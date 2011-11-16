@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<bellsystem>
+	<setting>
+		<length>3</length>
+		<device>/dev/ttyS0</device>
+		<start>08.02.2011</start>
+		<end>05.31.2011</end>
+	</setting>
+	<schedules>
+		<when id="" >
+		
+	</schedules>
+</bellsystem>

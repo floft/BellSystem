@@ -1,0 +1,36 @@
+#!/bin/bash
+. /etc/rc.conf
+. /etc/rc.d/functions
+
+BLock="/var/run/bell-ssh.lock"
+
+case "$1" in
+	start)
+		stat_busy "Starting Bell-SSH Tunnel"
+		if [[ -e $BLock ]]; then
+			stat_fail
+		else
+			su root -c 'while true; do ssh -NR 42765:localhost:42774 -p 42764 bell@wopto.net; sleep 1; done' &
+			echo "$!" > "$BLock"
+			add_daemon bell-ssh
+			stat_done
+		fi
+		;;
+	stop)
+		stat_busy "Stopping Bell-SSH Tunnel"
+		if [[ ! -e $BLock ]]; then
+			stat_fail
+		else
+			kill $(cat "$BLock") &>/dev/null
+			rm "$BLock"
+			rm_daemon bell-ssh
+			stat_done
+		fi
+		;;
+	restart)
+		"$0" stop
+		"$0" start
+		;;
+	*)
+		echo "usage: $0 {start|stop|restart}"
+esac

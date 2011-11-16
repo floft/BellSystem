@@ -6,3 +6,7 @@ usb-to-serial converter and triac circuit.
 - Add something like this to your crontab (as root, for the /dev/ttyUSB0):
 
 * * * * * php /home/bell/www/daemon.php >/dev/null 2>&1
+
+Depends:
+	glibc
+	xerces-c

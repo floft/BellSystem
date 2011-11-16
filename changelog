@@ -2,6 +2,12 @@ Possible:
 	* add single config
 	* PAM password? Database?
 	* make Overide the default
+	* warn when multiple schedules for same day
+	* allow ordering (first is default)
 
-0.1
+0.2:
+	* recoded daemon in C++
+	* redesigned XML code
+	* improved website UI
+0.1:
 	* initial run
