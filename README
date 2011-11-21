@@ -9,4 +9,6 @@ usb-to-serial converter and triac circuit.
 
 Depends:
 	glibc
-	xerces-c
+	libxml++
+	//xerces-c
+	boost

@@ -7,11 +7,11 @@
 #include <stropts.h>		//ioctl
 //#include <sys/ioctl.h>
 //#include <sys/types.h>
-#include <xercesc/dom/DOM.hpp>
-#include <xercesc/util/PlatformUtils.hpp>
+
+#include "config.h"
 
 using namespace std;
-using namespace xercesc;
+using namespace xmlpp;
 
 //for USB to Serial adapter
 const int set_bits_off = 0;
@@ -41,28 +41,13 @@ void turn_on(string device, int miliseconds)
 	close(fd);
 }
 
-void daemon(ifstream filename)
+void daemon(string filename)
 {
 	//ifstream ifile(filename.c_str());
 	//if  (!ifile) error("could not read config");
 	//close(ifile);
-
-	//Xerces junk
-	XMLPlatformUtils::Initialize();
-
-	XMLDOMParser* parser = new XercesDOMParser();
-	parser->setValidationScheme(XercesDOMParser::Val_Always);
-
-	ErrorHandler* errHandler = (ErrorHandler*) new HandlerBase();
-	parser->setErrorHandler(errHandler);
-
-	parser->parse(filename.c_str());
-	root = XMLString::transcode("");
-
-
-	delete parser;
-	delete errHandler;
-	XMLPlatformUtils::Terminate();
+	
+	Config config(filename);
 
 	turn_on(device, seconds*1000);
 }
@@ -92,31 +77,14 @@ int main(int argc, char *argv[])
 	{
 		daemon(config);
 	}
-	catch (const XMLException& e)
-	{
-		char* msg = XMLString::transcode(e.getMessage());
-
-		cerr << "Error: could not initialize xerces-c" << endl;
-		cerr << msg << endl;
-
-		XMLString::release(&msg);
-
-		return 1;
-	}
-	catch (const DOMException& e)
-	{
-		char* msg = XMLString::transcode(e.msg);
-
-		cerr << "Error: could not parse XML" << endl;
-		cerr << msg << endl;
-
-		XMLString::release(&msg);
-
-		return 1;
-	}
 	catch (exception& e)
 	{
 		cerr << "Error: " << e.what() << endl;
+		return 1;
+	}
+	catch (Config::Error& e)
+	{
+		cerr << "Config Error: "  << e.what() << endl;
 		return 1;
 	}
 	catch (...)
