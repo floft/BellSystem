@@ -12,3 +12,6 @@ Depends:
 	libxml++
 	//xerces-c
 	boost
+
+Build:
+	g++ -g example.cpp config.cpp split.cpp -o ex `pkg-config --cflags --libs libxml++-2.6` /usr/lib/libboost_date_time.a; ./ex
