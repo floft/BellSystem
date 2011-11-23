@@ -33,7 +33,7 @@ public:
 	{
 	public:
 		Error(const string& ss) :s(ss) { }
-		string what() { return s; }
+		string what() const { return s; }
 	private:
 		string s;
 	};
@@ -65,11 +65,11 @@ public:
 		vector<DateTime::time> times;
 	};
 	
-	Settings         get_settings()  { return settings;  }
-	vector<string>   get_defaults()  { return defaults;  }
-	vector<when>     get_quiets()    { return quiets;    }
-	vector<when>     get_overrides() { return overrides; }
-	vector<schedule> get_schedules() { return schedules; }
+	Settings         get_settings()  const { return settings;  }
+	vector<string>   get_defaults()  const { return defaults;  }
+	vector<when>     get_quiets()    const { return quiets;    }
+	vector<when>     get_overrides() const { return overrides; }
+	vector<schedule> get_schedules() const { return schedules; }
 	
 private:
 	void add_whens(const NodeSet& nodeset, vector<when>& whens);

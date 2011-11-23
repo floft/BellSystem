@@ -4,12 +4,14 @@ namespace DateTime
 {
 
 	now::now()
+		:dow(0)
 	{
 		time_t current = std::time(0);
-		struct tm* now = localtime(&current);
+		struct tm* tm  = localtime(&current);
 
-		d.set(now->tm_year + 1900, now->tm_mon + 1, now->tm_mday);
-		t.set(now->tm_hour, now->tm_min);
+		dow = tm->tm_wday;
+		t.set(tm->tm_hour, tm->tm_min);
+		d.set(tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday);
 	}
 
 	date::date(const int& yy, const int& mm, const int& dd)

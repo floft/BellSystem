@@ -28,14 +28,12 @@ void error(const string& s)
 	throw runtime_error(s);
 }
 
-void turn_on(string device, int seconds)
+void turn_on(const string& device, const int& seconds)
 {
 	int fd;
 	
 	if ((fd = open(device.c_str(), O_RDWR | O_NDELAY)) < 0)
-	{
 		error("could not turn device on");
-	}
 
 	ioctl(fd, TIOCMSET, &set_bits_on);
 	sleep(seconds);
@@ -68,20 +66,46 @@ bool in_times(const DateTime::time& t, const vector<DateTime::time>& times)
 	return false;
 }
 
-void daemon(string filename)
+bool ring_schedule(const string& id, const vector<Config::schedule>& schedules,
+		   const Config::Settings& settings, const DateTime::time& now)
+{
+	bool set = false;
+	Config::schedule schedule;
+
+	for (unsigned int i = 0; i < schedules.size(); ++i)
+	{
+		if (schedules[i].id == id)
+		{
+			set = true;
+			schedule = schedules[i];
+			break;
+		}
+	}
+
+	if (set)
+	{
+		if (in_times(now, schedule.times))
+		{
+			turn_on(settings.device, settings.length);
+		}
+	}
+
+	return set;
+}
+
+void daemon(const string& filename)
 {
 	ifstream ifile(filename.c_str());
 	if  (!ifile) error("could not read config");
 	ifile.close();
 	
-	Config config(filename);
+	DateTime::now n;
+	const Config&			config(filename);
 	const Config::Settings&         settings  = config.get_settings();
 	const vector<string>&           defaults  = config.get_defaults();
 	const vector<Config::when>&     quiets    = config.get_quiets();
 	const vector<Config::when>&     overrides = config.get_overrides();
 	const vector<Config::schedule>& schedules = config.get_schedules();
-
-	DateTime::now n;
 	
 	//exit if in quiet period
 	for (unsigned int i = 0; i < quiets.size(); ++i)
@@ -89,44 +113,31 @@ void daemon(string filename)
 			return;
 
 	//use override schedule
-	string id;
+	string override_id;
 
 	for (unsigned int i = 0; i < overrides.size(); ++i)
 	{
 		if (within_when(n, overrides[i]))
 		{
-			id = overrides[i].exec;
+			override_id = overrides[i].exec;
 			break;
 		}
 	}
-	
 
-	if (id.length() > 0)
+	if (override_id.length() > 0)
 	{
-		bool set = false;
-		Config::schedule schedule;
+		if (!ring_schedule(override_id, schedules, settings, n.t))
+			error("schedule with specified id does not exist");
 
-		for (unsigned int i = 0; i < schedules.size(); ++i)
-		{
-			if (schedules[i].id == id)
-			{
-				set = true;
-				schedule = schedules[i];
-				break;
-			}
-		}
-
-		if (set)
-		{
-			if (in_times(n.t, schedule.times))
-				turn_on(settings.device, settings.length);
-		}
-	}
+		return;
+	} else error("override exec blank");
 
 	//defaults
+	const string& default_id = defaults[n.dow];
 	
-	//find default schedule for today
-	//ring if in_times
+	if (default_id.length() > 0)
+		if (!ring_schedule(default_id, schedules, settings, n.t))
+			error("schedule with specified id does not exist");
 }
 
 int main(int argc, char *argv[])

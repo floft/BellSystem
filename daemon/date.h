@@ -17,15 +17,15 @@ namespace DateTime
 {
 	using namespace std;
 
-	static const int max_hours   = 23;
-	static const int max_minutes = 59;
+	const int max_hours   = 23;
+	const int max_minutes = 59;
 
 	class date
 	{
 	public:
 		class Invalid { };
 
-		date() :y(0), m(1), d(1) { }
+		date() :y(0), m(0), d(0) { }	// if d == date(), it hasn't been set
 		date(const int& yy, const int& mm, const int& dd);
 		date(const string& s);
 
@@ -85,6 +85,7 @@ namespace DateTime
 	struct now
 	{
 		now();
+		int dow;
 		date d;
 		time t;
 	};
