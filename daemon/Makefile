@@ -4,7 +4,7 @@ OBJ		= ${SRC:.cpp=.o}
 
 CC		= g++
 CFLAGS		:= -Wall ${CFLAGS}
-LDFLAGS		:= -lboost_date_time ${LDFLAGS}
+#LDFLAGS	:= -lboost_date_time ${LDFLAGS}
 
 CFLAGS		+= $(shell pkg-config --cflags libxml++-2.6)
 LDFLAGS		+= $(shell pkg-config --libs   libxml++-2.6)

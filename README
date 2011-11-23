@@ -1,13 +1,10 @@
-This is a simple bell system script written in PHP designed for a
-usb-to-serial converter and triac circuit.
+This is a fairly simple bell system using a usb-to-serial converter
+and triac circuit. A PHP web UI creates an XML file that a C++ daemon
+will read and turn on the bell if it is time to ring the bell.
 
-- Compile turnonrelay
-- Modify scripts for your directories
-- Add something like this to your crontab (as root, otherwise can't write to /dev/ttyUSB0):
-
-* * * * * php /home/bell/www/daemon.php >/dev/null 2>&1
+- cd src/; make
+- add daemon to root cron tab (* * * * * /path/to/bell-daemon &>/dev/null)
 
 Depends:
 	glibc
-	boost
 	libxml++

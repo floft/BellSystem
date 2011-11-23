@@ -1,4 +1,5 @@
 #include <string>
+#include <vector>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
@@ -11,7 +12,6 @@
 #include "config.h"
 
 using namespace std;
-using namespace xmlpp;
 
 //for USB to Serial adapter
 const int set_bits_off = 0;
@@ -41,8 +41,37 @@ void turn_on(string device, int seconds)
 	close(fd);
 }
 
+bool within_when(const date& today, const ptime& now, const Config::when& w)
+{
+	if (
+		(today == w.start || (w.end != not_a_date_time && today >= w.start && today <= w.end)) &&	//today is the day or within the range of days
+		(now >= w.start_time || date != w.start) &&							//if first day, after start time
+		(now <= w.end_time   || w.end == not_a_date_time || date != w.end) &&				//if last day,  before end time
+		(now >= w.period_start && now <= w.period_end)							//now is between period start and end
+	)
+		return true;
+	else
+		return false;
+}
+
+bool in_times(const ptime& now, const vector<Config::time>& times)
+{
+	for (unsigned int i = 0; i < times.size(); ++i)
+	{
+		const Config::time& t = times[i];
+
+		if (now.hours() == t.h && now.minutes() == t.m)
+			return true;
+	}
+
+	return false;
+}
+
 void daemon(string filename)
 {
+	using namespace boost::gregorian;
+	using namespace boost::posix_time;
+
 	ifstream ifile(filename.c_str());
 	if  (!ifile) error("could not read config");
 	ifile.close();
@@ -54,11 +83,53 @@ void daemon(string filename)
 	const vector<Config::when>&     overrides = config.get_overrides();
 	const vector<Config::schedule>& schedules = config.get_schedules();
 
-	//quiets
-	//overrides
-	//defaults
+	date  today = day_clock::local_day();
+	ptime now   = second_clock::local_time();
+	
+	//exit if in quiet period
+	for (unsigned int i = 0; i < quiets.size(); ++i)
+		if (within_when(today, now, &quiets[i]))
+			return;
 
-	turn_on(settings.device, settings.length);
+	//use override schedule
+	string id;
+
+	for (unsigned int i = 0; i < overrides.size(); ++i)
+	{
+		if (within_when(today, now, &overrides[i]))
+		{
+			id = overrides[i].exec;
+			break;
+		}
+	}
+	
+
+	if (schedule.length() > 0)
+	{
+		bool set = false;
+		Config::schedule schedule;
+
+		for (unsigned int i = 0; i < schedules.size(); ++i)
+		{
+			if (schedules[i].id = id)
+			{
+				set = true;
+				schedule = schedules[i];
+				break;
+			}
+		}
+
+		if (set)
+		{
+			if (in_times(now, &schedules[i].times))
+				turn_on(settings.device, settings.length);
+		}
+	}
+
+	//defaults
+	
+	//find default schedule for today
+	//ring if in_times
 }
 
 int main(int argc, char *argv[])

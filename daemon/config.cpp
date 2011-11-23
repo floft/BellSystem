@@ -1,25 +1,5 @@
 #include "config.h"
 
-int Config::ustring_to_int(const Glib::ustring& input) const
-{
-	int output = -1;
-	stringstream s;
-	s << input.raw();
-	s >> output;
-	
-	return output;
-}
-
-int Config::string_to_int(const string& input) const
-{
-	int output = -1;
-	stringstream s;
-	s << input;
-	s >> output;
-
-	return output;
-}
-
 Config::Config(string filename)
 	:defaults(7)
 {
@@ -162,6 +142,11 @@ void Config::add_whens(NodeSet& nodeset, vector<when>& whens)
 					w.end_time.h = string_to_int(dates[1].substr(8, 2));
 					w.end_time.m = string_to_int(dates[1].substr(10,2));
 				}
+				else
+				{
+					w.end_time.h = max_hours;
+					w.end_time.m = max_minutes;
+				}
 			}
 			
 			//Start/end of a period during each of these days
@@ -186,6 +171,11 @@ void Config::add_whens(NodeSet& nodeset, vector<when>& whens)
 				
 				w.period_end.h = string_to_int(times[0]);
 				w.period_end.m = string_to_int(times[1]);
+			}
+			else
+			{
+				w.period_end.h = max_hours;
+				w.period_end.m = max_minutes;
 			}
 
 			//Execute

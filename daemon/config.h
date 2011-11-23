@@ -12,26 +12,20 @@
 
 #include <string>
 #include <vector>
-#include <sstream>
 #include <iostream>
 #include <libxml++/libxml++.h>
-#include <boost/date_time/gregorian/gregorian.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
+#include "date.h"
 #include "split.h"
+#include "string_functions.h"
 
 using namespace std;
 using namespace xmlpp;
-using namespace boost::gregorian;
-//using namespace boost::posix_time;
 
 class Config
 {
 public:
 	Config(string filename);
 
-	int string_to_int(const string& input) const;
-	int ustring_to_int(const Glib::ustring& input) const;
-	
 	class Error
 	{
 	public:
@@ -48,14 +42,6 @@ public:
 		string device;
 		date start;
 		date end;
-	};
-
-	struct time
-	{
-		time() :h(0), m(0) { }
-		time(const int& h, const int& m) :h(h), m(m) { }
-		int h;
-		int m;
 	};
 	
 	struct when
@@ -86,10 +72,10 @@ private:
 	void recursive(const Node* node);
 	void add_whens(NodeSet& nodeset, vector<when>& whens);
 
-	Settings settings;
-	vector<string> defaults;
-	vector<when> quiets;
-	vector<when> overrides;
+	Settings         settings;
+	vector<string>   defaults;
+	vector<when>     quiets;
+	vector<when>     overrides;
 	vector<schedule> schedules;
 
 	friend ostream& operator<<(ostream& os, const Config& c);
