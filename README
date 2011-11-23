@@ -3,15 +3,11 @@ usb-to-serial converter and triac circuit.
 
 - Compile turnonrelay
 - Modify scripts for your directories
-- Add something like this to your crontab (as root, for the /dev/ttyUSB0):
+- Add something like this to your crontab (as root, otherwise can't write to /dev/ttyUSB0):
 
 * * * * * php /home/bell/www/daemon.php >/dev/null 2>&1
 
 Depends:
 	glibc
-	libxml++
-	//xerces-c
 	boost
-
-Build:
-	g++ -g example.cpp config.cpp split.cpp -o ex `pkg-config --cflags --libs libxml++-2.6` /usr/lib/libboost_date_time.a; ./ex
+	libxml++
