@@ -1,6 +1,6 @@
 #include "config.h"
 
-Config::Config(string filename)
+Config::Config(const string& filename)
 	:defaults(7)
 {
 	DomParser parser;
@@ -37,11 +37,16 @@ Config::Config(string filename)
 			else if (nodename == "device")
 				settings.device = nodeText->get_content().raw();
 			else if (nodename == "start")
-				settings.start  = from_undelimited_string(nodeText->get_content().raw());
+				settings.start.set(nodeText->get_content().raw());
 			else if (nodename == "end")
-				settings.end    = from_undelimited_string(nodeText->get_content().raw());
+				settings.end.set(nodeText->get_content().raw());
 		}
 	}
+
+	if (settings.length < min_length)
+		throw Error("settings.length < min_length");
+	if (settings.length > max_length)
+		throw Error("settings.length > max_length");
 
 	//defaults
 	for (unsigned int i = 0; i < n_defaults.size(); ++i)
@@ -93,11 +98,7 @@ Config::Config(string filename)
 
 			if (nodeText)
 			{
-				vector<string> times = Split::split(nodeText->get_content().raw(), ":");
-
-				if (times.size() != 2) throw Error("time not in 00:00 format");
-
-				time t(string_to_int(times[0]), string_to_int(times[1]));
+				DateTime::time t(nodeText->get_content().raw());
 				s.times.push_back(t);
 			}
 		}
@@ -106,7 +107,7 @@ Config::Config(string filename)
 	}
 }
 
-void Config::add_whens(NodeSet& nodeset, vector<when>& whens)
+void Config::add_whens(const NodeSet& nodeset, vector<when>& whens)
 {
 	for (unsigned int i = 0; i < nodeset.size(); ++i)
 	{
@@ -124,29 +125,22 @@ void Config::add_whens(NodeSet& nodeset, vector<when>& whens)
 			vector<string> dates = Split::split(nodeText->get_content().raw(), "-");
 
 			//start date
-			w.start = from_undelimited_string(dates[0].substr(0,8));
+			w.start.set(dates[0].substr(0,8));
 
 			if (dates[0].length() == 12)
-			{
-				w.start_time.h = string_to_int(dates[0].substr(8, 2));
-				w.start_time.m = string_to_int(dates[0].substr(10,2));
-			}
+				w.start_time.set(string_to_int(dates[0].substr(8, 2)),
+						 string_to_int(dates[0].substr(10,2)));
 
 			//end date
 			if (dates.size() > 1)
 			{
-				w.end = from_undelimited_string(dates[1].substr(0,8));
+				w.end.set(dates[1].substr(0,8));
 			
 				if (dates[1].length() == 12)
-				{
-					w.end_time.h = string_to_int(dates[1].substr(8, 2));
-					w.end_time.m = string_to_int(dates[1].substr(10,2));
-				}
+					w.end_time.set(string_to_int(dates[1].substr(8, 2)),
+						       string_to_int(dates[1].substr(10,2)));
 				else
-				{
-					w.end_time.h = max_hours;
-					w.end_time.m = max_minutes;
-				}
+					w.end_time.set(DateTime::max_hours, DateTime::max_minutes);
 			}
 			
 			//Start/end of a period during each of these days
@@ -154,29 +148,12 @@ void Config::add_whens(NodeSet& nodeset, vector<when>& whens)
 			const Attribute* end_attribute   = nodeElement->get_attribute("end");
 
 			if (start_attribute)
-			{
-				vector<string> times = Split::split(start_attribute->get_value().raw(), ":");
-
-				if (times.size() != 2) throw Error("period start time not in 00:00 format");
-
-				w.period_start.h = string_to_int(times[0]);
-				w.period_start.m = string_to_int(times[1]);
-			}
+				w.period_start.set(start_attribute->get_value().raw());
 
 			if (end_attribute)
-			{
-				vector<string> times = Split::split(end_attribute->get_value().raw(), ":");
-				
-				if (times.size() != 2) throw Error("period end time not in 00:00 format");
-				
-				w.period_end.h = string_to_int(times[0]);
-				w.period_end.m = string_to_int(times[1]);
-			}
+				w.period_end.set(end_attribute->get_value().raw());
 			else
-			{
-				w.period_end.h = max_hours;
-				w.period_end.m = max_minutes;
-			}
+				w.period_end.set(DateTime::max_hours, DateTime::max_minutes);
 
 			//Execute
 			const Attribute* exec_attribute = nodeElement->get_attribute("exec");
@@ -195,13 +172,6 @@ ostream& operator<<(ostream& os, const Config::Settings& s)
 	   << s.device << endl
 	   << s.start  << endl
 	   << s.end    << endl;
-
-	return os;
-}
-
-ostream& operator<<(ostream& os, const Config::time& t)
-{
-	os << t.h << ":" << t.m;
 
 	return os;
 }

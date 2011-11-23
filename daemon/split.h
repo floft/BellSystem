@@ -14,7 +14,7 @@ namespace Split
 {
 	using namespace std;
 
-	string peek_next(istream& is, int number);
+	string peek_next(istream& is, const int& number);
 	vector<string> split(const string& input, const string& split);
 }
 

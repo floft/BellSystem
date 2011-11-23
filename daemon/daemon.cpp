@@ -9,6 +9,7 @@
 #include <sys/ioctl.h>		//ioctl
 #include <sys/types.h>		//TIOCMSET
 
+#include "date.h"
 #include "config.h"
 
 using namespace std;
@@ -41,37 +42,34 @@ void turn_on(string device, int seconds)
 	close(fd);
 }
 
-bool within_when(const date& today, const ptime& now, const Config::when& w)
+bool within_when(const DateTime::now& n, const Config::when& w)
 {
 	if (
-		(today == w.start || (w.end != not_a_date_time && today >= w.start && today <= w.end)) &&	//today is the day or within the range of days
-		(now >= w.start_time || date != w.start) &&							//if first day, after start time
-		(now <= w.end_time   || w.end == not_a_date_time || date != w.end) &&				//if last day,  before end time
-		(now >= w.period_start && now <= w.period_end)							//now is between period start and end
+		//today is the day or within the range of days
+		(n.d == w.start || (w.end != DateTime::date() && n.d >= w.start && n.d <= w.end)) &&
+		//if first day, after start time
+		(n.t >= w.start_time || n.d != w.start) &&
+		//if last day,  before end time
+		(n.t <= w.end_time || w.end == DateTime::date() || n.d != w.end) &&
+		//now is between period start and end
+		(n.t >= w.period_start && n.t <= w.period_end)
 	)
 		return true;
 	else
 		return false;
 }
 
-bool in_times(const ptime& now, const vector<Config::time>& times)
+bool in_times(const DateTime::time& t, const vector<DateTime::time>& times)
 {
 	for (unsigned int i = 0; i < times.size(); ++i)
-	{
-		const Config::time& t = times[i];
-
-		if (now.hours() == t.h && now.minutes() == t.m)
+		if (t == times[i])
 			return true;
-	}
 
 	return false;
 }
 
 void daemon(string filename)
 {
-	using namespace boost::gregorian;
-	using namespace boost::posix_time;
-
 	ifstream ifile(filename.c_str());
 	if  (!ifile) error("could not read config");
 	ifile.close();
@@ -83,12 +81,11 @@ void daemon(string filename)
 	const vector<Config::when>&     overrides = config.get_overrides();
 	const vector<Config::schedule>& schedules = config.get_schedules();
 
-	date  today = day_clock::local_day();
-	ptime now   = second_clock::local_time();
+	DateTime::now n;
 	
 	//exit if in quiet period
 	for (unsigned int i = 0; i < quiets.size(); ++i)
-		if (within_when(today, now, &quiets[i]))
+		if (within_when(n, quiets[i]))
 			return;
 
 	//use override schedule
@@ -96,7 +93,7 @@ void daemon(string filename)
 
 	for (unsigned int i = 0; i < overrides.size(); ++i)
 	{
-		if (within_when(today, now, &overrides[i]))
+		if (within_when(n, overrides[i]))
 		{
 			id = overrides[i].exec;
 			break;
@@ -104,14 +101,14 @@ void daemon(string filename)
 	}
 	
 
-	if (schedule.length() > 0)
+	if (id.length() > 0)
 	{
 		bool set = false;
 		Config::schedule schedule;
 
 		for (unsigned int i = 0; i < schedules.size(); ++i)
 		{
-			if (schedules[i].id = id)
+			if (schedules[i].id == id)
 			{
 				set = true;
 				schedule = schedules[i];
@@ -121,7 +118,7 @@ void daemon(string filename)
 
 		if (set)
 		{
-			if (in_times(now, &schedules[i].times))
+			if (in_times(n.t, schedule.times))
 				turn_on(settings.device, settings.length);
 		}
 	}
@@ -160,6 +157,16 @@ int main(int argc, char *argv[])
 	catch (Config::Error& e)
 	{
 		cerr << "Config Error: "  << e.what() << endl;
+		return 1;
+	}
+	catch (DateTime::time::Invalid& e)
+	{
+		cerr << "Error: time not in 00:00 format" << endl;
+		return 1;
+	}
+	catch (DateTime::date::Invalid& e)
+	{
+		cerr << "Error: date not in YYYYMMDD format" << endl;
 		return 1;
 	}
 	catch (std::exception& e)

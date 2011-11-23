@@ -2,7 +2,7 @@
 
 namespace Split
 {
-	string peek_next(istream& is, int number)
+	string peek_next(istream& is, const int& number)
 	{
 		char c;
 		string s;

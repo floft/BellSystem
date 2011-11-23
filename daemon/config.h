@@ -24,12 +24,15 @@ using namespace xmlpp;
 class Config
 {
 public:
-	Config(string filename);
+	Config(const string& filename);
+
+	static const int min_length = 1;
+	static const int max_length = 10;
 
 	class Error
 	{
 	public:
-		Error(string s) :s(s) { }
+		Error(const string& ss) :s(ss) { }
 		string what() { return s; }
 	private:
 		string s;
@@ -40,26 +43,26 @@ public:
 		Settings() :length(0) { }
 		int length;
 		string device;
-		date start;
-		date end;
+		DateTime::date start;
+		DateTime::date end;
 	};
 	
 	struct when
 	{
 		string exec;
-		date start;
-		date end;
-		time start_time;	//starts at certain time on a day
-		time end_time;
-		time period_start;	//certian times during these days
-		time period_end;
+		DateTime::date start;
+		DateTime::date end;
+		DateTime::time start_time;	//starts at certain time on a day
+		DateTime::time end_time;
+		DateTime::time period_start;	//certian times during these days
+		DateTime::time period_end;
 	};
 
 	struct schedule
 	{
 		string id;
 		string name;
-		vector<time> times;
+		vector<DateTime::time> times;
 	};
 	
 	Settings         get_settings()  { return settings;  }
@@ -69,8 +72,7 @@ public:
 	vector<schedule> get_schedules() { return schedules; }
 	
 private:
-	void recursive(const Node* node);
-	void add_whens(NodeSet& nodeset, vector<when>& whens);
+	void add_whens(const NodeSet& nodeset, vector<when>& whens);
 
 	Settings         settings;
 	vector<string>   defaults;
@@ -82,7 +84,6 @@ private:
 };
 
 ostream& operator<<(ostream& os, const Config::Settings& s);
-ostream& operator<<(ostream& os, const Config::time& t);
 ostream& operator<<(ostream& os, const Config::when& w);
 ostream& operator<<(ostream& os, const Config::schedule& s);
 ostream& operator<<(ostream& os, const Config& c);
