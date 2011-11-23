@@ -4,9 +4,9 @@
 #include <stdexcept>
 #include <getopt.h>
 #include <unistd.h>		//sleep
-#include <stropts.h>		//ioctl
-//#include <sys/ioctl.h>
-//#include <sys/types.h>
+#include <fcntl.h>		//O_RDWR, O_NDELAY
+#include <sys/ioctl.h>		//ioctl
+#include <sys/types.h>		//TIOCMSET
 
 #include "config.h"
 
@@ -27,7 +27,7 @@ void error(const string& s)
 	throw runtime_error(s);
 }
 
-void turn_on(string device, int miliseconds)
+void turn_on(string device, int seconds)
 {
 	int fd;
 	
@@ -36,20 +36,29 @@ void turn_on(string device, int miliseconds)
 		error("could not turn device on");
 	}
 
-	ioctl(fd, TIOCMSET, &set_bits_on)
-	sleep(miliseconds);
+	ioctl(fd, TIOCMSET, &set_bits_on);
+	sleep(seconds);
 	close(fd);
 }
 
 void daemon(string filename)
 {
-	//ifstream ifile(filename.c_str());
-	//if  (!ifile) error("could not read config");
-	//close(ifile);
+	ifstream ifile(filename.c_str());
+	if  (!ifile) error("could not read config");
+	ifile.close();
 	
 	Config config(filename);
+	const Config::Settings&         settings  = config.get_settings();
+	const vector<string>&           defaults  = config.get_defaults();
+	const vector<Config::when>&     quiets    = config.get_quiets();
+	const vector<Config::when>&     overrides = config.get_overrides();
+	const vector<Config::schedule>& schedules = config.get_schedules();
 
-	turn_on(device, seconds*1000);
+	//quiets
+	//overrides
+	//defaults
+
+	turn_on(settings.device, settings.length);
 }
 
 int main(int argc, char *argv[])
@@ -77,14 +86,14 @@ int main(int argc, char *argv[])
 	{
 		daemon(config);
 	}
-	catch (exception& e)
-	{
-		cerr << "Error: " << e.what() << endl;
-		return 1;
-	}
 	catch (Config::Error& e)
 	{
 		cerr << "Config Error: "  << e.what() << endl;
+		return 1;
+	}
+	catch (std::exception& e)
+	{
+		cerr << "Error: " << e.what() << endl;
 		return 1;
 	}
 	catch (...)
