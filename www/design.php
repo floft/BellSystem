@@ -6,7 +6,7 @@
 session_start();
 
 //print_r($_SESSION);
-//if (isset($_SiESSION['bell'])) echo "true";
+//if (isset($_SESSION['bell'])) echo "true";
 //else echo "false";
 
 $HOME = "index.php";
