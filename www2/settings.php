@@ -67,12 +67,12 @@ foreach ($fields as $field)
 <table><tr>
 	<td class="head">School Start<sup>1</sup></td>
 	<td>
-		<input type="text" name="start" id="start" value="<?php echo from_date($start, "Y/m/d"); ?>" />
+		<input type="text" name="start" id="start" value="<?php echo from_date($start, "Y/m/d"); ?>" /> 
 	</td>
 </tr><tr>
 	<td class="head">School End<sup>1</sup></td>
 	<td>
-		<input type="text" name="end" id="end" value="<?php echo from_date($end, "Y/m/d"); ?>" />
+		<input type="text" name="end" id="end" value="<?php echo from_date($end, "Y/m/d"); ?>" /> 
 	</td>
 </tr><tr>
 	<td class="head">Length</td>

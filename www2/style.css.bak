@@ -13,11 +13,10 @@ div.status {
 	font-size:10pt;
 }
 div.menu {
-	position:absolute;
-	left:12px;
 	width:135px;
 	padding-top:25px;
 	text-align:center;
+	position:absolute;
 	display:inline-block;
 }
 div.menu a {
@@ -52,10 +51,10 @@ input.save {
 	width:85px;
 	height:25px;
 	float:right;
-	margin:0px 0px 50% 25px;
 	border: 1px solid #7F7F7F;
 	border-radius: 14px;
 	-webkit-border-radius: 14px;
+	margin:0px 0px 50% 25px;
 }
 
 select {
@@ -81,7 +80,7 @@ div.schedule {
 	padding:10px;
 	display:block;
 	float:left;
-	width:145px;
+	width:135px;
 	height:100%;
 	margin:0px 5px 10px 5px;
 	background-color: #F0F0F0;
@@ -93,7 +92,7 @@ div.schedule div.name {
 }
 
 div.schedule div.name input {
-	width:120px;
+	width:115px;
 	font-weight:bold;
 	background-color: #F5F5F5;
 	border:1px solid #999999;
@@ -116,7 +115,7 @@ div.schedule div.new a {
 	font-size:13pt;
 }
 
-div.name a, div.time a {
+div.name a {
 	color:#FF0000;
 	text-decoration:none;
 }

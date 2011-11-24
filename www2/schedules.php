@@ -31,6 +31,26 @@ foreach ($xml->children() as $child) {
 
 $total = count($schedules);
 $change = "onchange=\"window.needToConfirm=true\"";
+
+function add_time($id, $key, $hour, $minute, $separator="'") {
+	global $change;
+	
+	echo "<div class=\"time\" id=\"time_${id}_${key}\"><span>::</span> <select name=\"hour[$id][$key]\" $change>";
+
+	for ($i=0; $i <= max_hours; ++$i) {
+		echo "<option value=\"$i\"" . (($i==$hour)?" selected=\"selected\"":"") . ">$i</option>";
+	}
+
+	echo "</select> : <select name=\"minute[$id][$key]\" $change>";
+
+	for ($i=0; $i <= max_minutes; ++$i) {
+		$is = sprintf("%02d", $i);
+		echo "<option value=\"$is\"" . (($i==$minute)?" selected=\"selected\"":"") . ">$is</option>";
+	}
+
+	echo "</select> <a href=\"javascript:void(0)\" onclick=\"remove_time($separator$id$separator, $separator$key$separator)\">x</a></div>";
+}
+
 ?>
 <script type="text/javascript">
 <!--
@@ -43,29 +63,42 @@ for ($i=0; $i < $total; ++$i) {
 ?>
 });
 
-function remove_schedule(id) {
-	elem = document.getElementById("schedule_" + id)
+function remove(id) {
+	elem = document.getElementById(id)
 	elem.parentNode.removeChild(elem)
 }
 
+function remove_schedule(id) {
+	remove("schedule_" + id)
+}
+
+function remove_time(id, key) {
+	remove("time_" + id + "_" + key)
+}
+
 function add_time(id) {
-	elem = document.getElementById(id)
+	container = document.getElementById("sortable_" + id)
+	li = document.createElement('li')
+	li.innerHTML = '<?php add_time("", "", 0, 0, ""); ?>'
+	container.insertBefore(li, null)
+}
+
+function add_schedule() {
 }
 // -->
 </script>
 <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post">
 <?php echo saved($saved); ?>
 
-<table class='schedules'><tr>
+<div class="schedules">
 <?php
 for ($q=0; $q < $total; ++$q) {
-	$num = $q + 1;
 	$id    = $schedules[$q][0];
 	$name  = $schedules[$q][1];
 	$times = $schedules[$q][2];
 
 	echo <<<EOF
-<td><div class='schedule' id='schedule_$id'>
+<div class='schedule' id='schedule_$id'>
 	<div class="name">
 		<input type="text" name="name[$id]" value="$name" $change /> <a href="javascript:void(0)" onclick="remove_schedule('$id')">x</a>
 	</div>
@@ -74,53 +107,19 @@ for ($q=0; $q < $total; ++$q) {
 EOF;
 	foreach ($times as $key=>$time) {
 		$parts = explode(":", $time);
-
-		echo "\n\t<li> <span>::</span> <select name='hour[$id][$key]' $change>\n\t\t";
-
-		for ($i=0; $i <= max_hours; ++$i) {
-			echo "<option value='$i'" . (($i==$parts[0])?" selected=\"selected\"":"") . ">$i</option>";
-		}
-
-		echo "\n\t</select> : <select name='minute[$id][$key]' $change>\n\t\t";
-
-		for ($i=0; $i <= max_minutes; ++$i) {
-			$is = sprintf("%02d", $i);
-			echo "<option value='$is'" . (($i==$parts[1])?" selected=\"selected\"":"") . ">$is</option>";
-		}
-
-		echo "\n\t</select></li>\n";
+		echo "\n\t\t<li>";
+		add_time($id, $key, $parts[0], $parts[1]);
+		echo "</li>\n";
 	}
 echo <<<EOF
 	</ul>
 	<div class="new"><a href="javascript:void(0)" onclick="add_time('$id')">+</a></div>
 	</div>
-</div></td>
+</div>
 EOF;
-
-	if ($num%$columns == 0)
-	{
-		echo "</tr>";
-
-		if ($q+1 < $total)
-			echo "<tr>";
-	}
-}
-
-if ($num%$columns == 0)
-	echo "<tr><td><div class='schedule new_schedule'><a href=\"javascript:void(0)\" onclick=\"add_schedule()\">+</a></div></td>";
-else
-	echo "<td><div class='schedule new_schedule'><a href=\"javascript:void(0)\" onclick=\"add_schedule()\">+</a></div></td>";
-++$q;
-
-for (;$q%$columns != 0; ++$q)
-{
-	echo "<td></td>";
-
-	if (($q+1)%$columns == 0)
-		echo "</tr>";
 }
 ?>
-
-</table>
+<div class='schedule new_schedule'><a href="javascript:void(0)" onclick="add_schedule()">+</a></div></td>
+</div>
 </form>
 <?php site_footer(); ?>
