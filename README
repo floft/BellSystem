@@ -8,3 +8,7 @@ will read and turn on the bell if it is time to ring the bell.
 Depends:
 	glibc
 	libxml++
+
+Web UI uses (included):
+	http://fancybox.net/
+	http://javascriptcalendar.org/
