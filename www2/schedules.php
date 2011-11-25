@@ -48,12 +48,60 @@ function add_time($id, $key, $hour, $minute, $separator="'") {
 		echo "<option value=\"$is\"" . (($i==$minute)?" selected=\"selected\"":"") . ">$is</option>";
 	}
 
-	echo "</select> <a href=\"javascript:void(0)\" onclick=\"remove_time($separator$id$separator, $separator$key$separator)\">x</a></div>";
+	echo "</select> <a href=\"javascript:void(0)\" onclick=\"return remove_time($separator$id$separator, $separator$key$separator)\">x</a></div>";
 }
 
 ?>
 <script type="text/javascript">
-<!--
+window.onload = function() {
+	//http://forums.devshed.com/javascript-development-115/javascript-get-all-elements-of-class-abc-24349.html
+	if (document.getElementsByClassName == undefined) {
+		document.getElementsByClassName = function(className) {
+			var hasClassName = new RegExp("(?:^|\\s)" + className + "(?:$|\\s)");
+			var allElements = document.getElementsByTagName("*");
+			var results = [];
+
+			var element;
+			for (var i = 0; (element = allElements[i]) != null; i++) {
+				var elementClass = element.className;
+				if (elementClass && elementClass.indexOf(className) != -1 && hasClassName.test(elementClass))
+					results.push(element);
+			}
+
+			return results;
+		}
+	}
+
+	get_ids()
+};
+
+function get_ids() {
+	divs  = document.getElementsByClassName("schedule")
+	lists = new Array()
+	window.schedule_times = new Array()
+
+	for (i=0;i<divs.length;i++) {
+		if (divs[i].id != "new_schedule") {
+			//schedule ids
+			id = divs[i].id.split("_")[1]
+			lists.push(id)
+
+			//time ids
+			children = document.getElementById("sortable_" + id).getElementsByTagName("li")
+			window.schedule_times[id]=(children.length-1)
+		}
+	}
+
+	//get biggest schedule id
+	biggest=1
+
+	for (i=0;i<lists.length;i++) {
+		if (parseInt(lists[i]) > biggest) biggest = lists[i]
+	}
+
+	window.maxid=biggest
+}
+
 $(function() {
 <?php
 for ($i=0; $i < $total; ++$i) {
@@ -63,33 +111,97 @@ for ($i=0; $i < $total; ++$i) {
 ?>
 });
 
-function remove(id) {
+function remove_id(id) {
 	elem = document.getElementById(id)
 	elem.parentNode.removeChild(elem)
 }
 
 function remove_schedule(id) {
-	remove("schedule_" + id)
+	remove_id("schedule_" + id)
+
+	return false
 }
 
 function remove_time(id, key) {
-	remove("time_" + id + "_" + key)
+	remove_id("time_" + id + "_" + key)
+
+	return false
 }
 
 function add_time(id) {
+	window.needToConfirm = true
+	++window.schedule_times[id]
+	new_id = window.schedule_times[id]
+
 	container = document.getElementById("sortable_" + id)
 	li = document.createElement('li')
-	li.innerHTML = '<?php add_time("", "", 0, 0, ""); ?>'
-	container.insertBefore(li, null)
+	li.innerHTML = '<?php add_time("'+id+'", "'+new_id+'", 0, 0, ""); ?>'
+	container.appendChild(li)
+
+	return false
 }
 
 function add_schedule() {
+	window.needToConfirm = true
+	++window.maxid
+	id=window.maxid
+
+	window.schedule_times[id] = 0
+
+	container = document.getElementsByClassName("schedules")[0]
+
+	schedule = document.createElement('div')
+	container.appendChild(schedule)
+	schedule.className = "schedule"
+	schedule.id    = "schedule_" + id
+
+	namediv = document.createElement('div')
+	schedule.appendChild(namediv)
+	namediv.className = "name"
+
+	input = document.createElement('input')
+	namediv.appendChild(input)
+	input.type = "text"
+	input.name = "name[" + id + "]"
+
+	remove = document.createElement('a')
+	namediv.appendChild(remove)
+	remove.href = "javascript:void(0)"
+	remove.onclick = (function(id){
+		return function() { return remove_schedule(id); }
+	})(id)
+	remove.innerHTML = " x"
+	
+	times = document.createElement('div')
+	schedule.appendChild(times)
+	times.className = "times"
+
+	ul = document.createElement('ul')
+	times.appendChild(ul)
+	ul.id = "sortable_" + id
+
+	new_link = document.createElement('div')
+	schedule.appendChild(new_link)
+	new_link.className = "new"
+
+	link = document.createElement('a')
+	new_link.appendChild(link)
+	link.href = "javascript:void(0)"
+	link.onclick = (function(id){
+		return function() { return add_time(id); }
+	})(id)
+	link.innerHTML = "+"
+
+	$(function() {
+		$( "#sortable_" + id ).sortable();
+		$( "#sortable_" + id ).disableSelection();
+	});
+
+	return false
 }
-// -->
 </script>
 <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post">
 <?php echo saved($saved); ?>
-
 <div class="schedules">
 <?php
 for ($q=0; $q < $total; ++$q) {
@@ -100,7 +212,7 @@ for ($q=0; $q < $total; ++$q) {
 	echo <<<EOF
 <div class='schedule' id='schedule_$id'>
 	<div class="name">
-		<input type="text" name="name[$id]" value="$name" $change /> <a href="javascript:void(0)" onclick="remove_schedule('$id')">x</a>
+		<input type="text" name="name[$id]" value="$name" $change /> <a href="javascript:void(0)" onclick="return remove_schedule('$id')">x</a>
 	</div>
 	<div class="times">
 	<ul id="sortable_$id">
@@ -113,13 +225,13 @@ EOF;
 	}
 echo <<<EOF
 	</ul>
-	<div class="new"><a href="javascript:void(0)" onclick="add_time('$id')">+</a></div>
+	<div class="new"><a href="javascript:void(0)" onclick="return add_time('$id')">+</a></div>
 	</div>
 </div>
 EOF;
 }
 ?>
-<div class='schedule new_schedule'><a href="javascript:void(0)" onclick="add_schedule()">+</a></div></td>
 </div>
+<div class="new_schedule"><div class="schedule" id='new_schedule'><a href="javascript:void(0)" onclick="return add_schedule()">+</a></div></div>
 </form>
 <?php site_footer(); ?>

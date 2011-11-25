@@ -51,16 +51,15 @@ foreach ($xml->children() as $child) {
 }
 ?>
 <script type="text/javascript">
-<!--
 window.onload = function() {
 <?php
-$fields = array("start", "end");
+//$fields = array("start", "end");
+$fields = array("end", "start");
 
 foreach ($fields as $field)
 	echo jsDatePick($field);
 ?>
 };
-// -->
 </script>
 <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post">
 <?php echo saved($saved); ?>
