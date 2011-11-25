@@ -1,179 +1,160 @@
 <?php
-/*******************************************************************************
-* login process
-*******************************************************************************/
+$name        = "Bell System";
+$root        = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR;
+$menu_file   = $root . "menu.xml";
+$config_file = $root . "config.xml";
 
-session_start();
+$days_of_week = array(
+	"Sunday",
+	"Monday",
+	"Tuesday",
+	"Wednesday",
+	"Thursday",
+	"Friday",
+	"Saturday"
+);
 
-//print_r($_SESSION);
-//if (isset($_SESSION['bell'])) echo "true";
-//else echo "false";
-
-$HOME = "index.php";
-$configfile = "/home/bell/www/config.xml";
-$_PHPSELF = $_SERVER['PHP_SELF'];
-//$mycookie = md5($pass).sha1($pass);
-$mycookie = "I need to redo this";
-
-function startit() {
-	echo "<html><head><title>SAA Bell System</title><script type=\"text/javascript\">
-window.onload=function() { document.getElementById(\"pass\").focus(); }
-</script></head><body>";
-}
-
-function exitit() {
-	echo "</body></html>";
-	exit;
-}
-
-if (isset($_SESSION['bell']) && !isset($_REQUEST['logout']) || (isset($daemon)&&$daemon==true))
+function config_load()
 {
-	//continue;
+	global $config_file;
+	$xml = simplexml_load_file($config_file) or die("could not open config: $config_file");
+	return $xml;
 }
-else if (isset($_REQUEST['co']))
+
+function config_save($xml)
 {
-	if (md5($_REQUEST['co']).sha1($_REQUEST['co']) == $mycookie)
+	global $config_file;
+	$dom = new DOMDocument('1.0');
+	$dom->formatOutput = true;
+	$dom->preserveWhiteSpace = false;
+	$simple = dom_import_simplexml($xml);
+	$simple = $dom->importNode($simple, true);
+	$simple = $dom->appendChild($simple);
+	
+	if ($f = fopen($config_file,"w"))
 	{
-		$_SESSION['bell'] = true;
-		
-		startit();
-		echo "Logged in... <a href=\"$_PHPSELF\">Continue</a><script type=\"text/javascript\">
-	<!--
-		function relocate() {window.top.location=\"$_PHPSELF\";} setTimeout(\"relocate()\",500);
-	// -->
-	</script>";
-		exitit();
-	}
-	else
-	{
-		startit();
-		echo "<h2>Login - SAA Bell System</h2>Wrong password...<form action='$_PHPSELF' method='post'>Password: <input type='password' name='co' id=\"pass\" /> <input type='submit' value='Login' /></form>";
-		exitit();
-	}
-}
-else if (isset($_REQUEST['logout']))
-{
-	//unset($_SESSION['valid']);
-	session_destroy();
-	
-	startit();
-	echo "Logged out...<script type=\"text/javascript\">
-	<!--
-		function relocate() {window.top.location=\"$_PHPSELF\";} setTimeout(\"relocate()\",500);
-	// -->
-	</script>";
-	exitit();
-}
-else
-{
-	startit();
-	echo "<h2>Login - SAA Bell System</h2><form action='$_PHPSELF' method='post'>Password: <input type='password' name='co' id=\"pass\" /> <input type='submit' value='Login' /></form>";
-	exitit();
-}
-
-
-/*******************************************************************************
-* the actual design
-*******************************************************************************/
-
-function GetMenu($file) {
-	global $_PHPSELF;
-	$menu = "";
-	$xml = simplexml_load_file($file);
-	$links = count($xml);
-	
-	for ($i=0;$i<$links;$i++) {
-		$node = $xml->item[$i];
-		$url = $node["url"];
-		
-		//set the url to the root if it is "index"
-		//if ($url == "index.php") $url = "./";
-		
-		//is this the current page?
-		if ($url == basename(substr($_PHPSELF, 1))) $menu .= "<a href=\"" . $url . "\" id=\"current\">" . $node . "</a> ";
-		else $menu .= "<a href=\"" . $url . "\">" . $node . "</a> ";
-	}
-	
-	$menu = "<div class=\"contents\">
-		<b>Bell System</b><br />
-		$menu
-		<br />
-		<a href=\"index.php?logout\">Logout</a>
-	</div>";
-	
-	return $menu;
-}
-
-function loadconfig()
-{
-	$defaults = <<<EOF
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<bellsystem><settings><length>3</length><enable>1</enable><command><on></on><off></off></command></settings><schedules/><lists/></bellsystem>
-EOF;
-	global $configfile;
-	if($xml = @simplexml_load_file("$configfile")) {
-		return $xml;
-	} else {
-		$f=fopen("$configfile","w");
-		fwrite($f,$defaults);
+		$return = fwrite($f, $dom->saveXML());
 		fclose($f);
-		$xml=simplexml_load_file("$configfile");
-		return $xml;
-	}
-}
-function saveconfig($xml)
-{
-	global $configfile;
-	$return=null;
-	$code=$xml->asXML();
+		return $return;
+	} else  return false;
 
-	$f=fopen($configfile,"w");
-	$return=fwrite($f,$code);
-	fclose($f);
-
-	return $return;
 }
 
-function isdisabled() {
-	$xml=loadconfig();
-	$disabled=false;
-	
+function enabled() {
+	$enabled = false;
+
+	$xml = config_load();
+	$start = "";
+	$end   = "";
+
 	foreach ($xml->children() as $child) {
-		if ($child->getName()=="settings") {
+		if ($child->getName() == "settings") {
 			foreach ($child->children() as $setting) {
-				if ($setting->getName() == "enable") {
-					if ($setting=="0") $disabled=true;
-				}
+				if ($setting->getName() == "start")
+					$start = $setting;
+				else if ($setting->getName() == "end")
+					$end   = $setting;
 			}
+
+			break;
 		}
 	}
-	
-	return $disabled;
+
+	//YYYYMMDD
+	if (strlen($start) == 8 && strlen($end) == 8)
+	{
+		$now = time();
+
+		if ($now >= from_date($start) && $now <= from_date($end))
+			$enabled = true;
+	}
+
+	return $enabled;
 }
 
-function site_header($title)
+function from_date($string, $format="U")
 {
-	global $_PHPSELF;
-	$prefix = "SAA Bell System";
-	$title = ($title=="")?"$prefix":"$title - $prefix";
-		
-	$menu = GetMenu("menu.xml");
+	$len = strlen($string);
 
-echo <<< END
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
- <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en" dir="ltr">
- <head>
- 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
- 	<title>$title</title>
- 	<style type="text/css">
- 	div.left {float:left;font-size:80%;}
- 	div.right {float:right;font-size:80%;}
- 	div.contents {position:fixed;top:10px;right:10px;z-index:1;border:#FFA500 solid 2px;background-color:#FFE4B5;padding:10px;margin-left:10px;}
- 	div.contents a {display:block;}
- 	#current {font-style:italic;}
- 	div.page {width:85%;}
- 	img {padding:5px;border:0;}
- 	</style>
+	if ($len == 8)
+		return date_create_from_format("Ymd", $string)->format($format);
+	else if ($len == 12)
+		return date_create_from_format("YmdHi", $string)->format($format);
+	else
+		return false;
+}
+
+function jsDatePick($field)
+{
+	return <<<EOF
+	new JsDatePick({
+		useMode:2,
+		target:"$field",
+		dateFormat:"%Y/%m/%d",
+		cellColorScheme:"beige"
+	});
+
+EOF;
+}
+
+function saved($bool)
+{
+	echo '<input type="submit" name="save" class="save" value="Save" onclick="window.needToConfirm=false" />';
+	if ($bool) echo "<div class='saved'>Successfully Saved</div>";
+}
+
+function menu() {
+global $menu_file;
+
+$menu = "";
+$xml = simplexml_load_file($menu_file) or die("could not get menu: $menu_file");
+$links = count($xml);
+
+for ($i=0;$i<$links;$i++) {
+	$node = $xml->page[$i];
+	$url = str_replace("index.php", "", $node["url"]);
+
+	//is this the current page?
+	if ($node["url"] == $_SERVER["PHP_SELF"])
+		$menu .= "<a href='$url' id='current'>$node</a>";
+	else
+		$menu .= "<a href='$url'>$node</a>";
+	
+	$menu .= "\r\n";
+}
+
+return $menu;
+}
+
+function site_header($title) {
+global $name;
+
+$status = (enabled())?"Enabled":"Disabled";
+$ip     = $_SERVER["SERVER_ADDR"];
+$menu   = menu();
+
+if ($title == "Home")
+	$title = $name;
+else
+	$title = "$title - $name";
+
+echo <<<EOF
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>$title</title>
+	<link rel="shortcut icon" href="favicon.ico" type="image/vnd.microsoft.icon" />
+	<link type="text/css" rel="stylesheet" media="all" href="style.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="jsDatePick_ltr.min.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="fancybox/jquery.fancybox-1.3.4.css" />
+	<script type="text/javascript" src="jsDatePick.min.1.3.js"></script>
+	<script type="text/javascript" src="jquery-1.6.2.min.js"></script>
+	<script type="text/javascript" src="jquery-ui-1.8.16.custom.min.js"></script>
+	<script type="text/javascript" src="fancybox/jquery.mousewheel-3.0.4.pack.js"></script>
+	<script type="text/javascript" src="fancybox/jquery.fancybox-1.3.4.pack.js"></script>
 	<script type="text/javascript">
 	<!--
 	window.needToConfirm = false;
@@ -184,28 +165,30 @@ echo <<< END
 	}
 	// -->
 	</script>
- </head>
- <body>
-	<h1>SAA Bell System</h1>
-	
-	<div class="page">
-	$menu
-END;
+</head>
+<body>
+
+<div class="status">
+<table>
+	<tr><td><b>IP:</b></td><td>$ip</td></tr>
+	<tr><td><b>Status:</b></td><td>$status</td></tr>
+</table>
+</div>
+<div class="title">$name</div>
+
+<div class="menu">
+$menu</div>
+
+<div class="content">
+
+EOF;
 }
 
 function site_footer() {
-	global $_PHPSELF;
-	$lastmod = date("D M d H:i:s T Y", getlastmod("$_PHPSELF"));
-	
-echo <<< END
-	</div>
-	
-	<!--footer-->
-	<hr />
-	<p><a name="footer"></a></p>
-	<div class="left">Copyright &copy; 2010 <a href="http://www.floft.net/">Floft</a> All Rights Reserved.</div>
-	<div class="right"><a href="index.php">SAA Bell System</a> - Last Modified: $lastmod</div>
-</body></html>
-END;
+echo <<<EOF
+</div>
+</body>
+</html>
+EOF;
 }
 ?>

@@ -1,7 +1,6 @@
 <menu>
-	<item url="index.php">Home</item>
-	<item url="lists.php">Bell Lists</item>
-	<item url="schedules.php">Schedules</item>
-	<item url="settings.php">Settings</item>
-	<!--<item url="">Admin</item>-->
+	<page url="/index.php">Home</page>
+	<page url="/schedules.php">Schedules</page>
+	<page url="/calendar.php">Calendar</page>
+	<page url="/settings.php">Settings</page>
 </menu>

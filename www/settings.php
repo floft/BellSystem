@@ -1,64 +1,93 @@
 <?php
-include_once "design.php";
+require_once "design.php";
 site_header("Settings");
 
-$xml = loadconfig();
+$saved = false;
+$xml = config_load();
 
-$message = "";
+//also specified in the daemon
+const min_length = 1;
+const max_length = 10;
 
-if (isset($_REQUEST['length']) && isset($_REQUEST['on']) && isset($_REQUEST['off']) && isset($_REQUEST['enabled'])) {
+if (isset($_REQUEST['save'])) {
 	$length = $_REQUEST['length'];
-	$on = $_REQUEST['on'];
-	$off = $_REQUEST['off'];
-	$enabled = $_REQUEST['enabled'];
-	
+	$start  = $_REQUEST['start'];
+	$end    = $_REQUEST['end'];
+
 	foreach ($xml->children() as $child) {
-		if ($child->getName()=="settings") {
+		if ($child->getName() == "settings") {
 			$child->length = $length;
-			$child->enable = $enabled;
-			$child->command->on = $on;
-			$child->command->off = $off;
+			$child->start  = str_replace("/","",$start);
+			$child->end    = str_replace("/","",$end);
 		}
 	}
-	
-	saveconfig($xml);
-	
-	$message = " - <i>Settings Saved</i>";
+
+	config_save($xml);
+	$saved = true;
 }
 
-$length="";
-$on="";
-$off="";
-$enabled1="";
-$enabled2="";
+$length = 3;
+$device = "";
+$start  = "";
+$end    = "";
 
-//get the settings
 foreach ($xml->children() as $child) {
-	if ($child->getName()=="settings") {
+	if ($child->getName() == "settings") {
 		foreach ($child->children() as $setting) {
-			if ($setting->getName() == "length") {
+			$name = $setting->getName();
+
+			if ($name == "length")
 				$length = $setting;
-			} else if ($setting->getName() == "command") {
-				$on = $setting->on;
-				$off = $setting->off;
-			} else if ($setting->getName() == "enable") {
-				$selected="checked=\"checked\"";
-				if ($setting=="0") $enabled2=$selected;
-				else $enabled1=$selected;
-			}
+			else if ($name == "start")
+				$start  = $setting;
+			else if ($name == "end")
+				$end    = $setting;
+			else if ($name == "device")
+				$device = $setting;
 		}
+
+		break;
 	}
 }
 ?>
-<form action="settings.php" method="post">
-	<b>Settings</b><?php echo $message; ?><br />
-	System Enabled: <input type="radio" name="enabled" value="1" <?php echo $enabled1; ?> /> On <input type="radio" name="enabled" value="0"  <?php echo $enabled2; ?> /> Off <br />
-	Length of Ring: <input type="text" name="length" value="<?php echo htmlentities($length); ?>" /> seconds (will only work if 0&lt;length&lt;30)<br />
-	<br /><b>Advanced Settings</b> - Please don't edit these unless you know what you are doing. =)<br />
-	Turn ON command: <input type="text" name="on" value="<?php echo htmlentities($on); ?>" size="75" /><br />
-	Turn OFF command: <input type="text" name="off" value="<?php echo htmlentities($off); ?>" size="75" /><br />
-	<input type="submit" value="Save" />
-</form>
+<script type="text/javascript">
+window.onload = function() {
 <?php
-site_footer();
+//$fields = array("start", "end");
+$fields = array("end", "start");
+
+foreach ($fields as $field)
+	echo jsDatePick($field);
 ?>
+};
+</script>
+<form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post">
+<?php echo saved($saved); ?>
+<table><tr>
+	<td class="head">School Start<sup>1</sup></td>
+	<td>
+		<input type="text" name="start" id="start" value="<?php echo from_date($start, "Y/m/d"); ?>" /> 
+	</td>
+</tr><tr>
+	<td class="head">School End<sup>1</sup></td>
+	<td>
+		<input type="text" name="end" id="end" value="<?php echo from_date($end, "Y/m/d"); ?>" /> 
+	</td>
+</tr><tr>
+	<td class="head">Length</td>
+	<td><select name="length" onchange="window.needToConfirm=true"><?php 
+		for ($i = min_length; $i <= max_length; ++$i)
+			echo "<option value='$i'" . (($i==$length)?" selected=\"selected\"":"") . ">$i</option>";
+	?></select> seconds</td>
+</tr><tr>
+	<td class="head">Device<sup>2</sup></td>
+	<td><input type="text" name="device" value="<?php echo $device; ?>" disabled="disabled" /></td>
+</tr></table>
+</form>
+
+<br />
+<p>
+<sup>1</sup> The bell system will be enabled between these dates.<br />
+<sup>2</sup> This is for reference; you can't change this from this web UI.
+</p>
+<?php site_footer(); ?>

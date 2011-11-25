@@ -1,325 +1,237 @@
 <?php
-include_once "design.php";
-site_header("Bell Schedules");
+require_once "design.php";
+site_header("Schedules");
 
-$xml = loadconfig();
+const max_hours   = 23;
+const max_minutes = 59;
+$columns = 3;
 
-$message = "";
+$xml = config_load();
+$saved = false;
+$schedules = array();
 
-if (isset($_REQUEST['submitted'])) {
-	$exes = $_REQUEST['execute'];
-	$basis = (isset($_REQUEST['basis']))?$_REQUEST['basis']:null;
-	
-	//weekly basis
-	$week = (isset($_REQUEST['week']))?$_REQUEST['week']:null;
-	//montly basis
-	$month_day_start = (isset($_REQUEST['month_day_start']))?$_REQUEST['month_day_start']:null;
-	$month_day_end = (isset($_REQUEST['month_day_end']))?$_REQUEST['month_day_end']:null;
-	//yearly basis
-	$year_day_start = (isset($_REQUEST['year_day_start']))?$_REQUEST['year_day_start']:null;
-	$year_day_end = (isset($_REQUEST['year_day_end']))?$_REQUEST['year_day_end']:null;
-	$year_month_start = (isset($_REQUEST['year_month_start']))?$_REQUEST['year_month_start']:null;
-	$year_month_end = (isset($_REQUEST['year_month_end']))?$_REQUEST['year_month_end']:null;
-	//one time event
-	$once_month = (isset($_REQUEST['once_month']))?$_REQUEST['once_month']:null;
-	$once_day = (isset($_REQUEST['once_day']))?$_REQUEST['once_day']:null;
-	$once_year = (isset($_REQUEST['once_year']))?$_REQUEST['once_year']:null;
-	$once_override = (isset($_REQUEST['once_override']))?$_REQUEST['once_override']:null;
-	
-	//delete everything
-	if (isset($xml->schedules)) {
-		$dom=dom_import_simplexml($xml->schedules);
-		$dom->parentNode->removeChild($dom);
-	}
-	
-	$xml->addChild("schedules");
-	
-	foreach ($exes as $exe_key => $exe) {
-		//add the new one
-		foreach ($xml->children() as $num => $child) {
-			if ($child->getName()=="schedules") {
-				$content = "";
+foreach ($xml->children() as $child) {
+	if ($child->getName() == "schedules") {
+		foreach ($child->children() as $schedule) {
+			if ($schedule->getName() == "schedule") {
+				$id    = $schedule["id"];
+				$name  = $schedule["name"];
+				$times = array();
 				
-				//create data
-				if ($basis[$exe_key] == "week") {
-					$days = $week[$exe_key];
-					$days_new = array();
-					
-					foreach ($days as $day_key => $day) {
-						$days_new[] = $day_key;
-					}
-					
-					$content = implode(",", $days_new);
-				} else if ($basis[$exe_key] == "month") {
-					$content = "{$month_day_start[$exe_key]}-{$month_day_end[$exe_key]}";
-				} else if ($basis[$exe_key] == "year") {
-					$content = "{$year_month_start[$exe_key]}.{$year_day_start[$exe_key]}-{$year_month_end[$exe_key]}.{$year_day_end[$exe_key]}";
-				} else if ($basis[$exe_key] == "once") {
-					$content = "{$once_month[$exe_key]}.{$once_day[$exe_key]}.{$once_year[$exe_key]}.{$once_override[$exe_key]}";
-				}
-				
-				//add the data
-				if ($content != "") {
-					$newchild = $child->addChild("when",$content);
-					$newchild["id"] = $exe_key;
-					$newchild["exec"] = $exe;
-					$newchild["basis"] = $basis[$exe_key];
-				}
+				foreach ($schedule->children() as $time)
+					$times[] = $time;
+
+				$schedules[] = array($id, $name, $times);
 			}
 		}
+		
+		break;
 	}
-	
-	saveconfig($xml);
-	
-	$message = " - <i>Settings Saved</i>";
 }
 
-function genContent($id,$basis,$exec,$when) {
-	global $xml;
+$total = count($schedules);
+$change = "onchange=\"window.needToConfirm=true\"";
+
+function add_time($id, $key, $hour, $minute, $separator="'") {
+	global $change;
 	
-	$return="";
-	
-	$week_display = "none";
-	$month_display = "none";
-	$year_display = "none";
-	$once_display = "none";
-	
-	$selected=" selected=\"selected\"";
-	$checked=" checked=\"checked\"";
-	
-	if ($basis == "week") {
-		$week_display = "inline";
-		$days = split(",", $when);
-	} else if ($basis == "month") {
-		$month_display = "inline";
-		$days = split("-",$when);
-	} else if ($basis == "year") {
-		$year_display = "inline";
-		$parts = split("-",$when); // 0 -> 12.15, 1 -> 12.25
-		
-		$start = split("\.",$parts[0]); // 12 -> month, 15 -> day
-		$end = split("\.",$parts[1]);
-	} else if ($basis == "once") {
-		$once_display = "inline";
-		$parts = split("\.",$when); // 12 -> month, 15 -> day, 2010 -> year, 0|1 -> use only "One Time" schedules
+	echo "<div class=\"time\" id=\"time_${id}_${key}\"><span>::</span> <select name=\"hour[$id][$key]\" $change>";
+
+	for ($i=0; $i <= max_hours; ++$i) {
+		echo "<option value=\"$i\"" . (($i==$hour)?" selected=\"selected\"":"") . ">$i</option>";
 	}
-	
-	$return .= "<tr id=\"sch_$id\"><td><b>$id</b>. Execute <select name=\"execute[$id]\">";
-	$return .= "<option value=\"0\" ".(($exec==0)?$selected:"").">Quiet Period</option>";
-	foreach ($xml->lists->children() as $child) {
-		$child_id=(string)$child["id"];
-		$child_name=$child["name"];
-		
-		$return .= "<option value=\"$child_id\" ".(($exec==$child_id)?$selected:"").">$child_name</option>";
+
+	echo "</select> : <select name=\"minute[$id][$key]\" $change>";
+
+	for ($i=0; $i <= max_minutes; ++$i) {
+		$is = sprintf("%02d", $i);
+		echo "<option value=\"$is\"" . (($i==$minute)?" selected=\"selected\"":"") . ">$is</option>";
 	}
-	$return .= "</select> on a <select name=\"basis[$id]\" onchange=\"showbasis(this,'$id')\">
-	<option value=\"none\">Please Select</option>
-	<option value=\"week\"".(($basis=="week")?$selected:"").">Weekly</option>
-	<option value=\"month\"".(($basis=="month")?$selected:"").">Monthly</option>
-	<option value=\"year\"".(($basis=="year")?$selected:"").">Yearly</option>
-	<option value=\"once\"".(($basis=="once")?$selected:"").">One Time</option>
-	</select> basis -- 
-	<!-- weekly -->
-	<span id=\"week_$id\" style=\"display:$week_display\">
-	<input type=\"checkbox\" name=\"week[$id][0]\" value=\"1\" ".((($basis=="week")&&in_array("0",$days))?$checked:"")."/> Sunday 
-	<input type=\"checkbox\" name=\"week[$id][1]\" value=\"1\" ".((($basis=="week")&&in_array("1",$days))?$checked:"")."/> Monday 
-	<input type=\"checkbox\" name=\"week[$id][2]\" value=\"1\" ".((($basis=="week")&&in_array("2",$days))?$checked:"")."/> Tuesday
-	<input type=\"checkbox\" name=\"week[$id][3]\" value=\"1\" ".((($basis=="week")&&in_array("3",$days))?$checked:"")."/> Wednesday 
-	<input type=\"checkbox\" name=\"week[$id][4]\" value=\"1\" ".((($basis=="week")&&in_array("4",$days))?$checked:"")."/> Thursday 
-	<input type=\"checkbox\" name=\"week[$id][5]\" value=\"1\" ".((($basis=="week")&&in_array("5",$days))?$checked:"")."/> Friday  
-	<input type=\"checkbox\" name=\"week[$id][6]\" value=\"1\" ".((($basis=="week")&&in_array("6",$days))?$checked:"")."/> Saturday 
-	</span>
-	<!-- monthly -->
-	<span id=\"month_$id\" style=\"display:$month_display\">
-	Days of month: <select name=\"month_day_start[$id]\">";
-	for ($i=1;$i<=31;$i++) {
-		if ($basis=="month"&&$i==$days[0]) $return .= "<option value=\"$i\" $selected>$i</option>";
-		else $return .= "<option value=\"$i\">$i</option>";
-	}
-	$return .= "</select> through <select name=\"month_day_end[$id]\">";
-	for ($i=1;$i<=31;$i++) {
-		if ($basis=="month"&&$i==$days[1]) $return .= "<option value=\"$i\" $selected>$i</option>";
-		else $return .= "<option value=\"$i\">$i</option>";
-	}
-	$return .= "</select>
-	</span>
-	<!-- yearly -->
-	<span id=\"year_$id\" style=\"display:$year_display\">
-	<select name=\"year_month_start[$id]\">
-	<option value=\"1\" ".((($basis=="year")&&$start[0]=="1")?$selected:"").">January</option>
-	<option value=\"2\" ".((($basis=="year")&&$start[0]=="2")?$selected:"").">February</option>
-	<option value=\"3\" ".((($basis=="year")&&$start[0]=="3")?$selected:"").">March</option>
-	<option value=\"4\" ".((($basis=="year")&&$start[0]=="4")?$selected:"").">April</option>
-	<option value=\"5\" ".((($basis=="year")&&$start[0]=="5")?$selected:"").">May</option>
-	<option value=\"6\" ".((($basis=="year")&&$start[0]=="6")?$selected:"").">June</option>
-	<option value=\"7\" ".((($basis=="year")&&$start[0]=="7")?$selected:"").">July</option>
-	<option value=\"8\" ".((($basis=="year")&&$start[0]=="8")?$selected:"").">August</option>
-	<option value=\"9\" ".((($basis=="year")&&$start[0]=="9")?$selected:"").">September</option>
-	<option value=\"10\" ".((($basis=="year")&&$start[0]=="10")?$selected:"").">October</option>
-	<option value=\"11\" ".((($basis=="year")&&$start[0]=="11")?$selected:"").">November</option>
-	<option value=\"12\" ".((($basis=="year")&&$start[0]=="12")?$selected:"").">December</option>
-	</select>
-	<select name=\"year_day_start[$id]\">";
-	for ($i=1;$i<=31;$i++) {
-		$return .= "<option value=\"$i\" ".((($basis=="year")&&$start[1]==$i)?$selected:"").">$i</option>";
-	}
-	$return .= "</select> through <select name=\"year_month_end[$id]\">
-	<option value=\"1\" ".((($basis=="year")&&$end[0]=="1")?$selected:"").">January</option>
-	<option value=\"2\" ".((($basis=="year")&&$end[0]=="2")?$selected:"").">February</option>
-	<option value=\"3\" ".((($basis=="year")&&$end[0]=="3")?$selected:"").">March</option>
-	<option value=\"4\" ".((($basis=="year")&&$end[0]=="4")?$selected:"").">April</option>
-	<option value=\"5\" ".((($basis=="year")&&$end[0]=="5")?$selected:"").">May</option>
-	<option value=\"6\" ".((($basis=="year")&&$end[0]=="6")?$selected:"").">June</option>
-	<option value=\"7\" ".((($basis=="year")&&$end[0]=="7")?$selected:"").">July</option>
-	<option value=\"8\" ".((($basis=="year")&&$end[0]=="8")?$selected:"").">August</option>
-	<option value=\"9\" ".((($basis=="year")&&$end[0]=="9")?$selected:"").">September</option>
-	<option value=\"10\" ".((($basis=="year")&&$end[0]=="10")?$selected:"").">October</option>
-	<option value=\"11\" ".((($basis=="year")&&$end[0]=="11")?$selected:"").">November</option>
-	<option value=\"12\" ".((($basis=="year")&&$end[0]=="12")?$selected:"").">December</option>
-	</select>
-	<select name=\"year_day_end[$id]\">";
-	for ($i=1;$i<=31;$i++) {
-		$return .= "<option value=\"$i\" ".((($basis=="year")&&$end[1]==$i)?$selected:"").">$i</option>";
-	}
-	$return .= "</select>
-	</span>
-	<!-- one time -->
-	<span id=\"once_$id\" style=\"display:$once_display\">
-	<select name=\"once_override[$id]\">
-	<option value=\"0\" ".((($basis=="once")&&$parts[3]=="0")?$selected:"").">Add to Current Schedules</option>
-	<option value=\"1\" ".((($basis=="once")&&$parts[3]=="1")?$selected:"").">Override All Schedules</option>
-	</select> on 
-	<select name=\"once_month[$id]\">
-	<option value=\"1\" ".((($basis=="once")&&$parts[0]=="1")?$selected:"").">January</option>
-	<option value=\"2\" ".((($basis=="once")&&$parts[0]=="2")?$selected:"").">February</option>
-	<option value=\"3\" ".((($basis=="once")&&$parts[0]=="3")?$selected:"").">March</option>
-	<option value=\"4\" ".((($basis=="once")&&$parts[0]=="4")?$selected:"").">April</option>
-	<option value=\"5\" ".((($basis=="once")&&$parts[0]=="5")?$selected:"").">May</option>
-	<option value=\"6\" ".((($basis=="once")&&$parts[0]=="6")?$selected:"").">June</option>
-	<option value=\"7\" ".((($basis=="once")&&$parts[0]=="7")?$selected:"").">July</option>
-	<option value=\"8\" ".((($basis=="once")&&$parts[0]=="8")?$selected:"").">August</option>
-	<option value=\"9\" ".((($basis=="once")&&$parts[0]=="9")?$selected:"").">September</option>
-	<option value=\"10\" ".((($basis=="once")&&$parts[0]=="10")?$selected:"").">October</option>
-	<option value=\"11\" ".((($basis=="once")&&$parts[0]=="11")?$selected:"").">November</option>
-	<option value=\"12\" ".((($basis=="once")&&$parts[0]=="12")?$selected:"").">December</option>
-	</select>
-	<select name=\"once_day[$id]\">";
-	for ($i=1;$i<=31;$i++) {
-		$return .= "<option value=\"$i\" ".((($basis=="once")&&$parts[1]==$i)?$selected:"").">$i</option>";
-	}
-	$return .= "</select>
-	<select name=\"once_year[$id]\">";
-	$year=date("Y");
-	for ($i=($year-10);$i<=($year+25);$i++) {
-		$return .= "<option value=\"$i\" ".(((($basis=="once")&&$parts[2]==$i)||($basis==""&&$year==$i))?$selected:"").">$i</option>";
-	}
-	$return .= "</select>
-	</span>
-	(<a href=\"javascript:void(0)\" onclick=\"delsch('{$id}'); return false;\">Delete</a>)</td></tr>";
-	
-	return $return;
+
+	echo "</select> <a href=\"javascript:void(0)\" onclick=\"return remove_time($separator$id$separator, $separator$key$separator)\">x</a></div>";
 }
+
 ?>
 <script type="text/javascript">
-<!--
-window.schedules=0
-window.onload=getkeys
+window.onload = function() {
+	//http://forums.devshed.com/javascript-development-115/javascript-get-all-elements-of-class-abc-24349.html
+	if (document.getElementsByClassName == undefined) {
+		document.getElementsByClassName = function(className) {
+			var hasClassName = new RegExp("(?:^|\\s)" + className + "(?:$|\\s)");
+			var allElements = document.getElementsByTagName("*");
+			var results = [];
 
-function getkeys() {
-	table = document.getElementById("schedules").getElementsByTagName("TBODY")[0];
-	schedules=new Array()
-	
-	for (i=0;i<table.rows.length;i++) {
-		name=table.rows[i].id.split("_")[1]
-		schedules.push(name)
+			var element;
+			for (var i = 0; (element = allElements[i]) != null; i++) {
+				var elementClass = element.className;
+				if (elementClass && elementClass.indexOf(className) != -1 && hasClassName.test(elementClass))
+					results.push(element);
+			}
+
+			return results;
+		}
 	}
-	
+
+	get_ids()
+};
+
+function get_ids() {
+	divs  = document.getElementsByClassName("schedule")
+	lists = new Array()
+	window.schedule_times = new Array()
+
+	for (i=0;i<divs.length;i++) {
+		if (divs[i].id != "new_schedule") {
+			//schedule ids
+			id = divs[i].id.split("_")[1]
+			lists.push(id)
+
+			//time ids
+			children = document.getElementById("sortable_" + id).getElementsByTagName("li")
+			window.schedule_times[id]=(children.length-1)
+		}
+	}
+
+	//get biggest schedule id
 	biggest=1
-	
-	for (i=0;i<schedules.length;i++) {
-		if (parseInt(schedules[i]) > biggest) biggest = schedules[i]
-	}
-	
-	window.schedules=biggest
-}
-function showbasis(elem, id) {
-	value=elem.value
-	bases=new Array()
-	bases.push("week")
-	bases.push("month")
-	bases.push("year")
-	bases.push("once")
-	
-	for (i=0;i<bases.length;i++) {
-		document.getElementById(bases[i]+"_"+id).style.display="none"
-	}
-	
-	if (document.getElementById(value+"_"+id) != undefined) document.getElementById(value+"_"+id).style.display="inline"
-}
-function delsch(id) {
-	window.needToConfirm=true
 
-	try {
-		document.getElementById("sch_"+id).removeNode(true)
-	} catch (e) {
-		Node1 = document.getElementById("schedules").getElementsByTagName("TBODY")[0];
-		var len = Node1.childNodes.length;
-		
-		for(var i = 0; i < len; i++) {
-			if(Node1.childNodes[i].id == "sch_"+id) {
-				Node1.removeChild(Node1.childNodes[i])
-				break
-			}
-		}
+	for (i=0;i<lists.length;i++) {
+		if (parseInt(lists[i]) > biggest) biggest = lists[i]
 	}
-}
-function addrow() {
-	window.needToConfirm=true
-	
-	window.schedules++
-	key=window.schedules
-	content="<?php echo str_replace("<keygoeshere>","\"+key+\"", str_replace("\"","\\\"", str_replace("\n","",genContent("<keygoeshere>","","","")))); ?>"
 
-	tbody = document.getElementById("schedules").getElementsByTagName("TBODY")[0];
-	row = document.createElement("TR")
-	row.id = "sch_"+key
-	td1 = document.createElement("TD")
-	td1.appendChild(document.createTextNode(""))
-	row.appendChild(td1);
-	tbody.appendChild(row);
-	
-	tbodyrows=tbody.rows
-	for (i=0;i<tbodyrows.length;i++) {
-		if (tbodyrows[i].id == "sch_"+key) {
-			tbodyrows[i].cells[0].innerHTML = content
-			break
-		}
-	}
+	window.maxid=biggest
 }
-// -->
-</script>
-<form action="schedules.php" method="post">
-	<?php echo (isdisabled() == true)?"<b>WARNING:</b> the bell system is currently disabled. <br /><br />":""; ?>
-	<b>Bell Schedules</b><?php echo $message; ?><br />
-	
-	<table style="margin-left:30px" id="schedules"><tbody>
-	<?php
-	foreach ($xml->children() as $child) {
-		if ($child->getName()=="schedules") {
-			foreach ($child->children() as $key=>$sch) {
-				$id=$sch['id'];
-				$basis=$sch['basis'];
-				$exec = $sch['exec'];
-				$when = (string)$sch;
-				
-				echo genContent($id,$basis,$exec,$when);
-			}
-		}
-	}
-	?>
-	</tbody></table><a href="javascript:void(0);" onclick="addrow(); return false;" style="margin-left:30px">Add Another Schedule</a><br /><br />
-	<input name="submitted" type="submit" value="Save" onclick="window.needToConfirm=false;" />
-</form>
+
+$(function() {
 <?php
-site_footer();
+for ($i=0; $i < $total; ++$i) {
+	$id=$schedules[$i][0];
+	echo "\t$( \"#sortable_$id\" ).sortable();\n\t\$( \"#sortable_$id\" ).disableSelection();\n";
+}
 ?>
+});
+
+function remove_id(id) {
+	elem = document.getElementById(id)
+	elem.parentNode.removeChild(elem)
+}
+
+function remove_schedule(id) {
+	remove_id("schedule_" + id)
+
+	return false
+}
+
+function remove_time(id, key) {
+	remove_id("time_" + id + "_" + key)
+
+	return false
+}
+
+function add_time(id) {
+	window.needToConfirm = true
+	++window.schedule_times[id]
+	new_id = window.schedule_times[id]
+
+	container = document.getElementById("sortable_" + id)
+	li = document.createElement('li')
+	li.innerHTML = '<?php add_time("'+id+'", "'+new_id+'", 0, 0, ""); ?>'
+	container.appendChild(li)
+
+	return false
+}
+
+function add_schedule() {
+	window.needToConfirm = true
+	++window.maxid
+	id=window.maxid
+
+	window.schedule_times[id] = 0
+
+	container = document.getElementsByClassName("schedules")[0]
+
+	schedule = document.createElement('div')
+	container.appendChild(schedule)
+	schedule.className = "schedule"
+	schedule.id    = "schedule_" + id
+
+	namediv = document.createElement('div')
+	schedule.appendChild(namediv)
+	namediv.className = "name"
+
+	input = document.createElement('input')
+	namediv.appendChild(input)
+	input.type = "text"
+	input.name = "name[" + id + "]"
+
+	remove = document.createElement('a')
+	namediv.appendChild(remove)
+	remove.href = "javascript:void(0)"
+	remove.onclick = (function(id){
+		return function() { return remove_schedule(id); }
+	})(id)
+	remove.innerHTML = " x"
+	
+	times = document.createElement('div')
+	schedule.appendChild(times)
+	times.className = "times"
+
+	ul = document.createElement('ul')
+	times.appendChild(ul)
+	ul.id = "sortable_" + id
+
+	new_link = document.createElement('div')
+	schedule.appendChild(new_link)
+	new_link.className = "new"
+
+	link = document.createElement('a')
+	new_link.appendChild(link)
+	link.href = "javascript:void(0)"
+	link.onclick = (function(id){
+		return function() { return add_time(id); }
+	})(id)
+	link.innerHTML = "+"
+
+	$(function() {
+		$( "#sortable_" + id ).sortable();
+		$( "#sortable_" + id ).disableSelection();
+	});
+
+	return false
+}
+</script>
+<form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post">
+<?php echo saved($saved); ?>
+<div class="schedules">
+<?php
+for ($q=0; $q < $total; ++$q) {
+	$id    = $schedules[$q][0];
+	$name  = $schedules[$q][1];
+	$times = $schedules[$q][2];
+
+	echo <<<EOF
+<div class='schedule' id='schedule_$id'>
+	<div class="name">
+		<input type="text" name="name[$id]" value="$name" $change /> <a href="javascript:void(0)" onclick="return remove_schedule('$id')">x</a>
+	</div>
+	<div class="times">
+	<ul id="sortable_$id">
+EOF;
+	foreach ($times as $key=>$time) {
+		$parts = explode(":", $time);
+		echo "\n\t\t<li>";
+		add_time($id, $key, $parts[0], $parts[1]);
+		echo "</li>\n";
+	}
+echo <<<EOF
+	</ul>
+	<div class="new"><a href="javascript:void(0)" onclick="return add_time('$id')">+</a></div>
+	</div>
+</div>
+EOF;
+}
+?>
+</div>
+<div class="new_schedule"><div class="schedule" id='new_schedule'><a href="javascript:void(0)" onclick="return add_schedule()">+</a></div></div>
+</form>
+<?php site_footer(); ?>

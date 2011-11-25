@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<bellsystem>
+	<settings>
+		<enable>1</enable>
+		<length>3</length>
+		<device>/dev/ttyS0</device>
+	</settings>
+	<schedules>
+		<when id="3" exec="2" basis="week">1,2,3,4</when>
+		<when id="4" exec="3" basis="week">5</when>
+		<when id="21" exec="0" basis="once">8.22.2011.1</when>
+		<when id="22" exec="0" basis="once">8.29.2011.1</when>
+		<when id="23" exec="4" basis="once">9.2.2011.1</when>
+		<when id="24" exec="0" basis="once">9.5.2011.1</when>
+		<when id="25" exec="0" basis="year">9.8-9.11</when>
+		<when id="26" exec="4" basis="year">11.7-11.8</when>
+		<when id="27" exec="0" basis="year">11.23-11.25</when>
+		<when id="28" exec="4" basis="once">11.22.2011.1</when>
+		<when id="29" exec="0" basis="year">12.16-12.31</when>
+		<when id="30" exec="0" basis="year">1.1-1.2</when>
+		<when id="31" exec="0" basis="once">1.16.2011.1</when>
+	</schedules>
+	<lists>
+		<list id="2" name="M-H">
+			<time>8:0</time>
+			<time>8:45</time>
+			<time>8:47</time>
+			<time>8:57</time>
+			<time>9:0</time>
+			<time>9:45</time>
+			<time>9:48</time>
+			<time>10:33</time>
+			<time>10:36</time>
+			<time>11:21</time>
+			<time>11:24</time>
+			<time>11:54</time>
+			<time>11:57</time>
+			<time>13:27</time>
+			<time>13:30</time>
+			<time>15:0</time>
+			<time>14:15</time>
+		</list>
+		<list id="3" name="F">
+			<time>8:0</time>
+			<time>8:35</time>
+			<time>8:38</time>
+			<time>9:23</time>
+			<time>9:26</time>
+			<time>10:1</time>
+			<time>10:4</time>
+			<time>10:39</time>
+			<time>10:42</time>
+			<time>11:17</time>
+			<time>11:47</time>
+			<time>12:22</time>
+			<time>12:25</time>
+			<time>13:0</time>
+			<time>13:3</time>
+			<time>13:38</time>
+			<time>13:40</time>
+			<time>14:0</time>
+			<time>11:44</time>
+		</list>
+		<list id="4" name="Half">
+			<time>8:0</time>
+			<time>8:47</time>
+			<time>8:49</time>
+			<time>8:59</time>
+			<time>9:2</time>
+			<time>9:50</time>
+			<time>9:53</time>
+			<time>10:40</time>
+			<time>10:43</time>
+			<time>11:30</time>
+		</list>
+		<list id="5" name="Week on F">
+			<time>8:0</time>
+			<time>8:35</time>
+			<time>8:38</time>
+			<time>9:23</time>
+			<time>9:26</time>
+			<time>10:1</time>
+			<time>10:4</time>
+			<time>11:17</time>
+			<time>11:44</time>
+			<time>11:47</time>
+			<time>12:22</time>
+			<time>12:25</time>
+			<time>13:38</time>
+			<time>13:40</time>
+			<time>14:0</time>
+		</list>
+	</lists>
+</bellsystem>

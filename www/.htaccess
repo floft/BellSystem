@@ -1,5 +1,2 @@
-<filesmatch "(\.xml)$">
-order allow,deny
-deny from all
-#allow from all
-</filesmatch>
+DirectoryIndex index.php
+Allow from all
