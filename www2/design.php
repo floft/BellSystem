@@ -149,9 +149,12 @@ echo <<<EOF
 	<link rel="shortcut icon" href="favicon.ico" type="image/vnd.microsoft.icon" />
 	<link type="text/css" rel="stylesheet" media="all" href="style.css" />
 	<link type="text/css" rel="stylesheet" media="all" href="jsDatePick_ltr.min.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="fancybox/jquery.fancybox-1.3.4.css" />
 	<script type="text/javascript" src="jsDatePick.min.1.3.js"></script>
 	<script type="text/javascript" src="jquery-1.6.2.min.js"></script>
 	<script type="text/javascript" src="jquery-ui-1.8.16.custom.min.js"></script>
+	<script type="text/javascript" src="fancybox/jquery.mousewheel-3.0.4.pack.js"></script>
+	<script type="text/javascript" src="fancybox/jquery.fancybox-1.3.4.pack.js"></script>
 	<script type="text/javascript">
 	<!--
 	window.needToConfirm = false;
