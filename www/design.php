@@ -4,6 +4,9 @@ $root        = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR;
 $menu_file   = $root . "menu.xml";
 $config_file = $root . "config.xml";
 
+const max_hours   = 23;
+const max_minutes = 59;
+
 $days_of_week = array(
 	"Sunday",
 	"Monday",
@@ -101,6 +104,23 @@ function saved($bool)
 {
 	echo '<input type="submit" name="save" class="save" value="Save" onclick="window.needToConfirm=false" />';
 	if ($bool) echo "<div class='saved'>Successfully Saved</div>";
+}
+
+function time_select($str="", $hour=-1, $minute=-1) {
+	echo "<select name=\"hour$str\" onchange=\"window.needToConfirm=true\">";
+	
+	for ($i=0; $i <= max_hours; ++$i) {
+		echo "<option value=\"$i\"" . (($i==$hour)?" selected=\"selected\"":"") . ">$i</option>";
+	}
+
+	echo "</select> : <select name=\"minute$str\" onchange=\"window.needToConfirm=true\">";
+	
+	for ($i=0; $i <= max_minutes; ++$i) {
+		$is = sprintf("%02d", $i);
+		echo "<option value=\"$is\"" . (($i==$minute)?" selected=\"selected\"":"") . ">$is</option>";
+	}
+
+	echo "</select>";
 }
 
 function menu() {

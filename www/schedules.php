@@ -2,8 +2,6 @@
 require_once "design.php";
 site_header("Schedules");
 
-const max_hours   = 23;
-const max_minutes = 59;
 $columns = 3;
 
 $xml = config_load();
@@ -30,8 +28,6 @@ if (isset($_REQUEST['save'])) {
 					$times[] = $hours[$name_key][$hour_key] . ":" . $minutes[$name_key][$hour_key];
 				}
 			}
-
-			//remove it??? we already did...
 
 			foreach ($xml->children() as $child_key => $child) {
 				if ($child->getName() == "schedules") {
@@ -74,25 +70,11 @@ foreach ($xml->children() as $child) {
 }
 
 $total = count($schedules);
-$change = "onchange=\"window.needToConfirm=true\"";
 
-function add_time($id, $key, $hour, $minute, $separator="'") {
-	global $change;
-	
-	echo "<div class=\"time\" id=\"time_${id}_${key}\"><span>::</span> <select name=\"hour[$id][$key]\" $change>";
-
-	for ($i=0; $i <= max_hours; ++$i) {
-		echo "<option value=\"$i\"" . (($i==$hour)?" selected=\"selected\"":"") . ">$i</option>";
-	}
-
-	echo "</select> : <select name=\"minute[$id][$key]\" $change>";
-
-	for ($i=0; $i <= max_minutes; ++$i) {
-		$is = sprintf("%02d", $i);
-		echo "<option value=\"$is\"" . (($i==$minute)?" selected=\"selected\"":"") . ">$is</option>";
-	}
-
-	echo "</select> <a href=\"javascript:void(0)\" onclick=\"return remove_time($separator$id$separator, $separator$key$separator)\">x</a></div>";
+function add_time($id, $key, $hour, $minute, $sep="'") {
+	echo "<div class=\"time\" id=\"time_${id}_${key}\"><span>::</span>";
+	time_select("[$id][$key]", $hour, $minute);
+	echo " <a href=\"javascript:void(0)\" onclick=\"return remove_time($sep$id$sep, $sep$key$sep)\">x</a></div>";
 }
 
 ?>
@@ -256,7 +238,7 @@ for ($q=0; $q < $total; ++$q) {
 	echo <<<EOF
 <div class='schedule' id='schedule_$id'>
 	<div class="name">
-		<input type="text" name="name[$id]" value="$name" $change /> <a href="javascript:void(0)" onclick="return remove_schedule('$id')">x</a>
+		<input type="text" name="name[$id]" value="$name" onchange="window.needToConfirm=true" /> <a href="javascript:void(0)" onclick="return remove_schedule('$id')">x</a>
 	</div>
 	<div class="times">
 	<ul id="sortable_$id">

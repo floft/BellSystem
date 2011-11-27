@@ -3,7 +3,7 @@ div.title {
 	font-weight:bold;
 	font-family:"Times New Roman",serif;
 }
-div.section {
+div.section, td.section {
 	font-size:15pt;
 	font-weight:bold;
 	font-family:"Times New Roman",serif;
@@ -56,6 +56,22 @@ input.save {
 	border: 1px solid #7F7F7F;
 	border-radius: 14px;
 	-webkit-border-radius: 14px;
+}
+
+input.buttons {
+	color:#4C4C4C;
+	background-color: #E5E5E5;
+	font-size: 11pt;
+	width:85px;
+	height:25px;
+	border: 1px solid #7F7F7F;
+	border-radius: 14px;
+	-webkit-border-radius: 14px;
+}
+
+div.buttons {
+	float:right;
+	margin:10px;
 }
 
 select {
@@ -156,4 +172,23 @@ ul {
 
 div.schedules, div.new_schedule {
 	margin:0px 100px 0px 0px;
+}
+
+td.middle_horizontal {
+	width:125px;
+}
+
+td.middle_vertical {
+	height:35px;
+}
+
+#box {
+	width:750px;
+	height:300px;
+	overflow:auto;
+}
+
+div.note {
+	padding-top:15px;
+	position:absolute;
 }

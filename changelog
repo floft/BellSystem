@@ -4,6 +4,9 @@ Possible:
 	* make Overide the default
 	* warn when multiple schedules for same day
 	* allow ordering (first is default)
+	* run as daemon, not in cron
+	* convert times on each file change to unix time???
+	* finish Calendar page
 
 0.2:
 	* redesigned XML code
