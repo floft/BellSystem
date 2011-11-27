@@ -29,7 +29,7 @@ function config_save($xml)
 	$dom->preserveWhiteSpace = false;
 	$simple = dom_import_simplexml($xml);
 	$simple = $dom->importNode($simple, true);
-	$simple = $dom->appendChild($simple);
+	$dom->appendChild($simple);
 	
 	if ($f = fopen($config_file,"w"))
 	{

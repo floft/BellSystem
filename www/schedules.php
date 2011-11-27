@@ -10,6 +10,50 @@ $xml = config_load();
 $saved = false;
 $schedules = array();
 
+if (isset($_REQUEST['save'])) {
+	$names = $_REQUEST['name'];
+	$hours = (isset($_REQUEST['hour']))?$_REQUEST['hour']:null;
+	$minutes = (isset($_REQUEST['minute']))?$_REQUEST['minute']:null;
+
+	if (($hours == null && $minutes == null) || (is_array($hours) && is_array($minutes) && count($hours) == count($minutes))) {
+		$config = array();
+
+		$dom = dom_import_simplexml($xml->schedules);
+		$dom->parentNode->removeChild($dom);
+		$xml->addChild("schedules");
+
+		foreach ($names as $name_key => $name) {
+			$times = array();
+
+			if (isset($hours[$name_key]) && $hours[$name_key] != null ) {
+				foreach ($hours[$name_key] as $hour_key => $hour) {
+					$times[] = $hours[$name_key][$hour_key] . ":" . $minutes[$name_key][$hour_key];
+				}
+			}
+
+			//remove it??? we already did...
+
+			foreach ($xml->children() as $child_key => $child) {
+				if ($child->getName() == "schedules") {
+					$new = $child->addChild("schedule");
+					$new["id"] = $name_key;
+					$new["name"] = addslashes(html_entity_decode($name));
+
+					foreach ($times as $time_key => $time) {
+						$new->addChild("time");
+						$new->time[$time_key] = $time;
+					}
+
+					break;
+				}
+			}
+		}
+
+		config_save($xml);
+		$saved = true;
+	}
+}
+
 foreach ($xml->children() as $child) {
 	if ($child->getName() == "schedules") {
 		foreach ($child->children() as $schedule) {
