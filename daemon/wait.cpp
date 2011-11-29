@@ -19,7 +19,7 @@ namespace Wait
 			if (seconds > 1)
 				usleep((seconds-1)*1000);
 			else
-				usleep(mili_wait);
+				usleep(mili_wait*1000);
 		}
 	}
 

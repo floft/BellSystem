@@ -104,6 +104,10 @@ void check_ring(const Config& config)
 	const vector<Config::when>&     quiets    = config.get_quiets();
 	const vector<Config::when>&     overrides = config.get_overrides();
 	const vector<Config::schedule>& schedules = config.get_schedules();
+
+	//exit if not during school start/stop
+	if (settings.start > n.d || settings.end < n.d)
+		return;
 	
 	//exit if in quiet period
 	for (unsigned int i = 0; i < quiets.size(); ++i)
@@ -172,9 +176,9 @@ int main(int argc, char *argv[])
 	}
 	ifile.close();
 	
-	int lastmodified = 0;
 	struct stat attributes;
 	stat(filename.c_str(), &attributes);
+	int lastmodified = attributes.st_mtime;
 
 	Config config(filename);
 
