@@ -55,7 +55,7 @@ function box_save() {
 }
 
 window.onload = function() {
-	$("#link").fancybox({
+	$("#link_0").fancybox({
 		'titlePosition'         : 'inside',
 		'transitionIn'          : 'none',
 		'transitionOut'         : 'none'

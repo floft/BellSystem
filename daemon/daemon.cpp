@@ -8,7 +8,9 @@
 #include <fcntl.h>		//O_RDWR, O_NDELAY
 #include <sys/ioctl.h>		//ioctl
 #include <sys/types.h>		//TIOCMSET
+#include <sys/stat.h>
 
+#include "wait.h"
 #include "date.h"
 #include "config.h"
 
@@ -93,14 +95,10 @@ bool ring_schedule(const string& id, const vector<Config::schedule>& schedules,
 	return set;
 }
 
-void daemon(const string& filename)
+void check_ring(const Config& config)
 {
-	ifstream ifile(filename.c_str());
-	if  (!ifile) error("could not read config");
-	ifile.close();
 	
 	DateTime::now n;
-	const Config&			config(filename);
 	const Config::Settings&         settings  = config.get_settings();
 	const vector<string>&           defaults  = config.get_defaults();
 	const vector<Config::when>&     quiets    = config.get_quiets();
@@ -113,24 +111,29 @@ void daemon(const string& filename)
 			return;
 
 	//use override schedule
+	bool use_override = false;
 	string override_id;
 
 	for (unsigned int i = 0; i < overrides.size(); ++i)
 	{
 		if (within_when(n, overrides[i]))
 		{
+			use_override = true;
 			override_id = overrides[i].exec;
 			break;
 		}
 	}
 
-	if (override_id.length() > 0)
+	if (use_override)
 	{
-		if (!ring_schedule(override_id, schedules, settings, n.t))
-			error("schedule with specified id does not exist");
+		if (override_id.length() > 0)
+		{
+			if (!ring_schedule(override_id, schedules, settings, n.t))
+				error("schedule with specified id does not exist");
 
-		return;
-	} else error("override exec blank");
+			return;
+		} else error("override exec blank");
+	}
 
 	//defaults
 	const string& default_id = defaults[n.dow];
@@ -143,14 +146,14 @@ void daemon(const string& filename)
 int main(int argc, char *argv[])
 {
 	int c;
-	string config;
+	string filename;
 
 	while ((c = getopt(argc, argv, "c:h")) != -1)
 	{
 		switch (c)
 		{
 			case 'c':
-				config=optarg;
+				filename=optarg;
 				break;
 			case 'h':
 				help();
@@ -160,35 +163,62 @@ int main(int argc, char *argv[])
 				return 1;
 		}
 	}
+	
+	ifstream ifile(filename.c_str());
+	if  (!ifile)
+	{
+		cerr << "Error: could not read config" << endl;
+		return 1;
+	}
+	ifile.close();
+	
+	int lastmodified = 0;
+	struct stat attributes;
+	stat(filename.c_str(), &attributes);
 
-	try
+	Config config(filename);
+
+	while (true)
 	{
-		daemon(config);
-	}
-	catch (Config::Error& e)
-	{
-		cerr << "Config Error: "  << e.what() << endl;
-		return 1;
-	}
-	catch (DateTime::time::Invalid& e)
-	{
-		cerr << "Error: time not in 00:00 format" << endl;
-		return 1;
-	}
-	catch (DateTime::date::Invalid& e)
-	{
-		cerr << "Error: date not in YYYYMMDD format" << endl;
-		return 1;
-	}
-	catch (std::exception& e)
-	{
-		cerr << "Error: " << e.what() << endl;
-		return 1;
-	}
-	catch (...)
-	{
-		cerr << "Unexpected Exception" << endl;
-		return 1;
+		try
+		{
+			check_ring(config);
+		}
+		catch (Config::Error& e)
+		{
+			cerr << "Config Error: "  << e.what() << endl;
+		}
+		catch (DateTime::time::Invalid& e)
+		{
+			cerr << "Error: time not in 00:00 format" << endl;
+		}
+		catch (DateTime::date::Invalid& e)
+		{
+			cerr << "Error: date not in YYYYMMDD format" << endl;
+		}
+		catch (std::exception& e)
+		{
+			cerr << "Error: " << e.what() << endl;
+		}
+		catch (...)
+		{
+			cerr << "Unexpected Exception" << endl;
+		}
+		
+		//if error, don't loop until one second after the minute
+		//wait_for_minute() will terminate if current second = 0
+		sleep(1);
+
+		//save time by checking after ring
+		stat(filename.c_str(), &attributes);
+
+		if (attributes.st_mtime > lastmodified)
+		{
+			config = Config(filename);
+			lastmodified = attributes.st_mtime;
+		}
+
+		Wait::wait_for_minute();
 	}
 
 	return 0;

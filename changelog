@@ -1,10 +1,7 @@
 Possible:
 	* add single config
 	* PAM password? Database?
-	* make Overide the default
 	* warn when multiple schedules for same day
-	* allow ordering (first is default)
-	* run as daemon, not in cron
 	* convert times on each file change to unix time???
 	* finish Calendar page
 
@@ -13,5 +10,7 @@ Possible:
 	* rewrote daemon in C++
 	* rewrote website ui
 	* added reverse SSH tunnel daemons
+	* the daemon is a daemon, not run from cron
+	* only reload config when last modified changed
 0.1:
 	* initial run
