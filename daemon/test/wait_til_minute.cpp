@@ -6,7 +6,7 @@ using namespace std;
 
 int main()
 {
-	Wait::wait_for_minute();
+	Wait::wait_till_minute();
 	
 	time_t current = std::time(0);
 	struct tm* tm  = localtime(&current);

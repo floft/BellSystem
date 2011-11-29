@@ -206,7 +206,7 @@ int main(int argc, char *argv[])
 		}
 		
 		//if error, don't loop until one second after the minute
-		//wait_for_minute() will terminate if current second = 0
+		//wait_till_minute() will terminate if current second = 0
 		sleep(1);
 
 		//save time by checking after ring
@@ -218,7 +218,7 @@ int main(int argc, char *argv[])
 			lastmodified = attributes.st_mtime;
 		}
 
-		Wait::wait_for_minute();
+		Wait::wait_till_minute();
 	}
 
 	return 0;

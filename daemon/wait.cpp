@@ -2,7 +2,7 @@
 
 namespace Wait
 {
-	void wait_for_minute()
+	void wait_till_minute()
 	{
 		while (true)
 		{
@@ -23,7 +23,7 @@ namespace Wait
 		}
 	}
 
-	bool wait_for_change(int& fd)
+	/*bool wait_for_change(int& fd)
 	{
 		while (true)
 		{
@@ -37,5 +37,5 @@ namespace Wait
 			else			//changed
 				return true;
 		}
-	}
+	}*/
 }
