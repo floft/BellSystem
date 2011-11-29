@@ -3,7 +3,9 @@ and triac circuit. A PHP web UI creates an XML file that a C++ daemon
 will read and turn on the bell if it is time to ring the bell.
 
 - cd src/; make
-- add daemon to root cron tab (* * * * * /path/to/bell-daemon &>/dev/null)
+- put web ui on web server
+- add bell-daemon to rc.conf
+- optionally put bell-{http,ssh} in rc.conf for reverse ssh tunnels
 
 Depends:
 	glibc

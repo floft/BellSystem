@@ -137,19 +137,16 @@ for ($i=0; $i < $total; ++$i) {
 ?>
 });
 
-function remove_id(id) {
-	elem = document.getElementById(id)
-	elem.parentNode.removeChild(elem)
-}
-
 function remove_schedule(id) {
-	remove_id("schedule_" + id)
+	elem = document.getElementById("schedule_" + id)
+	elem.parentNode.removeChild(elem)
 
 	return false
 }
 
 function remove_time(id, key) {
-	remove_id("time_" + id + "_" + key)
+	elem = document.getElementById("time_" + id + "_" + key).parentNode
+	elem.parentNode.removeChild(elem)
 
 	return false
 }

@@ -64,6 +64,7 @@ input.buttons {
 	font-size: 11pt;
 	width:85px;
 	height:25px;
+	margin-top:20px;
 	border: 1px solid #7F7F7F;
 	border-radius: 14px;
 	-webkit-border-radius: 14px;
@@ -133,7 +134,7 @@ div.schedule div.new a {
 	font-size:13pt;
 }
 
-div.name a, div.time a {
+div.name a, div.time a, a.x {
 	color:#FF0000;
 	text-decoration:none;
 }
@@ -192,3 +193,16 @@ div.note {
 	padding-top:15px;
 	position:absolute;
 }
+
+a.period {
+	color:#000000;
+	text-decoration:none;
+	font-style:italic;
+}
+
+div.section a {
+	font-size:12pt;
+	font-weight:normal;
+	text-decoration:none;
+}
+
