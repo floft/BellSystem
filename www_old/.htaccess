@@ -1,5 +1,0 @@
-<filesmatch "(\.xml)$">
-order allow,deny
-deny from all
-#allow from all
-</filesmatch>

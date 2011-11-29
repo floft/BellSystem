@@ -1,7 +1,0 @@
-<menu>
-	<item url="index.php">Home</item>
-	<item url="lists.php">Bell Lists</item>
-	<item url="schedules.php">Schedules</item>
-	<item url="settings.php">Settings</item>
-	<!--<item url="">Admin</item>-->
-</menu>
