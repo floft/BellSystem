@@ -200,6 +200,10 @@ a.period {
 	font-style:italic;
 }
 
+a.period:hover {
+	text-decoration:underline;
+}
+
 a.period span {
 	font-style:normal;
 }

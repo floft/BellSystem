@@ -512,14 +512,14 @@ foreach ($overrides as $id => $override)
 <?php
 foreach ($days_of_week as $key=>$dow)
 {
-	echo "<tr>\n\t<td class=\"head\">$dow</td>\n\t<td><select name=\"default[$key]\">\n\t";
+	echo "<tr>\n\t<td class=\"head\">$dow</td>\n\t<td><select name=\"default[$key]\" onchange=\"window.needToConfirm=true\">\n\t";
 	echo "\t<option value=''>     </option>\n\t";
 	for ($i=0; $i<count($schedules); ++$i) {
 		$selected = ($defaults[$key] === $schedules[$i][0])?" selected=\"selected\"":"";
 		
 		echo "\t<option value='{$schedules[$i][0]}'$selected>{$schedules[$i][1]}</option>\n\t";
 	}
-	echo "</select><td>\n</tr>";
+	echo "</select></td>\n</tr>";
 }
 ?>
 </table>

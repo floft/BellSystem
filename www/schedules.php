@@ -138,6 +138,8 @@ for ($i=0; $i < $total; ++$i) {
 });
 
 function remove_schedule(id) {
+	window.needToConfirm = true
+
 	elem = document.getElementById("schedule_" + id)
 	elem.parentNode.removeChild(elem)
 
@@ -145,6 +147,8 @@ function remove_schedule(id) {
 }
 
 function remove_time(id, key) {
+	window.needToConfirm = true
+
 	elem = document.getElementById("time_" + id + "_" + key).parentNode
 	elem.parentNode.removeChild(elem)
 
