@@ -158,9 +158,10 @@ return $menu;
 
 function site_header($title) {
 global $name;
+global $xml;
 
 $status = (enabled())?"Enabled":"Disabled";
-$ip     = $_SERVER["SERVER_ADDR"];
+$device = $xml->settings->device;
 $menu   = menu();
 
 if ($title == "Home")
@@ -200,7 +201,7 @@ echo <<<EOF
 
 <div class="status">
 <table>
-	<tr><td><b>IP:</b></td><td>$ip</td></tr>
+	<tr><td><b>Device:</b></td><td><i>$device</i></td></tr>
 	<tr><td><b>Status:</b></td><td>$status</td></tr>
 </table>
 </div>
@@ -235,11 +236,16 @@ function login_form($note="") {
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Login - Bell System</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/vnd.microsoft.icon" />
+<script type="text/javascript">
+window.onload = function() {
+	document.getElementById("pass").focus()
+}
+</script>
 </head>
 <body>
 <h2>Bell System Login</h2>
 $note<form action='/' method='post'>
-Password: <input type='password' name='pass' />
+Password: <input type='password' name='pass' id='pass' />
           <input type='submit' value='Login' />
 </form>
 </body>
@@ -268,4 +274,6 @@ else if (isset($_REQUEST['pass']))
 }
 else if (!isset($_SESSION[bell_session]))
 	login_form();
+
+$xml = config_load();
 ?>

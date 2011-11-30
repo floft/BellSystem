@@ -3,7 +3,6 @@ require_once "design.php";
 site_header("Settings");
 
 $saved = false;
-$xml = config_load();
 
 //also specified in the daemon
 const min_length = 1;

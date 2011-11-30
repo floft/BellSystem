@@ -2,7 +2,6 @@
 require_once "design.php";
 site_header("Calendar");
 
-$xml = config_load();
 $saved = false;
 $defaults = array();
 $schedules = array();

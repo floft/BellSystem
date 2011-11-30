@@ -4,7 +4,6 @@ site_header("Schedules");
 
 $columns = 3;
 
-$xml = config_load();
 $saved = false;
 $schedules = array();
 
