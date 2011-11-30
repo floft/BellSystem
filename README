@@ -4,6 +4,7 @@ will read and turn on the bell if it is time to ring the bell.
 
 - cd src/; make
 - put web ui on web server
+- change password by running ./password.sh in web ui folder
 - add bell-daemon to rc.conf
 - optionally put bell-{http,ssh} in rc.conf for reverse ssh tunnels
 

@@ -1,11 +1,9 @@
 Possible:
-	* add single config
-	* PAM password? Database?
 	* warn when multiple schedules for same day
 	* convert times on each file change to unix time???
-	* finish Calendar page
 
 0.2:
+	* password in .password file (created by ./password.sh)
 	* redesigned XML code
 	* rewrote daemon in C++
 	* rewrote website ui
