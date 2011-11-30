@@ -59,6 +59,8 @@ $fields = array("end", "start");
 foreach ($fields as $field)
 	echo jsDatePick($field);
 ?>
+
+	setTimeout("document.getElementById('saved').style.display = 'none'", 1000)
 };
 </script>
 <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post">

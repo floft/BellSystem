@@ -1,2 +1,7 @@
 DirectoryIndex index.php
 Allow from all
+
+<FilesMatch "\.(password|ht*|sh|xml)$">
+	Order allow,deny
+	Deny from all
+</FilesMatch>

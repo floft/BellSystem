@@ -3,9 +3,11 @@ $name        = "Bell System";
 $root        = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR;
 $menu_file   = $root . "menu.xml";
 $config_file = $root . "config.xml";
+$password    = file_get_contents($root . ".password") or die("could not get password");
 
-const max_hours   = 23;
-const max_minutes = 59;
+const max_hours    = 23;
+const max_minutes  = 59;
+const bell_session = "bell_system_2011";
 
 $days_of_week = array(
 	"Sunday",
@@ -103,7 +105,8 @@ EOF;
 function saved($bool)
 {
 	echo '<input type="submit" name="save" class="save" value="Save" onclick="window.needToConfirm=false" />';
-	if ($bool) echo "<div class='saved'>Successfully Saved</div>";
+	if ($bool) echo "<div class='saved' id='saved'>Successfully Saved</div>";
+	else	   echo "<div class='saved' id='saved' style=\"display:none\">Successfully Saved</div>";
 }
 
 function time_select($str="", $hour=-1, $minute=-1) {
@@ -130,17 +133,24 @@ $menu = "";
 $xml = simplexml_load_file($menu_file) or die("could not get menu: $menu_file");
 $links = count($xml);
 
-for ($i=0;$i<$links;$i++) {
-	$node = $xml->page[$i];
-	$url = str_replace("index.php", "", $node["url"]);
-
-	//is this the current page?
-	if ($node["url"] == $_SERVER["PHP_SELF"])
-		$menu .= "<a href='$url' id='current'>$node</a>";
+foreach ($xml->children() as $child)
+{
+	if ($child->getName() == "break")
+	{
+		$menu .= "<br />\n";
+	}
 	else
-		$menu .= "<a href='$url'>$node</a>";
-	
-	$menu .= "\r\n";
+	{
+		$url = str_replace("index.php", "", $child["url"]);
+
+		//is this the current page?
+		if ($child["url"] == $_SERVER["PHP_SELF"])
+			$menu .= "<a href='$url' id='current'>$child</a>";
+		else
+			$menu .= "<a href='$url'>$child</a>";
+		
+		$menu .= "\n";
+	}
 }
 
 return $menu;
@@ -211,4 +221,51 @@ echo <<<EOF
 </html>
 EOF;
 }
+
+function login_form($note="") {
+	if ($note!="")
+		$note="<div style='color:#FF0000'>$note</div><br />\n";
+	
+	echo <<<EOF
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Login - Bell System</title>
+<link rel="shortcut icon" href="favicon.ico" type="image/vnd.microsoft.icon" />
+</head>
+<body>
+<h2>Bell System Login</h2>
+$note<form action='/' method='post'>
+Password: <input type='password' name='pass' />
+          <input type='submit' value='Login' />
+</form>
+</body>
+</html>
+EOF;
+
+	exit();
+}
+
+//get onto the password stuff...
+session_start();
+
+if (isset($_REQUEST['logout']))
+{
+	session_destroy();
+	login_form("Successfully logged out.");
+}
+else if (isset($_REQUEST['pass']))
+{
+	$input = $_REQUEST['pass'] . "\n";
+
+	if (hash("sha512",$input) == trim($password))
+		$_SESSION[bell_session] = true;
+	else
+		login_form("Incorrect password.");
+}
+else if (!isset($_SESSION[bell_session]))
+	login_form();
 ?>

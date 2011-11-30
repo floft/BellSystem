@@ -33,7 +33,7 @@ if (isset($_REQUEST['save'])) {
 				if ($child->getName() == "schedules") {
 					$new = $child->addChild("schedule");
 					$new["id"] = $name_key;
-					$new["name"] = addslashes(html_entity_decode($name));
+					$new["name"] = addslashes(html_entity_decode(preg_replace("/[^A-Za-z0-9 \-]/", "", $name)));
 
 					foreach ($times as $time_key => $time) {
 						$new->addChild("time");
@@ -99,6 +99,7 @@ window.onload = function() {
 	}
 
 	get_ids()
+	setTimeout("document.getElementById('saved').style.display = 'none'", 1500)
 };
 
 function get_ids() {

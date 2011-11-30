@@ -185,7 +185,7 @@ td.middle_vertical {
 
 #box {
 	width:750px;
-	height:300px;
+	height:315px;
 	overflow:auto;
 }
 
@@ -200,9 +200,16 @@ a.period {
 	font-style:italic;
 }
 
+a.period span {
+	font-style:normal;
+}
+
 div.section a {
 	font-size:12pt;
 	font-weight:normal;
 	text-decoration:none;
 }
 
+input.hidden {
+	display: none;
+}
