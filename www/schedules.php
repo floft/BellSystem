@@ -242,7 +242,7 @@ for ($q=0; $q < $total; ++$q) {
 	echo <<<EOF
 <div class='schedule' id='schedule_$id'>
 	<div class="name">
-		<input type="text" name="name[$id]" value="$name" onchange="window.needToConfirm=true" /> <a href="javascript:void(0)" onclick="return remove_schedule('$id')">x</a>
+		<input type="text" name="name[$id]" value="$name" onchange="window.needToConfirm=true" /> <a href="javascript:void(0)" onclick="return remove_schedule('$id')" title="Delete this schedule">x</a>
 	</div>
 	<div class="times">
 	<ul id="sortable_$id">
@@ -255,7 +255,7 @@ EOF;
 	}
 echo <<<EOF
 	</ul>
-	<div class="new"><a href="javascript:void(0)" onclick="return add_time('$id')">+</a></div>
+	<div class="new"><a href="javascript:void(0)" onclick="return add_time('$id')" title="Add a time to this schedule">+</a></div>
 	</div>
 </div>
 EOF;

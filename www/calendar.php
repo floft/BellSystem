@@ -533,12 +533,12 @@ foreach ($days_of_week as $key=>$dow)
 </table>
 <br />
 
-<div class="section">Quiet Periods &ndash; <a href="javascript:void(0)" onclick="return add_quiet()">Add</a></div>
+<div class="section">Quiet Periods &ndash; <a href="javascript:void(0)" onclick="return add_quiet()" title="Turn the bells off on a certain day">Add</a></div>
 <ul id="quiets">
 <?php print_whens("quiet", $quiets); ?>
 </ul><br />
 
-<div class="section">Override Schedules &ndash; <a href="javascript:void(0)" onclick="return add_override()">Add</a></div>
+<div class="section">Override Schedules &ndash; <a href="javascript:void(0)" onclick="return add_override()" title="Use a different schedule on a certain day">Add</a></div>
 <ul id="overrides">
 <?php print_whens("override", $overrides); ?>
 </ul>
