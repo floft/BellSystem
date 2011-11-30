@@ -176,7 +176,7 @@ div.schedules, div.new_schedule {
 }
 
 td.middle_horizontal {
-	width:125px;
+	width:50px;
 }
 
 td.middle_vertical {
@@ -184,7 +184,7 @@ td.middle_vertical {
 }
 
 #box {
-	width:750px;
+	width:650px;
 	height:315px;
 	overflow:auto;
 }
