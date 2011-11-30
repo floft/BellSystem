@@ -398,6 +398,7 @@ function add_quiet() {
 		return function() { return remove_item("quiet_" + id + "_div"); }
 	})(id)
 	del.innerHTML = "x "
+	del.title = "Delete"
 
 	link = document.createElement('a')
 	div.appendChild(link)
@@ -408,11 +409,13 @@ function add_quiet() {
 		return function() { return box_open("quiet_" + id); }
 	})(id)
 	link.innerHTML = print_date(true)
+	link.title = "Click to modify"
 	
 	$(link).fancybox({
 		'titlePosition'         : 'inside',
 		'transitionIn'          : 'none',
-		'transitionOut'         : 'none'
+		'transitionOut'         : 'none',
+		'titleShow'		: false
 	});
 
 	return false
@@ -447,6 +450,7 @@ function add_override() {
 		return function() { return remove_item("override_" + id + "_div"); }
 	})(id)
 	del.innerHTML = "x "
+	del.title = "Delete"
 
 	link = document.createElement('a')
 	div.appendChild(link)
@@ -457,11 +461,13 @@ function add_override() {
 		return function() { return box_open("override_" + id); }
 	})(id)
 	link.innerHTML = "<span>unknown</span> &ndash; " + print_date(true)
+	link.title = "Click to modify"
 	
 	$(link).fancybox({
 		'titlePosition'         : 'inside',
 		'transitionIn'          : 'none',
-		'transitionOut'         : 'none'
+		'transitionOut'         : 'none',
+		'titleShow'		: false
 	});
 
 	return false
@@ -474,7 +480,8 @@ foreach ($quiets as $id => $quiet)
 	echo "\t$(\"#quiet_${id}_link\").fancybox({
 		'titlePosition'         : 'inside',
 		'transitionIn'          : 'none',
-		'transitionOut'         : 'none'
+		'transitionOut'         : 'none',
+		'titleShow'		: false
 	});\n";
 }
 
@@ -483,7 +490,8 @@ foreach ($overrides as $id => $override)
 	echo "\t$(\"#override_${id}_link\").fancybox({
 		'titlePosition'         : 'inside',
 		'transitionIn'          : 'none',
-		'transitionOut'         : 'none'
+		'transitionOut'         : 'none',
+		'titleShow'		: false
 	});\n";
 }
 ?>

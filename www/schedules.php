@@ -71,9 +71,9 @@ foreach ($xml->children() as $child) {
 $total = count($schedules);
 
 function add_time($id, $key, $hour, $minute, $sep="'") {
-	echo "<div class=\"time\" id=\"time_${id}_${key}\"><span>::</span>";
+	echo "<div class=\"time\" id=\"time_${id}_${key}\"><span title=\"Rearrange\">::</span>";
 	time_select("[$id][$key]", $hour, $minute);
-	echo " <a href=\"javascript:void(0)\" onclick=\"return remove_time($sep$id$sep, $sep$key$sep)\">x</a></div>";
+	echo " <a href=\"javascript:void(0)\" onclick=\"return remove_time($sep$id$sep, $sep$key$sep)\" title=\"Delete\">x</a></div>";
 }
 
 ?>
@@ -190,6 +190,7 @@ function add_schedule() {
 	namediv.appendChild(input)
 	input.type = "text"
 	input.name = "name[" + id + "]"
+	input.title = "Name of this schedule"
 
 	remove = document.createElement('a')
 	namediv.appendChild(remove)
@@ -198,6 +199,7 @@ function add_schedule() {
 		return function() { return remove_schedule(id); }
 	})(id)
 	remove.innerHTML = " x"
+	remove.title = "Delete this schedule"
 	
 	times = document.createElement('div')
 	schedule.appendChild(times)
@@ -218,6 +220,7 @@ function add_schedule() {
 		return function() { return add_time(id); }
 	})(id)
 	link.innerHTML = "+"
+	link.title = "Add a time to this schedule"
 
 	$(function() {
 		$( "#sortable_" + id ).sortable();
@@ -259,6 +262,6 @@ EOF;
 }
 ?>
 </div>
-<div class="new_schedule"><div class="schedule" id='new_schedule'><a href="javascript:void(0)" onclick="return add_schedule()">+</a></div></div>
+<div class="new_schedule"><div class="schedule" id='new_schedule'><a href="javascript:void(0)" onclick="return add_schedule()" title="Create a new schedule">+</a></div></div>
 </form>
 <?php site_footer(); ?>
