@@ -39,12 +39,10 @@ div.content {
 	padding:25px;
 	padding-top:25px;
 }
-
 td.head {
 	font-size:13pt;
 	padding-right:25px;
 }
-
 input.save {
 	color:#4C4C4C;
 	background-color: #E5E5E5;
@@ -57,7 +55,6 @@ input.save {
 	border-radius: 14px;
 	-webkit-border-radius: 14px;
 }
-
 input.buttons {
 	color:#4C4C4C;
 	background-color: #E5E5E5;
@@ -69,31 +66,25 @@ input.buttons {
 	border-radius: 14px;
 	-webkit-border-radius: 14px;
 }
-
 div.buttons {
 	float:right;
 	margin:10px;
 }
-
 select {
 	border: 1px solid #F0F0F0;
 	font-size:11pt;
 	height:25px;
 }
-
 input {
 	border: 1px solid #999999;
 }
-
 sup {
 	font-size: 7pt;
 }
-
 div.saved {
 	font-style:italic;
 	color:#FF0000;
 }
-
 div.schedule {
 	padding:10px;
 	display:block;
@@ -105,25 +96,21 @@ div.schedule {
 	background-color: #F0F0F0;
 	border:1px solid #999999;
 }
-
 div.schedule div.name {
 	padding-bottom:5px;
 }
-
 div.schedule div.name input {
 	width:120px;
 	font-weight:bold;
 	background-color: #F5F5F5;
 	border:1px solid #999999;
 }
-
 div.schedule div.new {
 	border:1px solid #999999;
 	text-align:center;
 	vertical-align:center;
 	margin:15px 0px 0px 0px;
 }
-
 div.schedule div.new a {
 	width:100%;
 	height:100%;
@@ -133,34 +120,28 @@ div.schedule div.new a {
 	font-weight:bold;
 	font-size:13pt;
 }
-
 div.name a, div.time a, a.x {
 	color:#FF0000;
 	text-decoration:none;
 }
-
 li {
 	margin:0px;
 	padding:0px;
 	list-style-type:none;
 }
-
 li span {
 	font-weight:bold;
 	font-size:9pt;
 	cursor:pointer;
 }
-
 ul {
 	margin: 0px;
 	padding: 0px;
 }
-
 #new_schedule {
 	width:135px;
 	height:25px;
 }
-
 #new_schedule a {
 	display:block;
 	text-align:center;
@@ -170,50 +151,40 @@ ul {
 	font-size:16pt;
 	vertical-align:middle;
 }
-
 div.schedules, div.new_schedule {
 	margin:0px 100px 0px 0px;
 }
-
 td.middle_horizontal {
 	width:50px;
 }
-
 td.middle_vertical {
 	height:35px;
 }
-
 #box {
 	width:650px;
 	height:330px;
 	overflow:auto;
 }
-
 div.note {
 	padding-top:15px;
 	position:absolute;
 }
-
 a.period {
 	color:#000000;
 	text-decoration:none;
 	font-style:italic;
 }
-
 a.period:hover {
 	text-decoration:underline;
 }
-
 a.period span {
 	font-style:normal;
 }
-
 div.section a {
 	font-size:12pt;
 	font-weight:normal;
 	text-decoration:none;
 }
-
 input.hidden {
 	display: none;
 }

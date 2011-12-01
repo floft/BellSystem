@@ -6,7 +6,7 @@
 #include <getopt.h>
 #include <unistd.h>		//sleep
 #include <fcntl.h>		//O_RDWR, O_NDELAY
-#include <sys/ioctl.h>		//ioctl
+#include <sys/ioctl.h>
 #include <sys/types.h>		//TIOCMSET
 #include <sys/stat.h>
 

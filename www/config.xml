@@ -3,7 +3,7 @@
 	<settings>
 		<length>3</length>
 		<device>/dev/ttyUSB0</device>
-		<start>20110101</start>
+		<start>20120101</start>
 		<end>20121231</end>
 	</settings>
 	<calendar>
