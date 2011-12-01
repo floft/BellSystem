@@ -4,13 +4,15 @@
 
 BLock="/var/run/bell-http.lock"
 
+[[ -f /etc/conf.d/bellsystem ]] && . /etc/conf.d/bellsystem || exit 1
+
 case "$1" in
 	start)
 		stat_busy "Starting Bell-SSH Tunnel"
 		if [[ -e $BLock ]]; then
 			stat_fail
 		else
-			su root -c 'while true; do ssh -NR 42766:localhost:80 -p 42764 bell@wopto.net; sleep 1; done' &
+			su root -c "while true; do ssh -NR $REVERSE_HTTP_PORT:localhost:$LOCAL_HTTP_PORT -p $PORT $USER@$HOST; sleep 1; done" &
 			echo "$!" > "$BLock"
 			add_daemon bell-http
 			stat_done

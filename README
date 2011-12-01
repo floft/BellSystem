@@ -1,13 +1,7 @@
 This is a fairly simple bell system using a usb-to-serial converter
 and triac circuit. A PHP web UI creates an XML file that a C++ daemon
-will read and turn on the bell if it is time to ring the bell.
-
-- cd src/; make
-- put web ui on web server
-- change password by running www/password.sh in web ui folder
-- sudo chown http:http: www/config.xml
-- add bell-daemon to rc.conf
-- optionally put bell-{http,ssh} in rc.conf for reverse ssh tunnels
+will read and turn on the bell if it is time to ring the bell. For
+more info, see the website.
 
 Depends:
 	glibc

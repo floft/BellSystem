@@ -1,0 +1,38 @@
+#!/bin/bash
+. /etc/rc.conf
+. /etc/rc.d/functions
+
+BLock="/var/run/bellsystem.lock"
+
+[[ -f /etc/conf.d/bellsystem ]] && . /etc/conf.d/bellsystem || exit 1
+
+case "$1" in
+	start)
+		stat_busy "Starting Bellsystem"
+		if [[ -e $BLock ]]; then
+			stat_fail
+		else
+			/usr/bin/bellsystem-daemon -c "$CONFIG" &> "$LOG" &
+			echo "$!" > "$BLock"
+			add_daemon bellsystem
+			stat_done
+		fi
+		;;
+	stop)
+		stat_busy "Stopping Bellsystem"
+		if [[ ! -e $BLock ]]; then
+			stat_fail
+		else
+			kill $(cat "$BLock") &>/dev/null
+			rm "$BLock"
+			rm_daemon bellsystem
+			stat_done
+		fi
+		;;
+	restart)
+		"$0" stop
+		"$0" start
+		;;
+	*)
+		echo "usage: $0 {start|stop|restart}"
+esac
