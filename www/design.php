@@ -5,7 +5,7 @@ $menu_file   = $root . "menu.xml";
 $config_file = $root . "config.xml";
 $password    = file_get_contents($root . ".password") or die("could not get password");
 
-const allow_save   = true; //for online web ui demo
+const allow_save   = true; //for online web UI demo
 const max_hours    = 23;
 const max_minutes  = 59;
 const bell_session = "bell_system_2011";
