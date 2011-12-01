@@ -5,6 +5,7 @@ $menu_file   = $root . "menu.xml";
 $config_file = $root . "config.xml";
 $password    = file_get_contents($root . ".password") or die("could not get password");
 
+const allow_save   = true; //for online web ui demo
 const max_hours    = 23;
 const max_minutes  = 59;
 const bell_session = "bell_system_2011";
@@ -28,21 +29,23 @@ function config_load()
 
 function config_save($xml)
 {
-	global $config_file;
-	$dom = new DOMDocument('1.0');
-	$dom->formatOutput = true;
-	$dom->preserveWhiteSpace = false;
-	$simple = dom_import_simplexml($xml);
-	$simple = $dom->importNode($simple, true);
-	$dom->appendChild($simple);
-	
-	if ($f = fopen($config_file,"w"))
+	if (allow_save == true)
 	{
-		$return = fwrite($f, $dom->saveXML());
-		fclose($f);
-		return $return;
-	} else  return false;
-
+		global $config_file;
+		$dom = new DOMDocument('1.0');
+		$dom->formatOutput = true;
+		$dom->preserveWhiteSpace = false;
+		$simple = dom_import_simplexml($xml);
+		$simple = $dom->importNode($simple, true);
+		$dom->appendChild($simple);
+		
+		if ($f = fopen($config_file,"w"))
+		{
+			$return = fwrite($f, $dom->saveXML());
+			fclose($f);
+			return $return;
+		} else  return false;
+	}
 }
 
 function enabled() {
