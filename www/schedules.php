@@ -22,26 +22,16 @@ if (isset($_REQUEST['save'])) {
 		foreach ($names as $name_key => $name) {
 			$times = array();
 
-			if (isset($hours[$name_key]) && $hours[$name_key] != null ) {
-				foreach ($hours[$name_key] as $hour_key => $hour) {
+			if (isset($hours[$name_key]) && $hours[$name_key] != null )
+				foreach ($hours[$name_key] as $hour_key => $hour)
 					$times[] = $hours[$name_key][$hour_key] . ":" . $minutes[$name_key][$hour_key];
-				}
-			}
 
-			foreach ($xml->children() as $child_key => $child) {
-				if ($child->getName() == "schedules") {
-					$new = $child->addChild("schedule");
-					$new["id"] = $name_key;
-					$new["name"] = addslashes(html_entity_decode(preg_replace("/[^A-Za-z0-9 \-]/", "", $name)));
+			$new = $xml->schedules->addChild("schedule");
+			$new["id"] = $name_key;
+			$new["name"] = addslashes(html_entity_decode(preg_replace("/[^A-Za-z0-9 \-]/", "", $name)));
 
-					foreach ($times as $time_key => $time) {
-						$new->addChild("time");
-						$new->time[$time_key] = $time;
-					}
-
-					break;
-				}
-			}
+			foreach ($times as $time)
+				$new->addChild("time", $time);
 		}
 
 		config_save($xml);
@@ -49,23 +39,15 @@ if (isset($_REQUEST['save'])) {
 	}
 }
 
-foreach ($xml->children() as $child) {
-	if ($child->getName() == "schedules") {
-		foreach ($child->children() as $schedule) {
-			if ($schedule->getName() == "schedule") {
-				$id    = $schedule["id"];
-				$name  = $schedule["name"];
-				$times = array();
-				
-				foreach ($schedule->children() as $time)
-					$times[] = $time;
+foreach ($xml->schedules->schedule as $schedule) {
+	$id    = $schedule["id"];
+	$name  = $schedule["name"];
+	$times = array();
+	
+	foreach ($schedule->time as $time)
+		$times[] = $time;
 
-				$schedules[] = array($id, $name, $times);
-			}
-		}
-		
-		break;
-	}
+	$schedules[] = array($id, $name, $times);
 }
 
 $total = count($schedules);

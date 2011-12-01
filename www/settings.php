@@ -13,12 +13,10 @@ if (isset($_REQUEST['save'])) {
 	$start  = $_REQUEST['start'];
 	$end    = $_REQUEST['end'];
 
-	foreach ($xml->children() as $child) {
-		if ($child->getName() == "settings") {
-			$child->length = $length;
-			$child->start  = str_replace("/","",$start);
-			$child->end    = str_replace("/","",$end);
-		}
+	foreach ($xml->settings->children() as $child) {
+		$child->length = $length;
+		$child->start  = str_replace("/","",$start);
+		$child->end    = str_replace("/","",$end);
 	}
 
 	config_save($xml);
@@ -30,23 +28,17 @@ $device = "";
 $start  = "";
 $end    = "";
 
-foreach ($xml->children() as $child) {
-	if ($child->getName() == "settings") {
-		foreach ($child->children() as $setting) {
-			$name = $setting->getName();
+foreach ($xml->settings->children() as $setting) {
+	$name = $setting->getName();
 
-			if ($name == "length")
-				$length = $setting;
-			else if ($name == "start")
-				$start  = $setting;
-			else if ($name == "end")
-				$end    = $setting;
-			else if ($name == "device")
-				$device = $setting;
-		}
-
-		break;
-	}
+	if ($name == "length")
+		$length = $setting;
+	else if ($name == "start")
+		$start  = $setting;
+	else if ($name == "end")
+		$end    = $setting;
+	else if ($name == "device")
+		$device = $setting;
 }
 ?>
 <script type="text/javascript">

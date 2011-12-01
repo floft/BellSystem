@@ -2,10 +2,10 @@
 require_once "design.php";
 site_header("Calendar");
 
-$saved = false;
-$defaults = array();
+$saved     = false;
+$defaults  = array();
 $schedules = array();
-$quiets = array();
+$quiets    = array();
 $overrides = array();
 
 if (isset($xml->schedules->schedule))
@@ -32,7 +32,7 @@ if (isset($_REQUEST['save'])) {
 
 	$xml->calendar->addChild("quiet");
 
-	foreach ($quiets as $key => $quiet)
+	foreach ($quiets as $quiet)
 	{
 		$parts = explode("@", (string)$quiet);
 
@@ -52,7 +52,7 @@ if (isset($_REQUEST['save'])) {
 
 	$xml->calendar->addChild("override");
 	
-	foreach ($overrides as $key => $override)
+	foreach ($overrides as $override)
 	{
 		$exec_part = explode("#", (string)$override);
 
