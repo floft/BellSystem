@@ -32,16 +32,10 @@ function config_save($xml)
 	if (allow_save == true)
 	{
 		global $config_file;
-		$dom = new DOMDocument('1.0');
-		$dom->formatOutput = true;
-		$dom->preserveWhiteSpace = false;
-		$simple = dom_import_simplexml($xml);
-		$simple = $dom->importNode($simple, true);
-		$dom->appendChild($simple);
 		
 		if ($f = fopen($config_file,"w"))
 		{
-			$return = fwrite($f, $dom->saveXML());
+			$return = fwrite($f, $xml->saveXML());
 			fclose($f);
 			return $return;
 		} else  return false;

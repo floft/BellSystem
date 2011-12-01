@@ -50,6 +50,7 @@ foreach ($xml->children() as $child) {
 }
 ?>
 <script type="text/javascript">
+<!--
 window.onload = function() {
 <?php
 //$fields = array("start", "end");
@@ -61,6 +62,7 @@ foreach ($fields as $field)
 
 	setTimeout("document.getElementById('saved').style.display = 'none'", 1000)
 };
+// -->
 </script>
 <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post">
 <?php echo saved($saved); ?>

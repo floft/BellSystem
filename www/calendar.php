@@ -36,7 +36,7 @@ if (isset($_REQUEST['save'])) {
 	{
 		$parts = explode("@", (string)$quiet);
 
-		$xml->calendar->quiet->addChild("when", $parts[0]);
+		$new = $xml->calendar->quiet->addChild("when", $parts[0]);
 		
 		if (count($parts) == 2)
 		{
@@ -44,8 +44,8 @@ if (isset($_REQUEST['save'])) {
 
 			if (count($times) == 2)
 			{
-				$xml->calendar->quiet->when[$key]["start"] = $times[0];
-				$xml->calendar->quiet->when[$key]["end"]   = $times[1];
+				$new["start"] = $times[0];
+				$new["end"]   = $times[1];
 			}
 		}
 	}
@@ -76,8 +76,8 @@ if (isset($_REQUEST['save'])) {
 
 		$parts = explode("@", $exec_part[1]);
 
-		$xml->calendar->override->addChild("when", $parts[0]);
-		$xml->calendar->override->when[$key]["exec"] = $exec_part[0];
+		$new = $xml->calendar->override->addChild("when", $parts[0]);
+		$new["exec"] = $exec_part[0];
 		
 		if (count($parts) == 2)
 		{
@@ -85,8 +85,8 @@ if (isset($_REQUEST['save'])) {
 
 			if (count($times) == 2)
 			{
-				$xml->calendar->override->when[$key]["start"] = $times[0];
-				$xml->calendar->override->when[$key]["end"]   = $times[1];
+				$new["start"] = $times[0];
+				$new["end"]   = $times[1];
 			}
 		}
 	}
@@ -170,6 +170,7 @@ if (isset($xml->calendar->override->when))
 	$overrides = get_whens($xml->calendar->override->when);
 ?>
 <script type="text/javascript">
+<!--
 window.exec_box  = false
 window.box_id    = -1
 window.quiets    = 0
@@ -346,12 +347,12 @@ function box_open(input_id) {
 function print_date(slashes) {
 	now   = new Date()
 	year  = now.getFullYear()
-	month = now.getMonth()
+	month = now.getMonth()+1
 	day   = now.getDate()
 
-	if (month.length == 1)
+	if (month < 10)
 		month = "0" + month
-	if (day.length == 1)
+	if (day < 10)
 		day = "0" + day
 	
 	if (slashes)
@@ -512,6 +513,7 @@ foreach ($overrides as $id => $override)
 
 	setTimeout("document.getElementById('saved').style.display = 'none'", 1000)
 }
+// -->
 </script>
 <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post">
 <?php echo saved($saved); ?>

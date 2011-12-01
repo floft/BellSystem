@@ -78,6 +78,7 @@ function add_time($id, $key, $hour, $minute, $sep="'") {
 
 ?>
 <script type="text/javascript">
+<!--
 window.onload = function() {
 	//http://forums.devshed.com/javascript-development-115/javascript-get-all-elements-of-class-abc-24349.html
 	if (document.getElementsByClassName == undefined) {
@@ -229,6 +230,7 @@ function add_schedule() {
 
 	return false
 }
+// -->
 </script>
 <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post">
 <?php echo saved($saved); ?>

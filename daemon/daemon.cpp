@@ -22,7 +22,7 @@ const int set_bits_on  = 6;
 
 void help()
 {
-	cout << "Usage: bell-daemon -c /path/to/config.xml" << endl;
+	cout << "Usage: bell-daemon [-d] -c /path/to/config.xml" << endl;
 }
 
 void error(const string& s)
@@ -69,7 +69,8 @@ bool in_times(const DateTime::time& t, const vector<DateTime::time>& times)
 }
 
 bool ring_schedule(const string& id, const vector<Config::schedule>& schedules,
-		   const Config::Settings& settings, const DateTime::time& now)
+		   const Config::Settings& settings, const DateTime::time& now,
+		   const bool& debug = false)
 {
 	bool set = false;
 	Config::schedule schedule;
@@ -88,14 +89,17 @@ bool ring_schedule(const string& id, const vector<Config::schedule>& schedules,
 	{
 		if (in_times(now, schedule.times))
 		{
-			turn_on(settings.device, settings.length);
+			if (debug)
+				cout << "Ring" << endl;
+			else
+				turn_on(settings.device, settings.length);
 		}
 	}
 
 	return set;
 }
 
-void check_ring(const Config& config)
+void check_ring(const Config& config, const bool& debug = false)
 {
 	
 	DateTime::now n;
@@ -132,7 +136,7 @@ void check_ring(const Config& config)
 	{
 		if (override_id.length() > 0)
 		{
-			if (!ring_schedule(override_id, schedules, settings, n.t))
+			if (!ring_schedule(override_id, schedules, settings, n.t, debug))
 				error("schedule with specified id does not exist");
 
 			return;
@@ -143,21 +147,25 @@ void check_ring(const Config& config)
 	const string& default_id = defaults[n.dow];
 	
 	if (default_id.length() > 0)
-		if (!ring_schedule(default_id, schedules, settings, n.t))
+		if (!ring_schedule(default_id, schedules, settings, n.t, debug))
 			error("schedule with specified id does not exist");
 }
 
 int main(int argc, char *argv[])
 {
 	int c;
+	bool debug = false;
 	string filename;
 
-	while ((c = getopt(argc, argv, "c:h")) != -1)
+	while ((c = getopt(argc, argv, "c:hd")) != -1)
 	{
 		switch (c)
 		{
 			case 'c':
 				filename=optarg;
+				break;
+			case 'd':
+				debug = true;
 				break;
 			case 'h':
 				help();
@@ -186,7 +194,7 @@ int main(int argc, char *argv[])
 	{
 		try
 		{
-			check_ring(config);
+			check_ring(config, debug);
 		}
 		catch (Config::Error& e)
 		{
