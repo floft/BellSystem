@@ -4,7 +4,6 @@ OBJ		= ${SRC:.cpp=.o}
 
 CC		= g++
 CFLAGS		:= -Wall ${CFLAGS}
-#LDFLAGS	:= -lboost_date_time ${LDFLAGS}
 
 CFLAGS		+= $(shell pkg-config --cflags libxml++-2.6)
 LDFLAGS		+= $(shell pkg-config --libs   libxml++-2.6)
@@ -20,7 +19,13 @@ ${OUT}: ${OBJ}
 .cpp.o:
 	${CC} -c -o $@ $< ${CFLAGS}
 
+install:
+	install -Dm755 ${OUT} ${DESTDIR}${PREFIX}/bin/bellsystem-daemon
+	
+uninstall:
+	rm -f ${DESTDIR}${PREFIX}/bin/bellsystem-daemon
+
 clean:
 	${RM} ${OUT} ${OBJ}
 
-.PHONY: clean
+.PHONY: install clean
