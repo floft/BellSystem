@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0"?>
 <bellsystem>
 	<settings>
 		<length>3</length>
@@ -6,21 +6,6 @@
 		<start>20110101</start>
 		<end>20121231</end>
 	</settings>
-	<calendar>
-		<default>
-			<exec></exec>
-			<exec></exec>
-			<exec></exec>
-			<exec></exec>
-			<exec></exec>
-			<exec></exec>
-			<exec></exec>
-		</default>
-		<quiet>
-		</quiet>
-		<override>
-		</override>
-	</calendar>
-	<schedules>
-	</schedules>
-</bellsystem>
+	
+	
+<schedules/><calendar><default><exec/><exec/><exec/><exec/><exec/><exec/><exec/></default><quiet/><override/></calendar></bellsystem>

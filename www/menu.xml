@@ -1,8 +1,8 @@
 <menu>
-	<page url="/index.php">Home</page>
-	<page url="/schedules.php">Schedules</page>
-	<page url="/calendar.php">Calendar</page>
-	<page url="/settings.php">Settings</page>
+	<page url="index.php">Home</page>
+	<page url="schedules.php">Schedules</page>
+	<page url="calendar.php">Calendar</page>
+	<page url="settings.php">Settings</page>
 	<break />
-	<page url="/index.php?logout">Logout</page>
+	<page url="index.php?logout">Logout</page>
 </menu>

@@ -1,6 +1,6 @@
 <?php
 $name        = "Bell System";
-$root        = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR;
+$root        = getcwd() . DIRECTORY_SEPARATOR;
 $menu_file   = $root . "menu.xml";
 $config_file = $root . "config.xml";
 $password    = file_get_contents($root . ".password") or die("could not get password");
@@ -144,10 +144,11 @@ foreach ($xml->children() as $child)
 	}
 	else
 	{
-		$url = str_replace("index.php", "", $child["url"]);
+		$url  = $child["url"];
+		$self = basename($_SERVER["PHP_SELF"]);
 
 		//is this the current page?
-		if ($child["url"] == $_SERVER["PHP_SELF"])
+		if ($url == $self)
 			$menu .= "<a href='$url' id='current'>$child</a>";
 		else
 			$menu .= "<a href='$url'>$child</a>";
@@ -247,7 +248,7 @@ window.onload = function() {
 </head>
 <body>
 <h2>Bell System Login</h2>
-$note<form action='/' method='post'>
+$note<form action='index.php' method='post'>
 Password: <input type='password' name='pass' id='pass' />
           <input type='submit' value='Login' />
 </form>
