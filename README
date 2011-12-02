@@ -1,12 +1,9 @@
-This is a fairly simple bell system using a usb-to-serial converter
-and triac circuit. A PHP web UI creates an XML file that a C++ daemon
-will read and turn on the bell if it is time to ring the bell. For
-more info, see the website.
+Bell System
 
-Depends:
-	glibc
-	libxml++
+This is a fairly simple bell system C++ daemon, which reads an XML file,
+and PHP web UI, which can create the XML file. The daemon sets one of the
+pins of a serial connector to high to ring the bell.
 
-Web UI uses (included):
-	http://fancybox.net/
-	http://javascriptcalendar.org/
+Depends: glibc, libxml++
+License: GPL
+Website: http://floft.net/wiki/Scripts/BellSystem
