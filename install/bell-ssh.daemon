@@ -12,7 +12,7 @@ case "$1" in
 		if [[ -e $BLock ]]; then
 			stat_fail
 		else
-			su root -c "while true; do ssh -NR $REVERSE_SSH_PORT:localhost:$LOCAL_SSH_PORT -p $PORT $USER@$HOST; sleep 1; done" &
+			su root -c "while true; do ssh -NR $REVERSE_SSH_PORT:localhost:$LOCAL_SSH_PORT -p $PORT $USER@$HOST; sleep 1; done" &>/dev/null &
 			echo "$!" > "$BLock"
 			add_daemon bell-ssh
 			stat_done
