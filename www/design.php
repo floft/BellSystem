@@ -79,11 +79,34 @@ function from_date($string, $format="U")
 	$len = strlen($string);
 
 	if ($len == 8)
-		return date_create_from_format("Ymd", $string)->format($format);
+	{
+		if (function_exists("date_create_from_format"))
+		{
+			return date_create_from_format("Ymd", $string)->format($format);
+		}
+		else
+		{
+			return date($format, strtotime($string));
+		}
+	}
 	else if ($len == 12)
-		return date_create_from_format("YmdHi", $string)->format($format);
+	{
+		if (function_exists("date_create_from_format"))
+		{
+			return date_create_from_format("YmdHi", $string)->format($format);
+		}
+		else	
+		{
+			$date      = substr($string, 0, 8);
+			$time_hour = substr($string, 8, 2);
+			$time_min  = substr($string, 10, 2);
+			return date($format, strtotime("$date $time_hour:$time_min"));
+		}
+	}
 	else
+	{
 		return false;
+	}
 }
 
 function jsDatePick($field)
