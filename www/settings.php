@@ -5,8 +5,8 @@ site_header("Settings");
 $saved = false;
 
 //also specified in the daemon
-const min_length = 1;
-const max_length = 10;
+define("min_length", 1);
+define("max_length", 10);
 
 if (isset($_REQUEST['save'])) {
 	$length = $_REQUEST['length'];

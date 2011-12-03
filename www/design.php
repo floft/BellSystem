@@ -5,10 +5,10 @@ $menu_file   = $root . "menu.xml";
 $config_file = $root . "config.xml";
 $password    = file_get_contents($root . ".password") or die("could not get password");
 
-const allow_save   = true; //for online web UI demo
-const max_hours    = 23;
-const max_minutes  = 59;
-const bell_session = "bell_system_2011";
+define("allow_save",  true); //for online web UI demo
+define("max_hours",   23);
+define("max_minutes", 59);
+define("bell_session", "bell_system_2011");
 
 $days_of_week = array(
 	"Sunday",
