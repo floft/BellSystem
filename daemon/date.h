@@ -8,7 +8,7 @@
 
 #include <ctime>
 #include <string>
-#include <iomanip>	//setprecision
+#include <sstream>
 #include <iostream>
 #include "split.h"
 #include "string_functions.h"

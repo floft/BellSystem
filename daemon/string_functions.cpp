@@ -19,3 +19,20 @@ int string_to_int(const string& input)
 
 	return output;
 }
+
+string set_digits(const int& digits, const int& number)
+{
+	string zeros;
+	string str;
+
+	stringstream s;
+	s << number;
+	s >> str;
+
+	const int& len = str.length();
+
+	for (int i = 0; i < (digits - len); ++i)
+		zeros += "0";
+
+	return zeros + str;
+}

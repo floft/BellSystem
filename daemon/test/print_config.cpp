@@ -1,9 +1,9 @@
-#include "config.h"
+#include "../config.h"
 #include <stdexcept>
 
 int main()
 try {
-	Config c("../config.xml");
+	Config c("../../example.xml");
 	cout << c << endl;
 
 	return 0;

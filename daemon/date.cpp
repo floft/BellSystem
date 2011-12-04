@@ -279,16 +279,16 @@ namespace DateTime
 
 	ostream& operator<<(ostream& os, const date& d)
 	{
-		os << setprecision(4) << d.y
-		   << setprecision(2) << d.m
-		   << setprecision(2) << d.d;
+		os << set_digits(4, d.y)
+		   << set_digits(2, d.m)
+		   << set_digits(2, d.d);
 
 		return os;
 	}
 	
 	ostream& operator<<(ostream& os, const time& t)
 	{
-		os << t.h << setprecision(2) << t.m;
+		os << t.h << ":" << set_digits(2, t.m);
 
 		return os;
 	}
