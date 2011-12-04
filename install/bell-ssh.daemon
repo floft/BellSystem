@@ -6,13 +6,17 @@ BLock="/var/run/bell-ssh.lock"
 
 [[ -f /etc/conf.d/bellsystem ]] && . /etc/conf.d/bellsystem || exit 1
 
+if [[ -z $SLEEP ]] || (( SLEEP < 1 )); then
+	SLEEP=1
+fi
+
 case "$1" in
 	start)
 		stat_busy "Starting Bell-SSH Tunnel"
 		if [[ -e $BLock ]]; then
 			stat_fail
 		else
-			su root -c "while true; do ssh -o 'StrictHostKeyChecking no' -qNR $REVERSE_SSH_PORT:localhost:$LOCAL_SSH_PORT -p $PORT $USER@$HOST; sleep 1; done" &>/dev/null &
+			su root -c "while true; do ssh -o 'StrictHostKeyChecking no' -qNR $REVERSE_SSH_PORT:localhost:$LOCAL_SSH_PORT -p $PORT $USER@$HOST; sleep $SLEEP; done" &>/dev/null &
 			echo "$!" > "$BLock"
 			add_daemon bell-ssh
 			stat_done
