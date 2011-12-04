@@ -116,7 +116,8 @@ function jsDatePick($field)
 		useMode:2,
 		target:"$field",
 		dateFormat:"%Y/%m/%d",
-		cellColorScheme:"beige"
+		cellColorScheme:"beige",
+		weekStartDay:0
 	});
 
 EOF;
