@@ -17,9 +17,9 @@ namespace Wait
 			//sleep in seconds till just before the minute,
 			//then go in increments of mili_wait
 			if (seconds > 1)
-				usleep((seconds-1)*1000);
+				usleep((seconds-1)*1000000); //sec to micro
 			else
-				usleep(mili_wait*1000);
+				usleep(mili_wait*1000);     //mili to micro
 		}
 	}
 
