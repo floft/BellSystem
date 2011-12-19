@@ -13,11 +13,9 @@ if (isset($_REQUEST['save'])) {
 	$start  = $_REQUEST['start'];
 	$end    = $_REQUEST['end'];
 
-	foreach ($xml->settings->children() as $child) {
-		$child->length = $length;
-		$child->start  = str_replace("/","",$start);
-		$child->end    = str_replace("/","",$end);
-	}
+	$xml->settings->length = $length;
+	$xml->settings->start  = str_replace("/","",$start);
+	$xml->settings->end    = str_replace("/","",$end);
 
 	config_save($xml);
 	$saved = true;

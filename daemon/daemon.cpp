@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <sstream>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
@@ -22,12 +23,35 @@ const int set_bits_on  = 6;
 
 void help()
 {
-	cout << "Usage: bell-daemon [-d] -c /path/to/config.xml" << endl;
+	cout << "Usage: bell-daemon [-d] [-l /log.txt] -c /config.xml" << endl;
 }
 
 void error(const string& s)
 {
 	throw runtime_error(s);
+}
+
+void log(const string& s, const string& filename = "")
+{
+	DateTime::now n;
+
+	ostringstream ss;
+	ss << "[" << n << "] ";
+	string timestamp = ss.str();
+
+	cerr << timestamp << s << endl;
+
+	if (filename != "")
+	{
+		ofstream ofile(filename.c_str());
+
+		if  (!ofile)
+			cerr  << timestamp << "Error: could not write to log" << endl;
+		else
+			ofile << timestamp << s << endl;
+
+		ofile.close();
+	}
 }
 
 void turn_on(const string& device, const int& seconds)
@@ -156,13 +180,17 @@ int main(int argc, char *argv[])
 	int c;
 	bool debug = false;
 	string filename;
+	string logfile;
 
-	while ((c = getopt(argc, argv, "c:hd")) != -1)
+	while ((c = getopt(argc, argv, "c:l:hd")) != -1)
 	{
 		switch (c)
 		{
 			case 'c':
 				filename=optarg;
+				break;
+			case 'l':
+				logfile=optarg;
 				break;
 			case 'd':
 				debug = true;
@@ -179,7 +207,7 @@ int main(int argc, char *argv[])
 	ifstream ifile(filename.c_str());
 	if  (!ifile)
 	{
-		cerr << "Error: could not read config" << endl;
+		log("Error: could not read config", logfile);
 		return 1;
 	}
 	ifile.close();
@@ -198,23 +226,26 @@ int main(int argc, char *argv[])
 		}
 		catch (Config::Error& e)
 		{
-			cerr << "Config Error: "  << e.what() << endl;
+			log("Config Error: " + e.what(), logfile);
 		}
 		catch (DateTime::time::Invalid& e)
 		{
-			cerr << "Error: time not in 00:00 format" << endl;
+			log("Error: time not in 00:00 format", logfile);
 		}
 		catch (DateTime::date::Invalid& e)
 		{
-			cerr << "Error: date not in YYYYMMDD format" << endl;
+			log("Error: date not in YYYYMMDD format", logfile);
 		}
 		catch (std::exception& e)
 		{
-			cerr << "Error: " << e.what() << endl;
+			ostringstream ss;
+			ss << "Error: " << e.what();
+
+			log(ss.str(), logfile);
 		}
 		catch (...)
 		{
-			cerr << "Unexpected Exception" << endl;
+			log("Unexpected Exception", logfile);
 		}
 		
 		//if error, don't loop until one second after the minute
