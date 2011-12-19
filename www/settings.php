@@ -52,9 +52,23 @@ foreach ($fields as $field)
 
 	setTimeout("document.getElementById('saved').style.display = 'none'", 1000)
 };
+
+function check() {
+	start = document.getElementById("start").value
+	end   = document.getElementById("end").value
+
+	if ( /[^0-9\/]/.test(start) ||
+	     /[^0-9\/]/.test(end)   )
+	{
+		alert("Please use valid values (e.g. 2000/01/01)")
+		return false
+	}
+
+	return true
+}
 // -->
 </script>
-<form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post">
+<form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post" onsubmit="return check()">
 <?php echo saved($saved); ?>
 <table><tr>
 	<td class="head">School Start<sup>1</sup></td>
