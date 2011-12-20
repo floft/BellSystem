@@ -104,7 +104,7 @@ while (count($defaults) < 7)
 	$defaults[] = array();
 
 //read quiets
-function get_whens($whens)
+function get_whens($whens, $require_exec = false)
 {
 	global $schedules;
 
@@ -130,6 +130,8 @@ function get_whens($whens)
 
 			$value = "${when["exec"]}#$value";
 		}
+		else if ($require_exec == true)
+			continue;
 
 		$summary .= substr($parts[0], 0, 4) . "/" . substr($parts[0], 4, 2) . "/" . substr($parts[0], 6, 2);
 
@@ -167,7 +169,7 @@ if (isset($xml->calendar->quiet->when))
 	$quiets = get_whens($xml->calendar->quiet->when);
 
 if (isset($xml->calendar->override->when))
-	$overrides = get_whens($xml->calendar->override->when);
+	$overrides = get_whens($xml->calendar->override->when, true);
 ?>
 <script type="text/javascript">
 <!--
