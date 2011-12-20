@@ -2,11 +2,69 @@
 require_once "design.php";
 site_header("Calendar");
 
+//read quiets
+function get_whens($whens)
+{
+	global $schedules;
+
+	$results = array();
+
+	foreach ($whens as $when)
+	{
+		$value = (string)$when;
+			
+		$summary = "";
+		$parts = explode("-", (string)$when);
+
+		if (isset($when["exec"]))
+		{
+			foreach ($schedules as $item)
+			{
+				if ($item[0] == (string)$when["exec"])
+				{
+					$set_exec = true;
+					$summary .= "<span>${item[1]}</span> &ndash; ";
+					break;
+				}
+			}
+
+			$value = "${when["exec"]}#$value";
+		}
+
+		$summary .= substr($parts[0], 0, 4) . "/" . substr($parts[0], 4, 2) . "/" . substr($parts[0], 6, 2);
+
+		if (count($parts) == 2)
+			$summary .= " - " . substr($parts[1], 0, 4) . "/" . substr($parts[1], 4, 2) . "/" . substr($parts[1], 6, 2);
+
+		if (isset($when["start"]) && isset($when["end"]))
+		{
+			$value .= "@${when["start"]}-${when["end"]}";
+			$summary .= " from ${when["start"]} - ${when["end"]}";
+		}
+
+		$results[] = array($value, $summary);
+	}
+
+	return $results;
+}
+
+function print_whens($name, $whens)
+{
+	foreach ($whens as $id => $when)
+	{
+		$text = $when[0];
+		$summary = $when[1];
+
+		echo "\t<li><div id=\"${name}_${id}_div\">\n";
+		echo "\t\t<input type=\"hidden\" name=\"${name}[$id]\" id=\"${name}_$id\" value=\"$text\" />\n";
+		echo "\t\t<a class=\"x\" href=\"javascript:void(0)\" onclick=\"return remove_item('${name}_${id}_div')\">x</a>\n";
+		echo "\t\t<a class=\"period\" id=\"${name}_${id}_link\" href=\"#box\" onclick=\"return box_open('${name}_$id')\">$summary</a>\n";
+		echo "\t</div></li>\n";
+	}
+}
+
 $saved     = false;
-$defaults  = array();
 $schedules = array();
-$quiets    = array();
-$overrides = array();
 
 if (isset($xml->schedules->schedule))
 	foreach ($xml->schedules->schedule as $schedule)
@@ -95,6 +153,8 @@ if (isset($_REQUEST['save'])) {
 	config_save($xml);
 }
 
+$defaults = array();
+
 //read defaults
 if (isset($xml->calendar->default->exec))
 	foreach ($xml->calendar->default->exec as $exec)
@@ -103,77 +163,14 @@ if (isset($xml->calendar->default->exec))
 while (count($defaults) < 7)
 	$defaults[] = array();
 
-//read quiets
-function get_whens($whens, $require_exec = false)
-{
-	global $schedules;
-
-	$results = array();
-
-	foreach ($whens as $when)
-	{
-		$value = (string)$when;
-			
-		$summary = "";
-		$parts = explode("-", (string)$when);
-
-		if (isset($when["exec"]))
-		{
-			$set_exec = false;
-
-			foreach ($schedules as $item)
-			{
-				if ($item[0] == (string)$when["exec"])
-				{
-					$set_exec = true;
-					$summary .= "<span>${item[1]}</span> &ndash; ";
-					break;
-				}
-			}
-
-			if ($set_exec == false)
-				continue; 	//not a valid exec
-
-			$value = "${when["exec"]}#$value";
-		}
-
-		$summary .= substr($parts[0], 0, 4) . "/" . substr($parts[0], 4, 2) . "/" . substr($parts[0], 6, 2);
-
-		if (count($parts) == 2)
-			$summary .= " - " . substr($parts[1], 0, 4) . "/" . substr($parts[1], 4, 2) . "/" . substr($parts[1], 6, 2);
-
-		if (isset($when["start"]) && isset($when["end"]))
-		{
-			$value .= "@${when["start"]}-${when["end"]}";
-			$summary .= " from ${when["start"]} - ${when["end"]}";
-		}
-
-		$results[] = array($value, $summary);
-	}
-
-	return $results;
-}
-
-function print_whens($name, $whens)
-{
-	foreach ($whens as $id => $when)
-	{
-		$text = $when[0];
-		$summary = $when[1];
-
-		echo "\t<li><div id=\"${name}_${id}_div\">\n";
-		echo "\t\t<input type=\"hidden\" name=\"${name}[$id]\" id=\"${name}_$id\" value=\"$text\" />\n";
-		echo "\t\t<a class=\"x\" href=\"javascript:void(0)\" onclick=\"return remove_item('${name}_${id}_div')\">x</a>\n";
-		echo "\t\t<a class=\"period\" id=\"${name}_${id}_link\" href=\"#box\" onclick=\"return box_open('${name}_$id')\">$summary</a>\n";
-		echo "\t</div></li>\n";
-	}
-}
+$quiets    = array();
+$overrides = array();
 
 if (isset($xml->calendar->quiet->when))
 	$quiets = get_whens($xml->calendar->quiet->when);
 
 if (isset($xml->calendar->override->when))
-	$overrides = get_whens($xml->calendar->override->when, true);
+	$overrides = get_whens($xml->calendar->override->when);
 ?>
 <script type="text/javascript">
 <!--
