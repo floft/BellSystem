@@ -43,7 +43,8 @@ void log(const string& s, const string& filename = "")
 
 	if (filename != "")
 	{
-		ofstream ofile(filename.c_str());
+		ofstream ofile(filename.c_str(), ios_base::out|ios_base::app);
+		ofile.exceptions(ios_base::badbit|ios_base::failbit);
 
 		if  (!ofile)
 			cerr  << timestamp << "Error: could not write to log" << endl;
