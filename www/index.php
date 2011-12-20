@@ -13,5 +13,6 @@ Welcome to the Bell System Web <abbr title="User Interface">UI</abbr>. If this i
 <li><b>Schedules</b> &mdash; Create schedules that ring the bell at certain times.</li>
 <li><b>Calendar</b>  &mdash; Set when these schedules will be used.</li>
 <li><b>Settings</b>  &mdash; Set when school starts/ends to enable the bell system.</li>
+<li><b>Backup</b>    &mdash; Backup/restore the bell system configuration file.</li>
 </ul>
 <?php site_footer(); ?>
