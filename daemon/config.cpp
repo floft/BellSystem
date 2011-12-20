@@ -5,9 +5,15 @@ Config::Config(const string& filename)
 {
 	DomParser parser;
 	parser.set_substitute_entities();
-	parser.parse_file(filename);
 
-	if (!parser) throw Error("invalid XML");
+	try
+	{
+		parser.parse_file(filename);
+	}
+	catch (parse_error& e)
+	{
+		throw Error(e.what());
+	}
 
 	const Node* root = parser.get_document()->get_root_node();
 
