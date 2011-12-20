@@ -24,6 +24,7 @@ using namespace xmlpp;
 class Config
 {
 public:
+	Config();
 	Config(const string& filename);
 
 	static const int min_length = 1;

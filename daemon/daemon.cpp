@@ -31,7 +31,7 @@ void error(const string& s)
 	throw runtime_error(s);
 }
 
-void log(const string& s, const string& filename = "")
+void log(const string& s, const string& filename)
 {
 	DateTime::now n;
 
@@ -176,6 +176,37 @@ void check_ring(const Config& config, const bool& debug = false)
 			error("schedule with specified id does not exist");
 }
 
+void load_config(Config& config, const string& filename, const string& logfile)
+{
+	try
+	{
+		config = Config(filename);
+	}
+	catch (Config::Error& e)
+	{
+		log("Config Error: " + e.what(), logfile);
+	}
+	catch (DateTime::time::Invalid& e)
+	{
+		log("Error: time not in 00:00 format", logfile);
+	}
+	catch (DateTime::date::Invalid& e)
+	{
+		log("Error: date not in YYYYMMDD format", logfile);
+	}
+	catch (std::exception& e)
+	{
+		ostringstream ss;
+		ss << "Error: " << e.what();
+
+		log(ss.str(), logfile);
+	}
+	catch (...)
+	{
+		log("Unexpected Exception", logfile);
+	}
+}
+
 int main(int argc, char *argv[])
 {
 	int c;
@@ -208,7 +239,7 @@ int main(int argc, char *argv[])
 	ifstream ifile(filename.c_str());
 	if  (!ifile)
 	{
-		log("Error: could not read config", logfile);
+		log("Exiting. Error: could not read config", logfile);
 		return 1;
 	}
 	ifile.close();
@@ -217,63 +248,41 @@ int main(int argc, char *argv[])
 	stat(filename.c_str(), &attributes);
 	int lastmodified = attributes.st_mtime;
 
-	try
-	{
-		Config config(filename);
+	Config config;
+	load_config(config, filename, logfile);
 
-		while (true)
+	while (true)
+	{
+		try
 		{
-			try
-			{
-				check_ring(config, debug);
-			}
-			catch (DateTime::time::Invalid& e)
-			{
-				log("Error: time not in 00:00 format", logfile);
-			}
-			catch (DateTime::date::Invalid& e)
-			{
-				log("Error: date not in YYYYMMDD format", logfile);
-			}
-			catch (std::exception& e)
-			{
-				ostringstream ss;
-				ss << "Error: " << e.what();
-
-				log(ss.str(), logfile);
-			}
-			catch (...)
-			{
-				log("Unexpected Exception", logfile);
-			}
-			
-			//if error, don't loop until one second after the minute
-			//wait_till_minute() will terminate if current second = 0
-			sleep(1);
-
-			//save time by checking after ring
-			stat(filename.c_str(), &attributes);
-
-			if (attributes.st_mtime > lastmodified)
-			{
-				try
-				{
-					config = Config(filename);
-				}
-				catch (Config::Error& e)
-				{
-					log("Config Error: " + e.what(), logfile);
-				}
-
-				lastmodified = attributes.st_mtime;
-			}
-
-			Wait::wait_till_minute();
+			check_ring(config, debug);
 		}
-	}
-	catch (Config::Error& e)
-	{
-		log("Exiting. Config Error: " + e.what(), logfile);
+		catch (std::exception& e)
+		{
+			ostringstream ss;
+			ss << "Error: " << e.what();
+
+			log(ss.str(), logfile);
+		}
+		catch (...)
+		{
+			log("Unexpected Exception", logfile);
+		}
+		
+		//if error, don't loop until one second after the minute
+		//wait_till_minute() will terminate if current second = 0
+		sleep(1);
+
+		//save time by checking after ring
+		stat(filename.c_str(), &attributes);
+
+		if (attributes.st_mtime > lastmodified)
+		{
+			load_config(config, filename, logfile);
+			lastmodified = attributes.st_mtime;
+		}
+
+		Wait::wait_till_minute();
 	}
 
 	return 0;

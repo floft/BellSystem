@@ -1,5 +1,10 @@
 #include "config.h"
 
+Config::Config()
+	:defaults(7)
+{
+}
+
 Config::Config(const string& filename)
 	:defaults(7)
 {
