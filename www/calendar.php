@@ -225,7 +225,10 @@ function box_save() {
 	if ( /[^0-9\/]/.test(date_start) ||
 	     /[^0-9\/]/.test(date_end)   ||
 	     /[^0-9:]/.test(time_start)  ||
-	     /[^0-9:]/.test(time_end))
+	     /[^0-9:]/.test(time_end)    ||
+	     date_start.length != 10     ||
+	     (date_end.length  != 10 && date_end.length != 0)
+	   )
 	{
 		alert("Please use valid values (e.g. 2000/01/01)")
 		return false

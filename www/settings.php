@@ -58,7 +58,9 @@ function check() {
 	end   = document.getElementById("end").value
 
 	if ( /[^0-9\/]/.test(start) ||
-	     /[^0-9\/]/.test(end)   )
+	     /[^0-9\/]/.test(end)   ||
+	     start.length != 10     ||
+	     end.length   != 10     )
 	{
 		alert("Please use valid values (e.g. 2000/01/01)")
 		return false
