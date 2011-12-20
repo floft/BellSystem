@@ -216,17 +216,20 @@ int main(int argc, char *argv[])
 	stat(filename.c_str(), &attributes);
 	int lastmodified = attributes.st_mtime;
 
-	Config config(filename);
+	try
+	{
+		Config config(filename);
+	}
+	catch (Config::Error& e)
+	{
+		log("Config Error: " + e.what(), logfile);
+	}
 
 	while (true)
 	{
 		try
 		{
 			check_ring(config, debug);
-		}
-		catch (Config::Error& e)
-		{
-			log("Config Error: " + e.what(), logfile);
 		}
 		catch (DateTime::time::Invalid& e)
 		{
