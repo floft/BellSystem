@@ -119,19 +119,23 @@ function get_whens($whens, $require_exec = false)
 
 		if (isset($when["exec"]))
 		{
+			$set_exec = false;
+
 			foreach ($schedules as $item)
 			{
 				if ($item[0] == (string)$when["exec"])
 				{
+					$set_exec = true;
 					$summary .= "<span>${item[1]}</span> &ndash; ";
 					break;
 				}
 			}
 
+			if ($set_exec == false)
+				continue; 	//not a valid exec
+
 			$value = "${when["exec"]}#$value";
 		}
-		else if ($require_exec == true)
-			continue;
 
 		$summary .= substr($parts[0], 0, 4) . "/" . substr($parts[0], 4, 2) . "/" . substr($parts[0], 6, 2);
 
