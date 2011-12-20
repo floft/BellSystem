@@ -2,6 +2,10 @@
 require_once "design.php";
 site_header("Home");
 ?>
+<noscript>
+<div class="red"><b>WARNING:</b> You don't have Javascript enabled! Please do not use this Web UI until you enable it; otherwise, you may end up with a corrupt XML file.</div>
+</noscript>
+
 Welcome to the Bell System Web <abbr title="User Interface">UI</abbr>. If this is the first time you've ever been to this site, go through the pages in the order they are listed in the menu to setup the bell system.
 <br /><br />
 <ul>

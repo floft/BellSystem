@@ -85,6 +85,9 @@ div.saved {
 	font-style:italic;
 	color:#FF0000;
 }
+div.red {
+	color:#FF0000;
+}
 div.schedule {
 	padding:10px;
 	display:block;
