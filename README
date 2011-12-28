@@ -5,5 +5,4 @@ and PHP web UI, which can create the XML file. The daemon sets one of the
 pins of a serial connector to high to ring the bell.
 
 Depends: glibc, libxml++
-License: ISC
 Website: http://floft.net/wiki/Scripts/BellSystem
