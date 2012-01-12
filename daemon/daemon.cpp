@@ -269,11 +269,12 @@ int main(int argc, char *argv[])
 			log("Unexpected Exception", logfile);
 		}
 		
-		//if error, don't loop until one second after the minute
-		//wait_till_minute() will terminate if current second = 0
+		//don't loop until at least one second after the minute
+		//wait_till_minute() will terminate immediately if
+		//current second = 0, which it would on error
 		sleep(1);
 
-		//save time by checking after ring
+		//save time by checking after ring (instead of before)
 		stat(filename.c_str(), &attributes);
 
 		if (attributes.st_mtime > lastmodified)
