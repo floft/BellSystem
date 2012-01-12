@@ -13,6 +13,9 @@ MANPREFIX	?= ${PREFIX}/share/man
 
 all: ${OUT}
 
+tests: ${OUT}
+	${MAKE} -C test
+
 ${OUT}: ${OBJ}
 	${CC} -o $@ ${OBJ} ${LDFLAGS}
 
@@ -26,6 +29,7 @@ uninstall:
 	rm -f ${DESTDIR}${PREFIX}/bin/bellsystem-daemon
 
 clean:
+	${MAKE} -C test clean
 	${RM} ${OUT} ${OBJ}
 
-.PHONY: install clean
+.PHONY: tests install uninstall clean

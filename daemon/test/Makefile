@@ -20,7 +20,6 @@ tests: daemon
 	${CC} -o wait_till_minute.o wait_till_minute.cpp ${OBJ} ${LDFLAGS} ${CFLAGS}
 
 clean:
-	${MAKE} -C ../ clean
 	${RM} ${OUT} ${OBJ}
 
 .PHONY: daemon tests clean
