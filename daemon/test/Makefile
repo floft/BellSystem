@@ -22,4 +22,4 @@ tests: daemon
 clean:
 	${RM} ${OUT} ${OBJ}
 
-.PHONY: daemon tests clean
+.PHONY: all daemon tests clean

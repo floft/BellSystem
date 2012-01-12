@@ -32,4 +32,4 @@ clean:
 	${MAKE} -C test clean
 	${RM} ${OUT} ${OBJ}
 
-.PHONY: tests install uninstall clean
+.PHONY: all tests install uninstall clean
