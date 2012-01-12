@@ -62,7 +62,7 @@ window.onload = function() {
 
 <div class="section">Restore</div>
 <input type="hidden" name="MAX_FILE_SIZE" value="<?php echo MAX_SIZE; ?>" />
-<input type="file"   name="restore" />
+<input type="file"   name="restore" class="file" />
 </form>
 
 <?php if ($error != "") echo "<br /><div class='red'>Error: $error</div>"; ?>

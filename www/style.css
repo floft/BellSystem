@@ -78,6 +78,9 @@ select {
 input {
 	border: 1px solid #999999;
 }
+input.file {
+	border-width: 0px;
+}
 sup {
 	font-size: 7pt;
 }
