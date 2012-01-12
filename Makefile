@@ -8,11 +8,10 @@ tests: daemon
 
 deploy: clean
 	git add -A
-	git commit
-	git push
+	git commit && git push || true
 	@echo "Press enter to deploy..."
 	@read -s
-	ssh -t b 'cd PKGBUILDs/bellsystem-git; git pull; makepkg -sif; sudo rc.d restart bellsystem; tail /var/log/bellsystem.log'
+	ssh -t b 'cd PKGBUILDs/bellsystem-git; git pull; makepkg -sif --holdver; sudo rc.d restart bellsystem; tail /var/log/bellsystem.log'
 
 install: daemon
 	${MAKE} -C daemon install
