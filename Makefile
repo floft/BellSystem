@@ -12,8 +12,7 @@ deploy: clean
 	git push
 	@echo "Press enter to deploy..."
 	@read -s
-	ssh -t b '
-		cd PKGBUILDs/bellsystem-git
+	ssh -t b 'cd PKGBUILDs/bellsystem-git
 		git pull
 		makepkg -sif
 		sudo rc.d restart bellsystem'
