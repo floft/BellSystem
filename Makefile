@@ -10,8 +10,8 @@ deploy: clean
 	git add -A
 	git commit
 	git push
-	echo "Press enter to deploy..."
-	read -s
+	@echo "Press enter to deploy..."
+	@read -s
 	ssh b 'cd PKGBUILDs/bellsystem-git; git pull; makepkg -sif'
 
 install: daemon
