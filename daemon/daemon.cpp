@@ -257,8 +257,16 @@ int main(int argc, char *argv[])
 	if (background)
 	{
 		pid_t pid = fork();
-		if (pid<0) return 1;	//error occurred
+
+		if (pid<0)		//error occurred
+		{
+			log("Exiting. Error: could not create child process", logfile, backround);
+			return 1;
+		}
+
 		if (pid>0) return 0;	//exit the parent
+
+		setsid();
 	}
 	
 	struct stat attributes;
