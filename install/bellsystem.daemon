@@ -12,8 +12,8 @@ case "$1" in
 		if [[ -e $BLock ]]; then
 			stat_fail
 		else
-			/usr/bin/bellsystem-daemon -c "$CONFIG" -l "$LOG" &>/dev/null &
-			echo "$!" > "$BLock"
+			/usr/bin/bellsystem-daemon -c "$CONFIG" -l "$LOG" &>/dev/null
+			touch "$BLock"
 			add_daemon bellsystem
 			stat_done
 		fi
@@ -23,7 +23,7 @@ case "$1" in
 		if [[ ! -e $BLock ]]; then
 			stat_fail
 		else
-			kill $(cat "$BLock") &>/dev/null
+			kill $(pidof -s bellsystem-daemon) &>/dev/null
 			rm "$BLock"
 			rm_daemon bellsystem
 			stat_done

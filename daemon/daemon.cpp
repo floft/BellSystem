@@ -5,7 +5,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <getopt.h>
-#include <unistd.h>		//sleep
+#include <unistd.h>		//sleep, fork
 #include <fcntl.h>		//O_RDWR, O_NDELAY
 #include <sys/ioctl.h>
 #include <sys/types.h>		//TIOCMSET
@@ -23,7 +23,7 @@ const int set_bits_on  = 6;
 
 void help()
 {
-	cout << "Usage: bell-daemon [-d] [-l /log.txt] -c /config.xml" << endl;
+	cout << "Usage: bell-daemon [-d] [-f] [-l /log.txt] -c /config.xml" << endl;
 }
 
 void error(const string& s)
@@ -31,7 +31,7 @@ void error(const string& s)
 	throw runtime_error(s);
 }
 
-void log(const string& s, const string& filename)
+void log(const string& s, const string& filename, const bool& background)
 {
 	DateTime::now n;
 
@@ -39,7 +39,8 @@ void log(const string& s, const string& filename)
 	ss << "[" << n << "] ";
 	string timestamp = ss.str();
 
-	cerr << timestamp << s << endl;
+	if (!background)
+		cerr << timestamp << s << endl;
 
 	if (filename != "")
 	{
@@ -47,9 +48,14 @@ void log(const string& s, const string& filename)
 		ofile.exceptions(ios_base::badbit|ios_base::failbit);
 
 		if  (!ofile)
-			cerr  << timestamp << "Error: could not write to log" << endl;
+		{
+			if (!background)
+				cerr  << timestamp << "Error: could not write to log" << endl;
+		}
 		else
+		{
 			ofile << timestamp << s << endl;
+		}
 
 		ofile.close();
 	}
@@ -176,7 +182,7 @@ void check_ring(const Config& config, const bool& debug = false)
 			error("schedule with specified id does not exist");
 }
 
-void load_config(Config& config, const string& filename, const string& logfile)
+void load_config(Config& config, const string& filename, const string& logfile, const bool& background)
 {
 	try
 	{
@@ -184,26 +190,26 @@ void load_config(Config& config, const string& filename, const string& logfile)
 	}
 	catch (Config::Error& e)
 	{
-		log("Config Error: " + e.what(), logfile);
+		log("Config Error: " + e.what(), logfile, background);
 	}
 	catch (DateTime::time::Invalid& e)
 	{
-		log("Error: time not in 00:00 format", logfile);
+		log("Error: time not in 00:00 format", logfile, background);
 	}
 	catch (DateTime::date::Invalid& e)
 	{
-		log("Error: date not in YYYYMMDD format", logfile);
+		log("Error: date not in YYYYMMDD format", logfile, background);
 	}
 	catch (std::exception& e)
 	{
 		ostringstream ss;
 		ss << "Error: " << e.what();
 
-		log(ss.str(), logfile);
+		log(ss.str(), logfile, background);
 	}
 	catch (...)
 	{
-		log("Unexpected Exception", logfile);
+		log("Unexpected Exception", logfile, background);
 	}
 }
 
@@ -211,10 +217,11 @@ int main(int argc, char *argv[])
 {
 	int c;
 	bool debug = false;
+	bool background = true;
 	string filename;
 	string logfile;
 
-	while ((c = getopt(argc, argv, "c:l:hd")) != -1)
+	while ((c = getopt(argc, argv, "c:l:hdf")) != -1)
 	{
 		switch (c)
 		{
@@ -223,6 +230,9 @@ int main(int argc, char *argv[])
 				break;
 			case 'l':
 				logfile=optarg;
+				break;
+			case 'f':
+				background=false;
 				break;
 			case 'd':
 				debug = true;
@@ -239,17 +249,24 @@ int main(int argc, char *argv[])
 	ifstream ifile(filename.c_str());
 	if  (!ifile)
 	{
-		log("Exiting. Error: could not read config", logfile);
+		log("Exiting. Error: could not read config", logfile, background);
 		return 1;
 	}
 	ifile.close();
+
+	if (background)
+	{
+		pid_t pid = fork();
+		if (pid<0) return 1;	//error occurred
+		if (pid>0) return 0;	//exit the parent
+	}
 	
 	struct stat attributes;
 	stat(filename.c_str(), &attributes);
 	int lastmodified = attributes.st_mtime;
 
 	Config config;
-	load_config(config, filename, logfile);
+	load_config(config, filename, logfile, background);
 
 	while (true)
 	{
@@ -262,11 +279,11 @@ int main(int argc, char *argv[])
 			ostringstream ss;
 			ss << "Error: " << e.what();
 
-			log(ss.str(), logfile);
+			log(ss.str(), logfile, background);
 		}
 		catch (...)
 		{
-			log("Unexpected Exception", logfile);
+			log("Unexpected Exception", logfile, background);
 		}
 		
 		//don't loop until at least one second after the minute
@@ -279,7 +296,7 @@ int main(int argc, char *argv[])
 
 		if (attributes.st_mtime > lastmodified)
 		{
-			load_config(config, filename, logfile);
+			load_config(config, filename, logfile, background);
 			lastmodified = attributes.st_mtime;
 		}
 
