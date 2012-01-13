@@ -12,7 +12,7 @@ case "$1" in
 		if [[ -e $BLock ]]; then
 			stat_fail
 		else
-			/usr/bin/bellsystem-daemon -c "$CONFIG" -l "$LOG" &>/dev/null
+			/usr/bin/bellsystem-daemon -c "$CONFIG" -l "$LOG"
 			touch "$BLock"
 			add_daemon bellsystem
 			stat_done
