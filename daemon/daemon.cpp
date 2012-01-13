@@ -260,7 +260,7 @@ int main(int argc, char *argv[])
 
 		if (pid<0)		//error occurred
 		{
-			log("Exiting. Error: could not create child process", logfile, backround);
+			log("Exiting. Error: could not create child process", logfile, background);
 			return 1;
 		}
 
