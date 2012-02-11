@@ -70,6 +70,7 @@ void turn_on(const string& device, const int& seconds)
 
 	ioctl(fd, TIOCMSET, &set_bits_on);
 	sleep(seconds);
+	ioctl(fd, TIOCMSET, &set_bits_off);
 	close(fd);
 }
 
