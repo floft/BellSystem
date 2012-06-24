@@ -16,5 +16,5 @@ Welcome to the Bell System Web <abbr title="User Interface">UI</abbr>. If this i
 <li><b>Backup</b>    &mdash; Backup/restore the bell system configuration file.</li>
 </ul>
 
-<p>If you have any questions, you can consult the <a href="http://floft.net/wiki/Bells/Docs.html">documentation</a>.</p>
+<p>If you have any questions, you can consult the <a href="http://floft.net/wiki/Bells/Docs.html" target="_blank">documentation</a>.</p>
 <?php site_footer(); ?>
