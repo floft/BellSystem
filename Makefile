@@ -11,7 +11,7 @@ commit: clean
 	git commit && git push || true
 
 deploy: commit
-	ssh -t bellsystem 'cd PKGBUILDs/bellsystem-git; git pull; rm *.xz; makepkg -sif --holdver; sudo rc.d restart bellsystem; tail /var/log/bellsystem.log; pidof bellsystem-daemon &>/dev/null || echo "Warning: Bell System daemon is not running!"'
+	ssh -t e "ssh -t b 'cd PKGBUILDs/bellsystem-git; git pull; rm *.xz; makepkg -sif --holdver; sudo rc.d restart bellsystem; tail /var/log/bellsystem.log; pidof bellsystem-daemon &>/dev/null || echo \"Warning: Bell System daemon is not running!\"'"
 
 install: daemon
 	${MAKE} -C daemon install
