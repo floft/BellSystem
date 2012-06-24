@@ -15,4 +15,6 @@ Welcome to the Bell System Web <abbr title="User Interface">UI</abbr>. If this i
 <li><b>Settings</b>  &mdash; Set when school starts/ends to enable the bell system.</li>
 <li><b>Backup</b>    &mdash; Backup/restore the bell system configuration file.</li>
 </ul>
+
+<p>If you have any questions, you can consult the <a href="http://floft.net/wiki/Bells/Docs.html">documentation</a>.</p>
 <?php site_footer(); ?>
