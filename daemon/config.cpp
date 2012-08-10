@@ -100,12 +100,12 @@ Config::Config(const string& filename)
 
 		for (Element::NodeList::iterator iter = children.begin(); iter != children.end(); ++iter)
 		{
-			Node::NodeList list           = (*iter)->get_children();
-			Node::NodeList::iterator iter = list.begin();
+			Node::NodeList list                 = (*iter)->get_children();
+			Node::NodeList::iterator child_iter = list.begin();
 
 			if (list.size() == 0) continue;
 
-			const TextNode* nodeText  = dynamic_cast<const TextNode*>(*iter);
+			const TextNode* nodeText  = dynamic_cast<const TextNode*>(*child_iter);
 
 			if (nodeText)
 			{
