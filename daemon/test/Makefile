@@ -17,6 +17,7 @@ tests: daemon
 	${CC} -o date_test.o        date_test.cpp        ${OBJ} ${LDFLAGS} ${CFLAGS}
 	${CC} -o print_config.o     print_config.cpp     ${OBJ} ${LDFLAGS} ${CFLAGS}
 	${CC} -o print_date.o       print_date.cpp       ${OBJ} ${LDFLAGS} ${CFLAGS}
+	${CC} -o string_functions.o string_functions.cpp ${OBJ} ${LDFLAGS} ${CFLAGS}
 	${CC} -o wait_till_minute.o wait_till_minute.cpp ${OBJ} ${LDFLAGS} ${CFLAGS}
 
 clean:

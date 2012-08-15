@@ -74,6 +74,27 @@ void turn_on(const string& device, const int& seconds)
 	close(fd);
 }
 
+void gpio_write(const string& file, const string& contents)
+{
+	ofstream ofile(file, ios_base::out|ios_base::trunc);
+	ofile.exceptions(ios_base::badbit|ios_base::failbit);
+
+	if (!ofile)
+		error("could not turn device on");
+	
+	ofile << contents << endl;
+	ofile.close();
+}
+
+void turn_on_gpio(const int& seconds)
+{
+	gpio_write("/sys/class/gpio/export",		"4");
+	gpio_write("/sys/class/gpio/gpio4/direction",	"out");
+	gpio_write("/sys/class/gpio/gpio4/value",	"1");
+	sleep(seconds);
+	gpio_write("/sys/class/gpio/gpio4/value",	"0");
+}
+
 bool within_when(const DateTime::now& n, const Config::when& w)
 {
 	if (
@@ -122,9 +143,16 @@ bool ring_schedule(const string& id, const vector<Config::schedule>& schedules,
 		if (in_times(now, schedule.times))
 		{
 			if (debug)
+			{
 				cout << "Ring" << endl;
+			}
 			else
-				turn_on(settings.device, settings.length);
+			{
+				if (settings.gpio)
+					turn_on_gpio(settings.length);
+				else
+					turn_on(settings.device, settings.length);
+			}
 		}
 	}
 

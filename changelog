@@ -1,7 +1,8 @@
 Possible:
 	* warn when multiple schedules for same day
 	* convert times on each file change to unix time (faster?)
-
+0.3:
+	* added GPIO support for Raspberry Pi computers
 0.2:
 	* password in .password file
 	* redesigned XML code

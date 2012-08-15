@@ -30,6 +30,10 @@ Config::Config(const string& filename)
 
 	if (n_defaults.size() != 7) throw Error("not 7 defaults");
 
+	//default settings
+	settings.length = 3;
+	settings.gpio   = false;
+
 	//settings
 	for (unsigned int i = 0; i < n_settings.size(); ++i)
 	{
@@ -47,6 +51,8 @@ Config::Config(const string& filename)
 				settings.length = ustring_to_int(nodeText->get_content());
 			else if (nodename == "device")
 				settings.device = nodeText->get_content().raw();
+			else if (nodename == "gpio")
+				settings.gpio = ustring_to_bool(nodeText->get_content().raw());
 			else if (nodename == "start")
 				settings.start.set(nodeText->get_content().raw());
 			else if (nodename == "end")
@@ -181,6 +187,7 @@ ostream& operator<<(ostream& os, const Config::Settings& s)
 {
 	os << s.length << endl
 	   << s.device << endl
+	   << s.gpio   << endl
 	   << s.start  << endl
 	   << s.end    << endl;
 

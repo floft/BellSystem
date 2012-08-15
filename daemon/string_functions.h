@@ -9,6 +9,7 @@ using namespace std;
 
 int string_to_int(const string& input);
 int ustring_to_int(const Glib::ustring& input);
+bool ustring_to_bool(const Glib::ustring& input);
 string set_digits(const int& digits, const int& number);
 
 #endif

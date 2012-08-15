@@ -6,24 +6,20 @@ BLock="/var/run/bell-http.lock"
 
 [[ -f /etc/conf.d/bellsystem ]] && . /etc/conf.d/bellsystem || exit 1
 
-if [[ -z $SLEEP ]] || (( SLEEP < 1 )); then
-	SLEEP=1
-fi
-
 case "$1" in
 	start)
-		stat_busy "Starting Bell-SSH Tunnel"
+		stat_busy "Starting Bell-HTTP Tunnel"
 		if [[ -e $BLock ]]; then
 			stat_fail
 		else
-			su root -c "while true; do ssh -o 'StrictHostKeyChecking no' -qNR $REVERSE_HTTP_PORT:localhost:$LOCAL_HTTP_PORT -p $PORT $USER@$HOST; sleep $SLEEP; done" &>/dev/null &
+			autossh -M $HTTP_MONITOR -qNR $REMOTE_HTTP:localhost:$LOCAL_HTTP -o 'StrictHostKeyChecking no' -p $PORT $USER@$HOST &>/dev/null &
 			echo "$!" > "$BLock"
 			add_daemon bell-http
 			stat_done
 		fi
 		;;
 	stop)
-		stat_busy "Stopping Bell-SSH Tunnel"
+		stat_busy "Stopping Bell-HTTP Tunnel"
 		if [[ ! -e $BLock ]]; then
 			stat_fail
 		else

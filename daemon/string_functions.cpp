@@ -1,5 +1,15 @@
 #include "string_functions.h"
 
+int string_to_int(const string& input)
+{
+	int output = -1;
+	stringstream s;
+	s << input;
+	s >> output;
+
+	return output;
+}
+
 int ustring_to_int(const Glib::ustring& input)
 {
 	int output = -1;
@@ -10,14 +20,9 @@ int ustring_to_int(const Glib::ustring& input)
 	return output;
 }
 
-int string_to_int(const string& input)
+bool ustring_to_bool(const Glib::ustring& input)
 {
-	int output = -1;
-	stringstream s;
-	s << input;
-	s >> output;
-
-	return output;
+	return (input == "True" || input == "TRUE" || input == "true" || input == "1");
 }
 
 string set_digits(const int& digits, const int& number)

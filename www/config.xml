@@ -3,6 +3,7 @@
 	<settings>
 		<length>3</length>
 		<device>/dev/ttyUSB0</device>
+		<gpio>false</gpio>
 		<start>20120101</start>
 		<end>20121231</end>
 	</settings>

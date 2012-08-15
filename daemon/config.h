@@ -43,6 +43,7 @@ public:
 	{
 		Settings() :length(0) { }
 		int length;
+		bool gpio;
 		string device;
 		DateTime::date start;
 		DateTime::date end;
