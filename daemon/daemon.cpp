@@ -76,14 +76,17 @@ void turn_on(const string& device, const int& seconds)
 
 void gpio_write(const string& file, const string& contents)
 {
-	ofstream ofile(file.c_str(), ios_base::out|ios_base::trunc);
-	ofile.exceptions(ios_base::badbit|ios_base::failbit);
-
-	if (!ofile)
-		error("could not turn device on");
-	
-	ofile << contents << endl;
-	ofile.close();
+	try
+	{
+		ofstream ofile(file.c_str(), ios_base::out|ios_base::trunc);
+		ofile.exceptions(ios_base::badbit|ios_base::failbit);
+		ofile << contents << endl;
+		ofile.close();
+	}
+	catch (const ios_base::failure& e)
+	{
+		error("could not write to gpio");
+	}
 }
 
 void turn_on_gpio(const int& seconds)
