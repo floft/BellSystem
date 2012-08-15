@@ -91,8 +91,6 @@ void gpio_write(const string& file, const string& contents)
 
 void turn_on_gpio(const int& seconds)
 {
-	gpio_write("/sys/class/gpio/export",		"4");
-	gpio_write("/sys/class/gpio/gpio4/direction",	"out");
 	gpio_write("/sys/class/gpio/gpio4/value",	"1");
 	sleep(seconds);
 	gpio_write("/sys/class/gpio/gpio4/value",	"0");
@@ -307,6 +305,17 @@ int main(int argc, char *argv[])
 
 	Config config;
 	load_config(config, filename, logfile, background);
+
+	//setup gpio
+	{
+		const Config::Settings& settings  = config.get_settings();
+		
+		if (settings.gpio)
+		{
+			gpio_write("/sys/class/gpio/export",		"4");
+			gpio_write("/sys/class/gpio/gpio4/direction",	"out");
+		}
+	}
 
 	while (true)
 	{
