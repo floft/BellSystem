@@ -76,7 +76,7 @@ void turn_on(const string& device, const int& seconds)
 
 void gpio_write(const string& file, const string& contents)
 {
-	ofstream ofile(file, ios_base::out|ios_base::trunc);
+	ofstream ofile(file.c_str(), ios_base::out|ios_base::trunc);
 	ofile.exceptions(ios_base::badbit|ios_base::failbit);
 
 	if (!ofile)
