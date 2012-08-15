@@ -74,7 +74,7 @@ void turn_on(const string& device, const int& seconds)
 	close(fd);
 }
 
-void gpio_write(const string& file, const string& contents)
+void gpio_write(const string& file, const string& contents, const bool& ignore = false)
 {
 	try
 	{
@@ -85,7 +85,8 @@ void gpio_write(const string& file, const string& contents)
 	}
 	catch (const ios_base::failure& e)
 	{
-		error("could not write to gpio");
+		if (!ignore)
+			error("could not write to gpio");
 	}
 }
 
@@ -312,7 +313,7 @@ int main(int argc, char *argv[])
 		
 		if (settings.gpio)
 		{
-			gpio_write("/sys/class/gpio/export",		"4");
+			gpio_write("/sys/class/gpio/export",		"4", true);
 			gpio_write("/sys/class/gpio/gpio4/direction",	"out");
 		}
 	}
