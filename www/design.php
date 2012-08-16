@@ -334,7 +334,7 @@ function encrypt(key, text) {
 
 function login() {
 	var replace  = get("replace")
-	var password = Sha256.hash(get("password").value)
+	var password = Sha256.hash(get("pass").value+'\n')
 
 	get("login").style.display   = "none"
 	get("invalid").style.display = "none"
@@ -345,7 +345,7 @@ function login() {
 
 	http(url, function(text1) {
 		var key  = JSON.parse(text1)
-		password = encrypt(key, password+'\n')
+		password = encrypt(key, password)
 
 		url += "&p="+password
 
@@ -354,7 +354,7 @@ function login() {
 			replace.innerHTML=""
 
 			if (loggedin[0] == true) {
-				window.location.reload(true)
+				window.location = 'index.php'
 			} else {
 				get("invalid").style.display = "inline"
 				get("login").style.display   = "inline"
@@ -416,7 +416,7 @@ else if (isset($_REQUEST['login']))
 		if (!validSha($pass)) {
 			echo "[false]";
 		} else {
-			if ($pass == trim($password)) {
+			if ($pass == $password) {
 				echo "[true]";
 				$_SESSION[bell_session] = true;
 			} else {
