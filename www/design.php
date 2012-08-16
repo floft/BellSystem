@@ -148,7 +148,7 @@ function time_select($str="", $hour=-1, $minute=-1) {
 }
 
 function validSha($str) {
-	return (strlen($str) != 64);
+	return (strlen($str) == 64);
 }
 
 function encrypt($key, $text) {
