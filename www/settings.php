@@ -23,6 +23,7 @@ if (isset($_REQUEST['save'])) {
 
 $length = 3;
 $device = "";
+$gpio   = false;
 $start  = "";
 $end    = "";
 
@@ -37,6 +38,8 @@ foreach ($xml->settings->children() as $setting) {
 		$end    = $setting;
 	else if ($name == "device")
 		$device = $setting;
+	else if ($name == "gpio")
+		$gpio = ($setting == "True" || $setting == "TRUE" || $setting == "true" || $setting == "1");
 }
 ?>
 <script type="text/javascript">
@@ -91,6 +94,9 @@ function check() {
 </tr><tr>
 	<td class="head">Device<sup>2</sup></td>
 	<td><input type="text" name="device" value="<?php echo $device; ?>" disabled="disabled" /></td>
+</tr><tr>
+	<td class="head">Use GPIO<sup>2</sup></td>
+	<td><input type="text" name="gpio" value="<?php echo ($gpio)?"True":"False"; ?>" disabled="disabled" /></td>
 </tr></table>
 </form>
 

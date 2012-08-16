@@ -12,7 +12,7 @@ case "$1" in
 		if [[ -e $BLock ]]; then
 			stat_fail
 		else
-			autossh -M $SSH_MONITOR -qNR $REMOTE_SSH:localhost:$LOCAL_SSH -o 'StrictHostKeyChecking no' -p $PORT $USER@$HOST &>/dev/null &
+			su -u root "while true; do autossh -M $SSH_MONITOR -qNR $REMOTE_SSH:localhost:$LOCAL_SSH -o 'StrictHostKeyChecking no' -p $PORT $USER@$HOST; sleep 30; done" &>/dev/null &
 			echo "$!" > "$BLock"
 			add_daemon bell-ssh
 			stat_done

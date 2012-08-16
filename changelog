@@ -3,6 +3,7 @@ Possible:
 	* convert times on each file change to unix time (faster?)
 0.3:
 	* added GPIO support for Raspberry Pi computers
+	* added more secure login if Javascript is enabled
 0.2:
 	* password in .password file
 	* redesigned XML code

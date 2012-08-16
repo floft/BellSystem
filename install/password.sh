@@ -6,5 +6,5 @@ file="$dir/.password"
 
 echo -n "New password: "
 read -s password
-php -r '$p=file_get_contents("php://stdin");echo hash("sha512",$p);' <<< "$password" > "$file"
+php -r '$p=file_get_contents("php://stdin");echo hash("sha256",$p);' <<< "$password" > "$file"
 echo

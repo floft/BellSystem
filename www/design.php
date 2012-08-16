@@ -147,6 +147,38 @@ function time_select($str="", $hour=-1, $minute=-1) {
 	echo "</select>";
 }
 
+function validSha($str) {
+	return (strlen($str) != 64);
+}
+
+function encrypt($key, $text) {
+	$result = array();
+	$length = strlen($text);
+
+	for ($i=0; $i<$length; ++$i) {
+		$result[] = $key^ord($text[$i]);
+	}
+
+	return json_encode($result);
+}
+
+function decrypt($key, $text) {
+	$result  = "";
+	$encoded = json_decode($text);
+
+	if ($encoded !== false) {
+		$length  = count($encoded);
+
+		for ($i=0; $i<$length; ++$i) {
+			$result .= chr($key^$encoded[$i]);
+		}
+
+		return $result;
+	} else {
+		return false;
+	}
+}
+
 function menu() {
 global $menu_file;
 
@@ -248,8 +280,7 @@ EOF;
 function login_form($note="") {
 	if ($note!="")
 		$note="<div style='color:#FF0000'>$note</div><br />\n";
-	
-	echo <<<EOF
+?>
 <!DOCTYPE html
 	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -258,22 +289,100 @@ function login_form($note="") {
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Login - Bell System</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/vnd.microsoft.icon" />
+<script type="text/javascript" src="json2.js"></script>
+<script type="text/javascript" src="sha256.js"></script>
 <script type="text/javascript">
+function http(url, func) {
+	var con
+	try       { con=new XMLHttpRequest(); }
+	catch (e) { try { con=new ActiveXObject("Msxml2.XMLHTTP"); }
+	catch (e) { try { con=new ActiveXObject("Microsoft.XMLHTTP"); }
+	catch (e) { alert("Your browser does not support AJAX!"); return false; } } }
+
+	con.open("GET",url,true)
+	con.send(null)
+
+	con.onreadystatechange=function() {
+		if (con.readyState == 4) {
+			func(con.responseText)
+		}
+	}
+}
+
+function get(e) {
+	return document.getElementById(e)
+}
+
+function focus(t) {
+	var e = (typeof(t) == 'string')?get(t):t
+
+	e.focus()
+		setTimeout(function() {
+		e.focus()
+	}, 200)
+}
+
+function encrypt(key, text) {
+	var result = new Array()
+
+	for (i=0; i < text.length; ++i) {
+		result.push(key^text.charCodeAt(i))
+	}
+
+	return "[" + result.join(",") + "]"
+}
+
+function login() {
+	var replace  = get("replace")
+	var password = Sha256.hash(get("password").value)
+
+	get("login").style.display   = "none"
+	get("invalid").style.display = "none"
+	replace.innerHTML = "Signing in..."
+	get("pass").value = ""
+
+	var url = "?login"
+
+	http(url, function(text1) {
+		var key  = JSON.parse(text1)
+		password = encrypt(key, password+'\n')
+
+		url += "&p="+password
+
+		http(url, function(text2) {
+			var loggedin = JSON.parse(text2)
+			replace.innerHTML=""
+
+			if (loggedin[0] == true) {
+				window.location.reload(true)
+			} else {
+				get("invalid").style.display = "inline"
+				get("login").style.display   = "inline"
+				focus("pass")
+			}
+		})
+	})
+}
+
 window.onload = function() {
-	document.getElementById("pass").focus()
+	focus("pass")
 }
 </script>
 </head>
 <body>
 <h2>Bell System Login</h2>
-$note<form action='index.php' method='post'>
+<?php echo $note; ?>
+<div id="replace"></div>
+<div id="login">
+<div style='color:#FF0000; display:none;' id='invalid'>Incorrect password.<br /></div>
+<form action='index.php' method='post' onsubmit='login(); return false'>
 Password: <input type='password' name='pass' id='pass' />
           <input type='submit' value='Login' />
 </form>
+</div>
 </body>
 </html>
-EOF;
-
+<?php
 	exit();
 }
 
@@ -285,14 +394,43 @@ if (isset($_REQUEST['logout']))
 	session_destroy();
 	login_form("Successfully logged out.");
 }
+//non-js
 else if (isset($_REQUEST['pass']))
 {
 	$input = $_REQUEST['pass'] . "\n";
 
-	if (hash("sha512",$input) == trim($password))
+	if (hash("sha256",$input) == trim($password))
 		$_SESSION[bell_session] = true;
 	else
 		login_form("Incorrect password.");
+}
+//js version
+else if (isset($_REQUEST['login']))
+{
+	if (isset($_REQUEST['p'])) {
+		$pass = $_REQUEST['p'];
+		$key  = $_SESSION[bell_session."_key"];
+		unset($_SESSION[bell_session."_key"]);
+		$pass = decrypt($key, $pass);
+
+		if (!validSha($pass)) {
+			echo "[false]";
+		} else {
+			if ($pass == trim($password)) {
+				echo "[true]";
+				$_SESSION[bell_session] = true;
+			} else {
+				echo "[false]";
+			}
+		}
+	} else {
+		$key = rand();
+
+		$_SESSION[bell_session."_key"] = $key;
+		echo $key;
+	}
+
+	exit();
 }
 else if (!isset($_SESSION[bell_session]))
 	login_form();
