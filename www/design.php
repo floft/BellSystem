@@ -215,7 +215,7 @@ global $name;
 global $xml;
 
 $status = (enabled())?"Enabled":"Disabled";
-$device = $xml->settings->device;
+$device = ($xml->settings->gpio)?"GPIO":$xml->settings->device;
 $menu   = menu();
 
 if ($title == "Home")
