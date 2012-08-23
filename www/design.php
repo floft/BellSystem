@@ -74,6 +74,13 @@ function enabled() {
 	return $enabled;
 }
 
+function gpio() {
+	global $xml;
+	$gpio = $xml->settings->gpio;
+
+	return ($gpio == "True" || $gpio == "true" || $gpio == "TRUE" || $gpio == "1");
+}
+
 function from_date($string, $format="U")
 {
 	$len = strlen($string);
@@ -215,7 +222,7 @@ global $name;
 global $xml;
 
 $status = (enabled())?"Enabled":"Disabled";
-$device = ($xml->settings->gpio)?"GPIO":$xml->settings->device;
+$device = (gpio())?"GPIO":$xml->settings->device;
 $menu   = menu();
 
 if ($title == "Home")
