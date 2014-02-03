@@ -74,6 +74,12 @@ void turn_on(const string& device, const int& seconds)
 	close(fd);
 }
 
+void init_gpio(int pin)
+{
+	gpio_write("/sys/class/gpio/export", pin, true);
+	gpio_write("/sys/class/gpio/gpio"+pin+"/direction",	"out");
+}
+
 void gpio_write(const string& file, const string& contents, const bool& ignore = false)
 {
 	try
@@ -90,11 +96,11 @@ void gpio_write(const string& file, const string& contents, const bool& ignore =
 	}
 }
 
-void turn_on_gpio(const int& seconds)
+void turn_on_gpio(const int& pin, const int& seconds)
 {
-	gpio_write("/sys/class/gpio/gpio4/value",	"1");
+	gpio_write("/sys/class/gpio/gpio"+pin+"/value",	"1");
 	sleep(seconds);
-	gpio_write("/sys/class/gpio/gpio4/value",	"0");
+	gpio_write("/sys/class/gpio/gpio"+pin+"/value",	"0");
 }
 
 bool within_when(const DateTime::now& n, const Config::when& w)
@@ -151,7 +157,7 @@ bool ring_schedule(const string& id, const vector<Config::schedule>& schedules,
 			else
 			{
 				if (settings.gpio)
-					turn_on_gpio(settings.length);
+					turn_on_gpio(settings.gpio_pin, settings.length);
 				else
 					turn_on(settings.device, settings.length);
 			}
@@ -242,6 +248,19 @@ void load_config(Config& config, const string& filename, const string& logfile, 
 	{
 		log("Unexpected Exception", logfile, background);
 	}
+	
+	
+	//setup gpio
+	{
+		const Config::Settings& settings  = config.get_settings();
+		
+		if (settings.gpio)
+		{
+			// gpio_write("/sys/class/gpio/export",		"4", true);
+			init_gpio(settings.gpio_pin);
+		}
+	}
+
 }
 
 int main(int argc, char *argv[])
@@ -306,17 +325,6 @@ int main(int argc, char *argv[])
 
 	Config config;
 	load_config(config, filename, logfile, background);
-
-	//setup gpio
-	{
-		const Config::Settings& settings  = config.get_settings();
-		
-		if (settings.gpio)
-		{
-			gpio_write("/sys/class/gpio/export",		"4", true);
-			gpio_write("/sys/class/gpio/gpio4/direction",	"out");
-		}
-	}
 
 	while (true)
 	{

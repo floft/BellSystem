@@ -12,10 +12,14 @@ if (isset($_REQUEST['save'])) {
 	$length = $_REQUEST['length'];
 	$start  = $_REQUEST['start'];
 	$end    = $_REQUEST['end'];
+	$gpio    = $_REQUEST['gpio'];
+	$gpio_pin    = $_REQUEST['gpio_pin'];
 
 	$xml->settings->length = $length;
 	$xml->settings->start  = str_replace("/","",$start);
 	$xml->settings->end    = str_replace("/","",$end);
+	$xml->settings->gpio = $gpio;
+	$xml->settings->gpio_pin = $gpio_pin;
 
 	config_save($xml);
 	$saved = true;
@@ -24,6 +28,7 @@ if (isset($_REQUEST['save'])) {
 $length = 3;
 $device = "";
 $gpio   = false;
+$gpio_pin   = 4;
 $start  = "";
 $end    = "";
 
@@ -40,6 +45,8 @@ foreach ($xml->settings->children() as $setting) {
 		$device = $setting;
 	else if ($name == "gpio")
 		$gpio = ($setting == "True" || $setting == "TRUE" || $setting == "true" || $setting == "1");
+	else if ($name == "gpio_pin")
+		$gpio_pin = $setting;
 }
 ?>
 <script type="text/javascript">
@@ -95,8 +102,20 @@ function check() {
 	<td class="head">Device<sup>2</sup></td>
 	<td><input type="text" name="device" value="<?php echo $device; ?>" disabled="disabled" /></td>
 </tr><tr>
-	<td class="head">Use GPIO<sup>2</sup></td>
-	<td><input type="text" name="gpio" value="<?php echo ($gpio)?"True":"False"; ?>" disabled="disabled" /></td>
+	<td class="head">Use GPIO</td>
+	<td><select name="gpio" onchange="window.needToConfirm=true"/>
+	  <?php echo "<option value=\"False\"" . ($gpio==false ? "selected=true" : "") . ">False</option>"?>
+	  <?php echo "<option value=\"True\""  . ($gpio==true  ? "selected=true" : "") . ">True</option>"?>
+	</select></td>
+</tr><tr>
+	<td class="head">GPIO Pin</td>
+	<td><select name="gpio_pin" onchange="window.needToConfirm=true">
+		<?php foreach (array(4, 17, 22, 23, 24, 25) as $value) {
+			echo "<option value = $value" . ($gpio_pin==$value ? " selected=true>" : ">") . "$value</option>";
+			}
+			unset($value);
+		?>
+	</select></td>
 </tr></table>
 </form>
 

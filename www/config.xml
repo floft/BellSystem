@@ -4,6 +4,7 @@
 		<length>3</length>
 		<device>/dev/ttyUSB0</device>
 		<gpio>false</gpio>
+		<gpio_pin>4</gpio_pin>
 		<start>20120101</start>
 		<end>20121231</end>
 	</settings>

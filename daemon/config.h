@@ -44,6 +44,7 @@ public:
 		Settings() :length(0) { }
 		int length;
 		bool gpio;
+		int gpio_pin;	//pins 4, 17, 22, 23, 24, 25 should work as expected
 		string device;
 		DateTime::date start;
 		DateTime::date end;
