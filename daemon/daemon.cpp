@@ -74,12 +74,6 @@ void turn_on(const string& device, const int& seconds)
 	close(fd);
 }
 
-void init_gpio(int pin)
-{
-	gpio_write("/sys/class/gpio/export", pin, true);
-	gpio_write("/sys/class/gpio/gpio"+pin+"/direction",	"out");
-}
-
 void gpio_write(const string& file, const string& contents, const bool& ignore = false)
 {
 	try
@@ -96,11 +90,25 @@ void gpio_write(const string& file, const string& contents, const bool& ignore =
 	}
 }
 
+void init_gpio(int pin)
+{
+	std::stringstream sstm;
+	std::stringstream p;
+	p << pin;
+	sstm << "/sys/class/gpio/gpio" << pin << "/direction";
+
+	gpio_write("/sys/class/gpio/export", p.str(), true);
+	gpio_write(sstm.str(),	"out");
+}
+
 void turn_on_gpio(const int& pin, const int& seconds)
 {
-	gpio_write("/sys/class/gpio/gpio"+pin+"/value",	"1");
+	std::stringstream sstm;
+	sstm << "/sys/class/gpio/gpio" << pin << "/value";
+	
+	gpio_write(sstm.str(),	"1");
 	sleep(seconds);
-	gpio_write("/sys/class/gpio/gpio"+pin+"/value",	"0");
+	gpio_write(sstm.str(),	"0");
 }
 
 bool within_when(const DateTime::now& n, const Config::when& w)
