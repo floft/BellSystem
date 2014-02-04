@@ -55,7 +55,7 @@ Config::Config(const string& filename)
 			else if (nodename == "gpio")
 				settings.gpio = ustring_to_bool(nodeText->get_content().raw());
 			else if (nodename == "gpio_pin")
-				settings.gpio_pin = ustring_to_bool(nodeText->get_content().raw());
+				settings.gpio_pin = ustring_to_int(nodeText->get_content().raw());
 			else if (nodename == "start")
 				settings.start.set(nodeText->get_content().raw());
 			else if (nodename == "end")
