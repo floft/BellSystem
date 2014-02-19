@@ -90,25 +90,58 @@ void gpio_write(const string& file, const string& contents, const bool& ignore =
 	}
 }
 
-void init_gpio(int pin)
+vector<int> parse_gpio_list(const string gpio_pins_string)
 {
-	std::stringstream sstm;
-	std::stringstream p;
-	p << pin;
-	sstm << "/sys/class/gpio/gpio" << pin << "/direction";
-
-	gpio_write("/sys/class/gpio/export", p.str(), true);
-	gpio_write(sstm.str(),	"out");
+	stringstream gpio_pins_stringstream(gpio_pins_string);
+	string item;
+	vector<int> pin_int_vector;
+	
+	while(getline(gpio_pins_stringstream, item, ','))
+	{
+        pin_int_vector.push_back(atoi(item.c_str()));
+	}
+	return pin_int_vector;
 }
 
-void turn_on_gpio(const int& pin, const int& seconds)
+void init_gpio(string pin_list)
 {
-	std::stringstream sstm;
-	sstm << "/sys/class/gpio/gpio" << pin << "/value";
+	// parse pin list, and init each pin to be used
+	vector<int> pins = parse_gpio_list(pin_list);
+	int pin;
 	
-	gpio_write(sstm.str(),	"1");
+	for( int i = 0; i < pins.length(); i++ )
+	{
+		pin = pins[i];
+		std::stringstream file_ss, pin_ss;
+		pin_ss << pin;
+		file_ss << "/sys/class/gpio/gpio" << pin << "/direction";
+
+		gpio_write("/sys/class/gpio/export", pin_ss.str(), true);
+		gpio_write(file_ss.str(),	"out");
+	}
+}
+
+void turn_on_gpio(const string gpio_pins_string, const int& seconds)
+{
+	// parse pin list, and init each pin to be used
+	vector<int> pins = parse_gpio_list(pin_list);
+	int pin;
+	
+	for( int i = 0; i < pins.length(); i++ )
+	{
+		pin = pins[i];
+		file_ss << "/sys/class/gpio/gpio" << pin << "/value";
+		gpio_write(file_ss.str(),	"1");
+	}
+	
 	sleep(seconds);
-	gpio_write(sstm.str(),	"0");
+	
+	for( int i = 0; i < pins.length(); i++ )
+	{
+		pin = pins[i];
+		file_ss << "/sys/class/gpio/gpio" << pin << "/value";
+		gpio_write(file_ss.str(),	"0");
+	}
 }
 
 bool within_when(const DateTime::now& n, const Config::when& w)

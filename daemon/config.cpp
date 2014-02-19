@@ -33,7 +33,7 @@ Config::Config(const string& filename)
 	//default settings
 	settings.length = 3;
 	settings.gpio   = false;
-	settings.gpio_pin = 4;
+	settings.gpio_pin = "4";
 
 	//settings
 	for (unsigned int i = 0; i < n_settings.size(); ++i)
@@ -55,7 +55,7 @@ Config::Config(const string& filename)
 			else if (nodename == "gpio")
 				settings.gpio = ustring_to_bool(nodeText->get_content().raw());
 			else if (nodename == "gpio_pin")
-				settings.gpio_pin = ustring_to_bool(nodeText->get_content().raw());
+				settings.gpio_pin = nodeText->get_content().raw();
 			else if (nodename == "start")
 				settings.start.set(nodeText->get_content().raw());
 			else if (nodename == "end")

@@ -19,7 +19,18 @@ if (isset($_REQUEST['save'])) {
 	$xml->settings->start  = str_replace("/","",$start);
 	$xml->settings->end    = str_replace("/","",$end);
 	$xml->settings->gpio = $gpio;
-	$xml->settings->gpio_pin = $gpio_pin;
+	
+	if ( count ($gpio_pin) > 1 ) {
+		$gpio_pin_string = $gpio_pin[0];
+		for ( $i=1; $i < count($gpio_pin); $i++ ) {
+			$gpio_pin_string .= ("," . $gpio_pin[$i]);
+		}
+	} else if ( count($gpio_pin) == 1 ) {
+		$gpio_pin_string = $gpio_pin[0];
+	} else {
+		$gpio_pin_string = "";
+	}
+	$xml->settings->gpio_pin = $gpio_pin_string;
 
 	config_save($xml);
 	$saved = true;
@@ -109,11 +120,10 @@ function check() {
 	</select></td>
 </tr><tr>
 	<td class="head">GPIO Pin</td>
-	<td><select name="gpio_pin" onchange="window.needToConfirm=true">
 		<?php foreach (array(4, 17, 22, 23, 24, 25) as $value) {
-			echo "<option value = $value" . ($gpio_pin==$value ? " selected=true>" : ">") . "$value</option>";
-			}
-			unset($value);
+			echo "<td><input type=\"checkbox\" name=\"gpio_pin[]\" value=" . $value . "/>" . $value . "</td>"
+		}
+		unset($value);
 		?>
 	</select></td>
 </tr></table>
