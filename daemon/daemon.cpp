@@ -7,6 +7,7 @@
 #include <getopt.h>
 #include <unistd.h>		//sleep, fork
 #include <fcntl.h>		//O_RDWR, O_NDELAY
+#include <stdlib.h>		//atoi
 #include <sys/ioctl.h>
 #include <sys/types.h>		//TIOCMSET
 #include <sys/stat.h>
@@ -109,7 +110,7 @@ void init_gpio(string gpio_pins_string)
 	vector<int> pins = parse_gpio_list(gpio_pins_string);
 	int pin;
 	
-	for( int i = 0; i < pins.length(); i++ )
+	for( int i = 0; i < pins.size(); i++ )
 	{
 		pin = pins[i];
 		std::stringstream file_ss, pin_ss;
@@ -126,8 +127,9 @@ void turn_on_gpio(const string gpio_pins_string, const int& seconds)
 	// parse pin list, and init each pin to be used
 	vector<int> pins = parse_gpio_list(gpio_pins_string);
 	int pin;
+	stringstream file_ss;
 	
-	for( int i = 0; i < pins.length(); i++ )
+	for( int i = 0; i < pins.size(); i++ )
 	{
 		pin = pins[i];
 		file_ss << "/sys/class/gpio/gpio" << pin << "/value";
@@ -136,7 +138,7 @@ void turn_on_gpio(const string gpio_pins_string, const int& seconds)
 	
 	sleep(seconds);
 	
-	for( int i = 0; i < pins.length(); i++ )
+	for( int i = 0; i < pins.size(); i++ )
 	{
 		pin = pins[i];
 		file_ss << "/sys/class/gpio/gpio" << pin << "/value";
