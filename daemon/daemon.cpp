@@ -103,10 +103,10 @@ vector<int> parse_gpio_list(const string gpio_pins_string)
 	return pin_int_vector;
 }
 
-void init_gpio(string pin_list)
+void init_gpio(string gpio_pins_string)
 {
 	// parse pin list, and init each pin to be used
-	vector<int> pins = parse_gpio_list(pin_list);
+	vector<int> pins = parse_gpio_list(gpio_pins_string);
 	int pin;
 	
 	for( int i = 0; i < pins.length(); i++ )
@@ -124,7 +124,7 @@ void init_gpio(string pin_list)
 void turn_on_gpio(const string gpio_pins_string, const int& seconds)
 {
 	// parse pin list, and init each pin to be used
-	vector<int> pins = parse_gpio_list(pin_list);
+	vector<int> pins = parse_gpio_list(gpio_pins_string);
 	int pin;
 	
 	for( int i = 0; i < pins.length(); i++ )

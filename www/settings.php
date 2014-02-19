@@ -118,15 +118,17 @@ function check() {
 	  <?php echo "<option value=\"False\"" . ($gpio==false ? "selected=true" : "") . ">False</option>"?>
 	  <?php echo "<option value=\"True\""  . ($gpio==true  ? "selected=true" : "") . ">True</option>"?>
 	</select></td>
-</tr><tr>
+</tr>
+</table><table>
+<tr>
 	<td class="head">GPIO Pin</td>
 		<?php foreach (array(4, 17, 22, 23, 24, 25) as $value) {
-			echo "<td><input type=\"checkbox\" name=\"gpio_pin[]\" value=" . $value . "/>" . $value . "</td>"
+			echo "<td><label><input type=\"checkbox\" name=\"gpio_pin[]\" value=" . $value . " " . (in_array($value, explode(",",$gpio_pin)) ? "checked" : "" ) . ">" . $value . "</label></td>";
 		}
 		unset($value);
 		?>
-	</select></td>
-</tr></table>
+</tr>
+</table>
 </form>
 
 <br />
