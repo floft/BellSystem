@@ -109,11 +109,13 @@ void init_gpio(string gpio_pins_string)
 	// parse pin list, and init each pin to be used
 	vector<int> pins = parse_gpio_list(gpio_pins_string);
 	int pin;
+	std::stringstream file_ss, pin_ss;
 	
 	for( int i = 0; i < pins.size(); i++ )
 	{
+		file_ss.str(string());
+		pin_ss.str(string());
 		pin = pins[i];
-		std::stringstream file_ss, pin_ss;
 		pin_ss << pin;
 		file_ss << "/sys/class/gpio/gpio" << pin << "/direction";
 
@@ -129,18 +131,22 @@ void turn_on_gpio(const string gpio_pins_string, const int& seconds)
 	int pin;
 	stringstream file_ss;
 	
-	for( int i = 0; i < pins.size(); i++ )
+	for( unsigned int i = 0; i < pins.size(); i++ )
 	{
 		pin = pins[i];
+		file_ss.str(string());
+		
 		file_ss << "/sys/class/gpio/gpio" << pin << "/value";
 		gpio_write(file_ss.str(),	"1");
 	}
 	
 	sleep(seconds);
 	
-	for( int i = 0; i < pins.size(); i++ )
+	for( unsigned int i = 0; i < pins.size(); i++ )
 	{
 		pin = pins[i];
+		file_ss.str(string());
+		
 		file_ss << "/sys/class/gpio/gpio" << pin << "/value";
 		gpio_write(file_ss.str(),	"0");
 	}
