@@ -111,7 +111,7 @@ void init_gpio(string gpio_pins_string)
 	int pin;
 	std::stringstream file_ss, pin_ss;
 	
-	for( int i = 0; i < pins.size(); i++ )
+	for( unsigned int i = 0; i < pins.size(); i++ )
 	{
 		file_ss.str(string());
 		pin_ss.str(string());
