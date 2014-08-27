@@ -75,7 +75,7 @@ Config::Config(const string& filename)
 		Node::NodeList::iterator iter = list.begin();
 
 		if (list.size() == 0) continue;
-		
+
 		const TextNode* nodeText  = dynamic_cast<const TextNode*>(*iter);
 		if (nodeText) defaults[i] = nodeText->get_content().raw();
 	}
@@ -99,7 +99,7 @@ Config::Config(const string& filename)
 		if (id_attribute)
 			s.id = id_attribute->get_value().raw();
 		else throw Error("id not specified");
-		
+
 		if (name_attribute)
 			s.name = name_attribute->get_value().raw();
 		else throw Error("name not specified");
@@ -134,11 +134,11 @@ void Config::add_whens(const NodeSet& nodeset, vector<when>& whens)
 		const Element* nodeElement = dynamic_cast<const Element*>(nodeset[i]);
 		Node::NodeList list           = nodeset[i]->get_children();
 		Node::NodeList::iterator iter = list.begin();
-		
+
 		if (list.size() == 0) continue;
 
 		const TextNode* nodeText = dynamic_cast<const TextNode*>(*iter);
-		
+
 		if (nodeText)
 		{
 			when w;
@@ -155,14 +155,14 @@ void Config::add_whens(const NodeSet& nodeset, vector<when>& whens)
 			if (dates.size() > 1)
 			{
 				w.end.set(dates[1].substr(0,8));
-			
+
 				if (dates[1].length() == 12)
 					w.end_time.set(string_to_int(dates[1].substr(8, 2)),
 						       string_to_int(dates[1].substr(10,2)));
 				else
 					w.end_time.set(DateTime::max_hours, DateTime::max_minutes);
 			}
-			
+
 			//Start/end of a period during each of these days
 			const Attribute* start_attribute = nodeElement->get_attribute("start");
 			const Attribute* end_attribute   = nodeElement->get_attribute("end");
@@ -190,10 +190,10 @@ ostream& operator<<(ostream& os, const Config::Settings& s)
 {
 	os << s.length << endl
 	   << s.device << endl
-	   << s.gpio   << endl
-	   << s.gpio_pin   << endl
-	   << s.start  << endl
-	   << s.end    << endl;
+	   << s.gpio << endl
+	   << s.gpio_pin << endl
+	   << s.start << endl
+	   << s.end  << endl;
 
 	return os;
 }
@@ -207,7 +207,7 @@ ostream& operator<<(ostream& os, const Config::when& w)
 	   << w.end_time     << endl
 	   << w.period_start << endl
 	   << w.period_end   << endl;
-	
+
 	return os;
 }
 
@@ -230,7 +230,7 @@ ostream& operator<<(ostream& os, const Config& c)
 	//defaults
 	for (unsigned int i = 0; i < c.defaults.size(); ++i)
 		os << c.defaults[i] << endl;
-	
+
 	//quiets
 	for (unsigned int i = 0; i < c.quiets.size(); ++i)
 		os << c.quiets[i] << endl;
@@ -242,6 +242,6 @@ ostream& operator<<(ostream& os, const Config& c)
 	//schedules
 	for (unsigned int i = 0; i < c.schedules.size(); ++i)
 		os << c.schedules[i] << endl;
-	
+
 	return os;
 }

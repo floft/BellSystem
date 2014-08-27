@@ -19,17 +19,18 @@ if (isset($_REQUEST['save'])) {
 	$xml->settings->start  = str_replace("/","",$start);
 	$xml->settings->end    = str_replace("/","",$end);
 	$xml->settings->gpio = $gpio;
-	
-	if ( count ($gpio_pin) > 1 ) {
+
+	if (count($gpio_pin) > 1) {
 		$gpio_pin_string = $gpio_pin[0];
-		for ( $i=1; $i < count($gpio_pin); $i++ ) {
+		for ($i=1; $i < count($gpio_pin); $i++) {
 			$gpio_pin_string .= ("," . $gpio_pin[$i]);
 		}
-	} else if ( count($gpio_pin) == 1 ) {
+	} else if (count($gpio_pin) == 1) {
 		$gpio_pin_string = $gpio_pin[0];
 	} else {
 		$gpio_pin_string = "";
 	}
+
 	$xml->settings->gpio_pin = $gpio_pin_string;
 
 	config_save($xml);
@@ -38,10 +39,10 @@ if (isset($_REQUEST['save'])) {
 
 $length = 3;
 $device = "";
-$gpio   = false;
-$gpio_pin   = 4;
-$start  = "";
-$end    = "";
+$gpio = false;
+$gpio_pin = 4;
+$start = "";
+$end = "";
 
 foreach ($xml->settings->children() as $setting) {
 	$name = $setting->getName();
@@ -122,11 +123,11 @@ function check() {
 </table><table>
 <tr>
 	<td class="head">GPIO Pin</td>
-		<?php foreach (array(4, 17, 22, 23, 24, 25) as $value) {
-			echo "<td><label><input type=\"checkbox\" name=\"gpio_pin[]\" value=" . $value . " " . (in_array($value, explode(",",$gpio_pin)) ? "checked" : "" ) . ">" . $value . "</label></td>";
-		}
-		unset($value);
-		?>
+	<?php foreach (array(4, 17, 22, 23, 24, 25) as $value) {
+		echo "<td><label><input type=\"checkbox\" name=\"gpio_pin[]\" value=" . $value . " " . (in_array($value, explode(",",$gpio_pin)) ? "checked" : "" ) . ">" . $value . "</label></td>";
+	}
+	unset($value);
+	?>
 </tr>
 </table>
 </form>

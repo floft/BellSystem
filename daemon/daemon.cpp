@@ -65,7 +65,7 @@ void log(const string& s, const string& filename, const bool& background)
 void turn_on(const string& device, const int& seconds)
 {
 	int fd;
-	
+
 	if ((fd = open(device.c_str(), O_RDWR | O_NDELAY)) < 0)
 		error("could not turn device on");
 
@@ -93,14 +93,13 @@ void gpio_write(const string& file, const string& contents, const bool& ignore =
 
 vector<int> parse_gpio_list(const string gpio_pins_string)
 {
-	stringstream gpio_pins_stringstream(gpio_pins_string);
+	istringstream gpio_pins_stringstream(gpio_pins_string);
 	string item;
 	vector<int> pin_int_vector;
-	
-	while(getline(gpio_pins_stringstream, item, ','))
-	{
-        pin_int_vector.push_back(atoi(item.c_str()));
-	}
+
+	while (getline(gpio_pins_stringstream, item, ','))
+		pin_int_vector.push_back(atoi(item.c_str()));
+
 	return pin_int_vector;
 }
 
@@ -109,9 +108,9 @@ void init_gpio(string gpio_pins_string)
 	// parse pin list, and init each pin to be used
 	vector<int> pins = parse_gpio_list(gpio_pins_string);
 	int pin;
-	std::stringstream file_ss, pin_ss;
-	
-	for( unsigned int i = 0; i < pins.size(); i++ )
+	ostringstream file_ss, pin_ss;
+
+	for (unsigned int i = 0; i < pins.size(); ++i)
 	{
 		file_ss.str(string());
 		pin_ss.str(string());
@@ -120,7 +119,7 @@ void init_gpio(string gpio_pins_string)
 		file_ss << "/sys/class/gpio/gpio" << pin << "/direction";
 
 		gpio_write("/sys/class/gpio/export", pin_ss.str(), true);
-		gpio_write(file_ss.str(),	"out");
+		gpio_write(file_ss.str(), "out");
 	}
 }
 
@@ -130,25 +129,25 @@ void turn_on_gpio(const string gpio_pins_string, const int& seconds)
 	vector<int> pins = parse_gpio_list(gpio_pins_string);
 	int pin;
 	stringstream file_ss;
-	
-	for( unsigned int i = 0; i < pins.size(); i++ )
+
+	for (unsigned int i = 0; i < pins.size(); ++i)
 	{
 		pin = pins[i];
 		file_ss.str(string());
-		
+
 		file_ss << "/sys/class/gpio/gpio" << pin << "/value";
-		gpio_write(file_ss.str(),	"1");
+		gpio_write(file_ss.str(), "1");
 	}
-	
+
 	sleep(seconds);
-	
-	for( unsigned int i = 0; i < pins.size(); i++ )
+
+	for (unsigned int i = 0; i < pins.size(); ++i)
 	{
 		pin = pins[i];
 		file_ss.str(string());
-		
+
 		file_ss << "/sys/class/gpio/gpio" << pin << "/value";
-		gpio_write(file_ss.str(),	"0");
+		gpio_write(file_ss.str(), "0");
 	}
 }
 
@@ -218,7 +217,7 @@ bool ring_schedule(const string& id, const vector<Config::schedule>& schedules,
 
 void check_ring(const Config& config, const bool& debug = false)
 {
-	
+
 	DateTime::now n;
 	const Config::Settings&         settings  = config.get_settings();
 	const vector<string>&           defaults  = config.get_defaults();
@@ -229,7 +228,7 @@ void check_ring(const Config& config, const bool& debug = false)
 	//exit if not during school start/stop
 	if (settings.start > n.d || settings.end < n.d)
 		return;
-	
+
 	//exit if in quiet period
 	for (unsigned int i = 0; i < quiets.size(); ++i)
 		if (within_when(n, quiets[i]))
@@ -262,7 +261,7 @@ void check_ring(const Config& config, const bool& debug = false)
 
 	//defaults
 	const string& default_id = defaults[n.dow];
-	
+
 	if (default_id.length() > 0)
 		if (!ring_schedule(default_id, schedules, settings, n.t, debug))
 			error("schedule with specified id does not exist");
@@ -297,19 +296,12 @@ void load_config(Config& config, const string& filename, const string& logfile, 
 	{
 		log("Unexpected Exception", logfile, background);
 	}
-	
-	
-	//setup gpio
-	{
-		const Config::Settings& settings  = config.get_settings();
-		
-		if (settings.gpio)
-		{
-			// gpio_write("/sys/class/gpio/export",		"4", true);
-			init_gpio(settings.gpio_pin);
-		}
-	}
 
+	// Setup GPIO if desired
+	const Config::Settings& settings  = config.get_settings();
+
+	if (settings.gpio)
+		init_gpio(settings.gpio_pin);
 }
 
 int main(int argc, char *argv[])
@@ -344,7 +336,7 @@ int main(int argc, char *argv[])
 				return 1;
 		}
 	}
-	
+
 	ifstream ifile(filename.c_str());
 	if  (!ifile)
 	{
@@ -367,7 +359,7 @@ int main(int argc, char *argv[])
 
 		setsid();
 	}
-	
+
 	struct stat attributes;
 	stat(filename.c_str(), &attributes);
 	int lastmodified = attributes.st_mtime;
@@ -392,7 +384,7 @@ int main(int argc, char *argv[])
 		{
 			log("Unexpected Exception", logfile, background);
 		}
-		
+
 		//don't loop until at least one second after the minute
 		//wait_till_minute() will terminate immediately if
 		//current second = 0, which it would on error

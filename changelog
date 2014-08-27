@@ -2,7 +2,7 @@ Possible:
 	* warn when multiple schedules for same day
 	* convert times on each file change to unix time (faster?)
 0.3.2
-	* added GPIO pin config setting	
+	* added GPIO pin config setting
 0.3:
 	* added GPIO support for Raspberry Pi computers
 	* added more secure login if Javascript is enabled
