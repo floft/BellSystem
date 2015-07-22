@@ -311,8 +311,22 @@ void load_config(Config& config, const string& filename, const string& logfile, 
 	// Setup GPIO if desired
 	const Config::Settings& settings  = config.get_settings();
 
-	if (settings.gpio_enabled)
-		init_gpio(settings.gpio_pin);
+	try
+	{
+		if (settings.gpio_enabled)
+			init_gpio(settings.gpio_pin);
+	}
+	catch (std::exception& e)
+	{
+		ostringstream ss;
+		ss << "Error: " << e.what();
+
+		log(ss.str(), logfile, background);
+	}
+	catch (...)
+	{
+		log("Unexpected Exception", logfile, background);
+	}
 }
 
 int main(int argc, char *argv[])
