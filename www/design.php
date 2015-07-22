@@ -32,7 +32,7 @@ function config_save($xml)
 	if (allow_save == true)
 	{
 		global $config_file;
-		
+
 		if ($f = fopen($config_file,"w"))
 		{
 			$return = fwrite($f, $xml->saveXML());
@@ -74,13 +74,6 @@ function enabled() {
 	return $enabled;
 }
 
-function gpio() {
-	global $xml;
-	$gpio = $xml->settings->gpio;
-
-	return ($gpio == "True" || $gpio == "true" || $gpio == "TRUE" || $gpio == "1");
-}
-
 function from_date($string, $format="U")
 {
 	$len = strlen($string);
@@ -102,7 +95,7 @@ function from_date($string, $format="U")
 		{
 			return date_create_from_format("YmdHi", $string)->format($format);
 		}
-		else	
+		else
 		{
 			$date      = substr($string, 0, 8);
 			$time_hour = substr($string, 8, 2);
@@ -139,13 +132,13 @@ function saved($bool)
 
 function time_select($str="", $hour=-1, $minute=-1) {
 	echo "<select name=\"hour$str\" onchange=\"window.needToConfirm=true\">";
-	
+
 	for ($i=0; $i <= max_hours; ++$i) {
 		echo "<option value=\"$i\"" . (($i==$hour)?" selected=\"selected\"":"") . ">$i</option>";
 	}
 
 	echo "</select> : <select name=\"minute$str\" onchange=\"window.needToConfirm=true\">";
-	
+
 	for ($i=0; $i <= max_minutes; ++$i) {
 		$is = sprintf("%02d", $i);
 		echo "<option value=\"$is\"" . (($i==$minute)?" selected=\"selected\"":"") . ">$is</option>";
@@ -209,7 +202,7 @@ foreach ($xml->children() as $child)
 			$menu .= "<a href='$url' id='current'>$child</a>";
 		else
 			$menu .= "<a href='$url'>$child</a>";
-		
+
 		$menu .= "\n";
 	}
 }
@@ -222,7 +215,8 @@ global $name;
 global $xml;
 
 $status = (enabled())?"Enabled":"Disabled";
-$device = (gpio())?"GPIO":$xml->settings->device;
+$device = $xml->settings->device;
+$method = $xml->settings->method;
 $menu   = menu();
 
 if ($title == "Home")
@@ -253,7 +247,7 @@ echo <<<EOF
 	window.onbeforeunload = confirmExit;
 	function confirmExit()
 	{
-		if (window.needToConfirm) return "Are you sure you want to leave this page before saving?"; 
+		if (window.needToConfirm) return "Are you sure you want to leave this page before saving?";
 	}
 	// -->
 	</script>
@@ -262,6 +256,7 @@ echo <<<EOF
 
 <div class="status">
 <table>
+	<tr><td><b>Method:</b></td><td><i>$method</i></td></tr>
 	<tr><td><b>Device:</b></td><td><i>$device</i></td></tr>
 	<tr><td><b>Status:</b></td><td>$status</td></tr>
 </table>

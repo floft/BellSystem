@@ -10,6 +10,7 @@
 #ifndef H_BELLCONFIG
 #define H_BELLCONFIG
 
+#include <regex>
 #include <string>
 #include <vector>
 #include <iostream>
@@ -43,13 +44,16 @@ public:
 	{
 		Settings() :length(0) { }
 		int length;
-		bool gpio;
+		bool gpio_enabled;
+		bool serial_enabled;
+		bool command_enabled;
+		string command;
 		string gpio_pin;	//pins 4, 17, 22, 23, 24, 25 should work as expected
 		string device;
 		DateTime::date start;
 		DateTime::date end;
 	};
-	
+
 	struct when
 	{
 		string exec;
@@ -67,13 +71,13 @@ public:
 		string name;
 		vector<DateTime::time> times;
 	};
-	
+
 	Settings         get_settings()  const { return settings;  }
 	vector<string>   get_defaults()  const { return defaults;  }
 	vector<when>     get_quiets()    const { return quiets;    }
 	vector<when>     get_overrides() const { return overrides; }
 	vector<schedule> get_schedules() const { return schedules; }
-	
+
 private:
 	void add_whens(const NodeSet& nodeset, vector<when>& whens);
 

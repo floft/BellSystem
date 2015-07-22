@@ -12,13 +12,17 @@ if (isset($_REQUEST['save'])) {
 	$length = $_REQUEST['length'];
 	$start  = $_REQUEST['start'];
 	$end    = $_REQUEST['end'];
-	$gpio    = $_REQUEST['gpio'];
+	$method = $_REQUEST['method'];
 	$gpio_pin    = $_REQUEST['gpio_pin'];
 
 	$xml->settings->length = $length;
 	$xml->settings->start  = str_replace("/","",$start);
 	$xml->settings->end    = str_replace("/","",$end);
-	$xml->settings->gpio = $gpio;
+	$xml->settings->method = $method;
+
+	// Don't set the command from the web interface at the moment for security
+	//$command = $_REQUEST['command'];
+	//$xml->settings->command = $command;
 
 	if (count($gpio_pin) > 1) {
 		$gpio_pin_string = $gpio_pin[0];
@@ -39,7 +43,8 @@ if (isset($_REQUEST['save'])) {
 
 $length = 3;
 $device = "";
-$gpio = false;
+$method = "";
+$command = "";
 $gpio_pin = 4;
 $start = "";
 $end = "";
@@ -55,8 +60,10 @@ foreach ($xml->settings->children() as $setting) {
 		$end    = $setting;
 	else if ($name == "device")
 		$device = $setting;
-	else if ($name == "gpio")
-		$gpio = ($setting == "True" || $setting == "TRUE" || $setting == "true" || $setting == "1");
+	else if ($name == "method")
+		$method = $setting;
+	else if ($name == "command")
+		$command = $setting;
 	else if ($name == "gpio_pin")
 		$gpio_pin = $setting;
 }
@@ -97,16 +104,16 @@ function check() {
 <table><tr>
 	<td class="head">School Start<sup>1</sup></td>
 	<td>
-		<input type="text" name="start" id="start" value="<?php echo from_date($start, "Y/m/d"); ?>" /> 
+		<input type="text" name="start" id="start" value="<?php echo from_date($start, "Y/m/d"); ?>" />
 	</td>
 </tr><tr>
 	<td class="head">School End<sup>1</sup></td>
 	<td>
-		<input type="text" name="end" id="end" value="<?php echo from_date($end, "Y/m/d"); ?>" /> 
+		<input type="text" name="end" id="end" value="<?php echo from_date($end, "Y/m/d"); ?>" />
 	</td>
 </tr><tr>
 	<td class="head">Length</td>
-	<td><select name="length" onchange="window.needToConfirm=true"><?php 
+	<td><select name="length" onchange="window.needToConfirm=true"><?php
 		for ($i = min_length; $i <= max_length; ++$i)
 			echo "<option value='$i'" . (($i==$length)?" selected=\"selected\"":"") . ">$i</option>";
 	?></select> seconds</td>
@@ -114,10 +121,15 @@ function check() {
 	<td class="head">Device<sup>2</sup></td>
 	<td><input type="text" name="device" value="<?php echo $device; ?>" disabled="disabled" /></td>
 </tr><tr>
-	<td class="head">Use GPIO</td>
-	<td><select name="gpio" onchange="window.needToConfirm=true"/>
-	  <?php echo "<option value=\"False\"" . ($gpio==false ? "selected=true" : "") . ">False</option>"?>
-	  <?php echo "<option value=\"True\""  . ($gpio==true  ? "selected=true" : "") . ">True</option>"?>
+	<td class="head">Command<sup>2</sup></td>
+	<td><input type="text" name="command" value="<?php echo htmlentities($command); ?>" disabled="disabled" /></td>
+</tr><tr>
+	<td class="head">Method:</td>
+	<td><select name="method" onchange="window.needToConfirm=true"/>
+	  <?php echo "<option value=\"none\">None</option>" ?>
+	  <?php echo "<option value=\"gpio\" " . ($method=="gpio" ? "selected=true" : "") . ">GPIO</option>" ?>
+	  <?php echo "<option value=\"serial\" " . ($method=="serial" ? "selected=true" : "") . ">Serial</option>" ?>
+	  <?php echo "<option value=\"command\" " . ($method=="command" ? "selected=true" : "") . ">Command</option>" ?>
 	</select></td>
 </tr>
 </table><table>
@@ -135,6 +147,6 @@ function check() {
 <br />
 <p>
 <sup>1</sup> The bell system will be enabled between these dates.<br />
-<sup>2</sup> This is for reference; you can't change this from this web UI.
+<sup>2</sup> This is for reference; you can't change this from this web UI. Edit the XML config file by hand.
 </p>
 <?php site_footer(); ?>

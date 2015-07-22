@@ -62,7 +62,7 @@ void log(const string& s, const string& filename, const bool& background)
 	}
 }
 
-void turn_on(const string& device, const int& seconds)
+void turn_on_serial(const string& device, const int& seconds)
 {
 	int fd;
 
@@ -151,6 +151,13 @@ void turn_on_gpio(const string gpio_pins_string, const int& seconds)
 	}
 }
 
+void turn_on_command(const string& command)
+{
+	// Note that you want to be *very* careful what you put in that command,
+	// especially if you'll be running this as root.
+	system(command.c_str());
+}
+
 bool within_when(const DateTime::now& n, const Config::when& w)
 {
 	if (
@@ -204,10 +211,14 @@ bool ring_schedule(const string& id, const vector<Config::schedule>& schedules,
 			}
 			else
 			{
-				if (settings.gpio)
+				// TODO: make these all run at the same time so you can have
+				// multiple enabled at once
+				if (settings.gpio_enabled)
 					turn_on_gpio(settings.gpio_pin, settings.length);
-				else
-					turn_on(settings.device, settings.length);
+				if (settings.command_enabled)
+					turn_on_command(settings.command);
+				if (settings.serial_enabled)
+					turn_on_serial(settings.device, settings.length);
 			}
 		}
 	}
@@ -300,7 +311,7 @@ void load_config(Config& config, const string& filename, const string& logfile, 
 	// Setup GPIO if desired
 	const Config::Settings& settings  = config.get_settings();
 
-	if (settings.gpio)
+	if (settings.gpio_enabled)
 		init_gpio(settings.gpio_pin);
 }
 

@@ -3,7 +3,9 @@
 	<settings>
 		<length>3</length>
 		<device>/dev/ttyUSB0</device>
-		<gpio>false</gpio>
+		<method>gpio,serial,command</method>
+		<command>echo "Hello world! $(date)"</command>
+		<gpio_pin>1,2,3,4</gpio_pin>
 		<start>20110822</start>
 		<end>20120601</end>
 	</settings>

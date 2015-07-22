@@ -32,8 +32,16 @@ Config::Config(const string& filename)
 
 	//default settings
 	settings.length = 3;
-	settings.gpio   = false;
-	settings.gpio_pin = "4";
+	settings.gpio_enabled = false;
+	settings.serial_enabled = false;
+	settings.command_enabled = false;
+	settings.command = "";
+	settings.gpio_pin = "";
+
+	std::string method;
+	std::regex gpio_match("gpio", std::regex_constants::icase);
+	std::regex serial_match("serial", std::regex_constants::icase);
+	std::regex command_match("command", std::regex_constants::icase);
 
 	//settings
 	for (unsigned int i = 0; i < n_settings.size(); ++i)
@@ -42,7 +50,9 @@ Config::Config(const string& filename)
 		Node::NodeList list           = n_settings[i]->get_children();
 		Node::NodeList::iterator iter = list.begin();
 
-		if (list.size() == 0) throw Error("empty setting");
+		// This setting is empty, so just use the default value
+		if (list.size() == 0)
+			continue;
 
 		const TextNode* nodeText = dynamic_cast<const TextNode*>(*iter);
 
@@ -52,8 +62,10 @@ Config::Config(const string& filename)
 				settings.length = ustring_to_int(nodeText->get_content());
 			else if (nodename == "device")
 				settings.device = nodeText->get_content().raw();
-			else if (nodename == "gpio")
-				settings.gpio = ustring_to_bool(nodeText->get_content().raw());
+			else if (nodename == "method")
+				method = nodeText->get_content().raw();
+			else if (nodename == "command")
+				settings.command = nodeText->get_content().raw();
 			else if (nodename == "gpio_pin")
 				settings.gpio_pin = nodeText->get_content().raw();
 			else if (nodename == "start")
@@ -62,6 +74,10 @@ Config::Config(const string& filename)
 				settings.end.set(nodeText->get_content().raw());
 		}
 	}
+
+	settings.gpio_enabled = std::regex_match(method, gpio_match);
+	settings.serial_enabled = std::regex_match(method, serial_match);
+	settings.command_enabled = std::regex_match(method, command_match);
 
 	if (settings.length < min_length)
 		throw Error("settings.length < min_length");
@@ -190,7 +206,10 @@ ostream& operator<<(ostream& os, const Config::Settings& s)
 {
 	os << s.length << endl
 	   << s.device << endl
-	   << s.gpio << endl
+	   << s.gpio_enabled << endl
+	   << s.serial_enabled << endl
+	   << s.command_enabled << endl
+	   << s.command << endl
 	   << s.gpio_pin << endl
 	   << s.start << endl
 	   << s.end  << endl;
