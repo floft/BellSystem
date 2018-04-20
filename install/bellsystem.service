@@ -1,0 +1,8 @@
+[Unit]
+Description=BellSystem
+
+[Service]
+ExecStart=/usr/bin/bellsystem-daemon -c /usr/share/webapps/bellsystem/config.xml -l /var/log/bellsystem.log
+
+[Install]
+WantedBy=multi-user.target
