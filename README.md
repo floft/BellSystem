@@ -5,7 +5,7 @@ This is a fairly simple bell system C++ daemon, which reads an XML file,
 and PHP web UI, which can create the XML file. The daemon sets one of the
 pins of a serial connector to high to ring the bell.
 
-Depends: glibc, libxml++
+Depends: glibc, libxml++  
 Website: http://floft.net/code/bells/
 
 # Raspbian Installation
