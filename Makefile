@@ -14,7 +14,7 @@ install: daemon
 	mkdir -p "${DESTDIR}${PREFIX}/share/bellsystem/"
 	mkdir -p "${DESTDIR}${PREFIX}/share/webapps/bellsystem/"
 	# Copy systemd service
-	install -Dm755 "install/bellsystem.service"         "${DESTDIR}${PREFIX}/lib/systemd/system/"
+	install -Dm755 "install/bellsystem.service"         "${DESTDIR}/lib/systemd/system/"
 	# Copy Apache config files
 	install -Dm644 "install/httpd-bellsystem.conf"      "${DESTDIR}/etc/httpd/conf/extra/"
 	install -Dm644 "install/httpd-bellsystem-root.conf" "${DESTDIR}/etc/httpd/conf/extra/"
