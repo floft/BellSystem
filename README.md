@@ -34,14 +34,24 @@ Third, you can set up the bell system.
     git clone https://github.com/floft/BellSystem
     cd BellSystem
     make
-    make PREFIX=/usr install
+    sudo make PREFIX=/usr install
     sudo systemctl enable bellsystem
     sudo systemctl start bellsystem
 
 Finally, you need to:
 
- * Run `bellsystem-password` to change the website user interface password.
+ * Run `sudo bellsystem-password` to change the website user interface password.
  * Manually change the device location in */usr/share/webapps/bellsystem/config.xml*.
- * Add one of the following two lines to */etc/httpd/conf/httpd.conf*
-    - To put the website at /: *Include conf/extra/httpd-bellsystem-root.conf*
-    - To put the website at /bellsystem: *Include conf/extra/httpd-bellsystem.conf*
+ * Add one of the following two lines to */etc/apache2/apache2.conf*
+    - To put the website at /: *sudo ln -s /etc/apache2/conf-{available,enabled}/httpd-bellsystem-root.conf*
+    - To put the website at /bellsystem: *sudo ln -s /etc/apache2/conf-{available,enabled}/httpd-bellsystem.conf*
+    - Restart Apache: `sudo systemctl restart apache2`
+
+To uninstall:
+
+    sudo systemctl disable bellsystem
+    sudo systemctl stop bellsystem
+    sudo unlink /etc/apache2/conf-enabled/httpd-bellsystem.conf
+    sudo unlink /etc/apache2/conf-enabled/httpd-bellsystem-root.conf
+    cd BellSystem
+    sudo make PREFIX=/usr uninstall
