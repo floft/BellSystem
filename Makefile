@@ -31,7 +31,7 @@ uninstall:
 	rm -r "${DESTDIR}${PREFIX}/share/bellsystem/"
 	rm -r "${DESTDIR}${PREFIX}/share/webapps/bellsystem/"
 	# Remove systemd service
-	rm "${DESTDIR}${PREFIX}/lib/systemd/system/bellsystem.service"
+	rm "${DESTDIR}/lib/systemd/system/bellsystem.service"
 	# Remove Apache config files
 	rm "${DESTDIR}/etc/httpd/conf/extra/httpd-bellsystem.conf"
 	rm "${DESTDIR}/etc/httpd/conf/extra/httpd-bellsystem-root.conf"
