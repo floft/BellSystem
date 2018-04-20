@@ -6,13 +6,7 @@ and PHP web UI, which can create the XML file. The daemon sets one of the
 pins of a serial connector to high to ring the bell.
 
 Depends: glibc, libxml++
-Website: http://floft.net/wiki/Bells.html
-
-# Arch Linux ARM Installation
-If you're using Arch Linux ARM, then I provided a
-[PKGBUILD](https://github.com/floft/PKGBUILDs/tree/master/bellsystem-git) for
-this. Note this was before Systemd was around though. This should be a starting
-point though. You can also see the Raspbian instructions below.
+Website: http://floft.net/code/bells/
 
 # Raspbian Installation
 Since it it more likely you'll be using Raspbian than Arch Linux ARM, I'll
@@ -30,7 +24,7 @@ before you do this if you want any sort of security.
 
 Third, you can set up the bell system.
 
-    sudo apt install libglibmm-2.4-dev libxml++2.6-dev apache2 libapache2-mod-php git
+    sudo apt install libglibmm-2.4-dev libxml++2.6-dev apache2 libapache2-mod-php php7.0-xml git
     git clone https://github.com/floft/BellSystem
     cd BellSystem
     make
@@ -47,7 +41,11 @@ To setup the website with Apache:
 Finally, you need to:
 
  * Run `sudo bellsystem-password` to change the website user interface password.
- * Manually change the device location in */usr/share/webapps/bellsystem/config.xml*.
+ * Manually change the device location, GPIO pin, or command you want to run in
+   */usr/share/webapps/bellsystem/config.xml* since those you can't change from
+   the website for security.
+ * Follow the [user guide](http://www.floft.net/code/bells/) to set up the bell
+   schedule. Make sure to change the school start/end or else it'll never ring.
 
 To uninstall:
 
@@ -56,3 +54,10 @@ To uninstall:
     sudo unlink /etc/apache2/sites-enabled/httpd-bellsystem-root.conf
     cd BellSystem
     sudo make PREFIX=/usr uninstall
+
+# Arch Linux ARM Installation
+If you're using Arch Linux ARM, then I provided a
+[PKGBUILD](https://github.com/floft/PKGBUILDs/tree/master/bellsystem-git) for
+this. Note this was before Systemd was around though. This should be a starting
+point though. I'd recommend using Raspbian at the moment unless you want to
+modify the PKGBUILD.
