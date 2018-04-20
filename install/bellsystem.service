@@ -2,7 +2,7 @@
 Description=BellSystem
 
 [Service]
-ExecStart=/usr/bin/bellsystem-daemon -c /usr/share/webapps/bellsystem/config.xml -l /var/log/bellsystem.log
+ExecStart=/usr/bin/bellsystem-daemon -f -c /usr/share/webapps/bellsystem/config.xml
 
 [Install]
 WantedBy=multi-user.target
