@@ -11,13 +11,14 @@ install: daemon
 	${MAKE} -C daemon install
 	# Create directories
 	mkdir -p "${DESTDIR}/etc/apache2/conf-available/"
+	mkdir -p "${DESTDIR}/etc/apache2/sites-available/"
 	mkdir -p "${DESTDIR}${PREFIX}/share/bellsystem/"
 	mkdir -p "${DESTDIR}${PREFIX}/share/webapps/bellsystem/"
 	# Copy systemd service
 	install -Dm755 "install/bellsystem.service"         "${DESTDIR}/lib/systemd/system/"
 	# Copy Apache config files
 	install -Dm644 "install/httpd-bellsystem.conf"      "${DESTDIR}/etc/apache2/conf-available/"
-	install -Dm644 "install/httpd-bellsystem-root.conf" "${DESTDIR}/etc/apache2/conf-available/"
+	install -Dm644 "install/httpd-bellsystem-root.conf" "${DESTDIR}/etc/apache2/sites-available/"
 	# Copy website password changer script
 	install -Dm755 "install/password.sh"                "${DESTDIR}${PREFIX}/bin/bellsystem-password"
 	# Copy website files
@@ -34,7 +35,7 @@ uninstall:
 	rm "${DESTDIR}/lib/systemd/system/bellsystem.service"
 	# Remove Apache config files
 	rm "${DESTDIR}/etc/apache2/conf-available/httpd-bellsystem.conf"
-	rm "${DESTDIR}/etc/apache2/conf-available/httpd-bellsystem-root.conf"
+	rm "${DESTDIR}/etc/apache2/sites-available/httpd-bellsystem-root.conf"
 	# Remove website password changer script
 	rm "${DESTDIR}${PREFIX}/bin/bellsystem-password"
 

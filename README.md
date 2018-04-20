@@ -38,20 +38,21 @@ Third, you can set up the bell system.
     sudo systemctl enable bellsystem
     sudo systemctl start bellsystem
 
+To setup the website with Apache:
+
+    sudo unlink /etc/apache2/sites-enabled/000-default.conf
+    sudo ln -s /etc/apache2/sites-{available,enabled}/httpd-bellsystem-root.conf
+    sudo systemctl restart apache2
+
 Finally, you need to:
 
  * Run `sudo bellsystem-password` to change the website user interface password.
  * Manually change the device location in */usr/share/webapps/bellsystem/config.xml*.
- * Add one of the following two lines to */etc/apache2/apache2.conf*
-    - To put the website at /: *sudo ln -s /etc/apache2/conf-{available,enabled}/httpd-bellsystem-root.conf*
-    - To put the website at /bellsystem: *sudo ln -s /etc/apache2/conf-{available,enabled}/httpd-bellsystem.conf*
-    - Restart Apache: `sudo systemctl restart apache2`
 
 To uninstall:
 
     sudo systemctl disable bellsystem
     sudo systemctl stop bellsystem
-    sudo unlink /etc/apache2/conf-enabled/httpd-bellsystem.conf
-    sudo unlink /etc/apache2/conf-enabled/httpd-bellsystem-root.conf
+    sudo unlink /etc/apache2/sites-enabled/httpd-bellsystem-root.conf
     cd BellSystem
     sudo make PREFIX=/usr uninstall
