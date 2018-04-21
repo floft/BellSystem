@@ -8,19 +8,20 @@ pins of a serial connector to high to ring the bell.
 Depends: glibc, libxml++  
 Website: http://floft.net/code/bells/
 
-# Raspbian Installation
-Since it it more likely you'll be using Raspbian than Arch Linux ARM, I'll
-provide instructions for Raspbian.
+[![BellSystem Web UI](https://raw.githubusercontent.com/floft/BellSystem/master/images/website.png)](https://raw.githubusercontent.com/floft/BellSystem/master/images/website.png)
 
+# Raspbian Installation
 First, put Raspbian on an SD card and boot up your Raspberry Pi. See the
 [Raspberry Pi website](https://www.raspberrypi.org/downloads/raspbian/).
 
-Second, boot it up and enable SSH access if you wish. Default user is "pi" and
-password is "raspberry". After running the following command, it's under
-Interfacing Options --> SSH --> Enable. Make sure you change the password
-before you do this if you want any sort of security.
-
-    sudo raspi-config
+Second, boot it up and adjust a couple settings. Default user is "pi" and
+password is "raspberry".  Run `sudo raspi-config`, then:
+ * Enable SSH access if you wish. Interfacing Options --> SSH --> Enable. Make
+   sure you change the password before you do this if you want any sort of
+   security.
+ * Also, you probably want to set the timezone, under Localisation --> Change
+   Timezone. Otherwise all your times in the config file and website UI have to
+   be in UTC.
 
 Third, you can set up the bell system.
 
@@ -55,17 +56,11 @@ voltage).
     make tests
     ./daemon/tests/serial.out
 
-To uninstall:
+To uninstall (note that this deletes your config file and website password
+file):
 
     sudo systemctl disable bellsystem
     sudo systemctl stop bellsystem
     sudo unlink /etc/apache2/sites-enabled/httpd-bellsystem-root.conf
     cd BellSystem
     sudo make PREFIX=/usr uninstall
-
-# Arch Linux ARM Installation
-If you're using Arch Linux ARM, then I provided a
-[PKGBUILD](https://github.com/floft/PKGBUILDs/tree/master/bellsystem-git) for
-this. Note this was before Systemd was around though. This should be a starting
-point though. I'd recommend using Raspbian at the moment unless you want to
-modify the PKGBUILD.
