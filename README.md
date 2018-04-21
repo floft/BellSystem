@@ -47,6 +47,14 @@ Finally, you need to:
  * Follow the [user guide](http://www.floft.net/code/bells/) to set up the bell
    schedule. Make sure to change the school start/end or else it'll never ring.
 
+If you're interested in debugging serial, you might build the "serial.out" test
+which alternates setting the voltage on serial high and low every 3 seconds.
+You probably want pins 5 (ground) and 7 (RTS, changed between high/low
+voltage).
+
+    make tests
+    ./daemon/tests/serial.out
+
 To uninstall:
 
     sudo systemctl disable bellsystem
