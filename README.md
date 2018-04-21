@@ -2,8 +2,17 @@ Bell System
 ===========
 
 This is a fairly simple bell system C++ daemon, which reads an XML file,
-and PHP web UI, which can create the XML file. The daemon sets one of the
-pins of a serial connector to high to ring the bell.
+and PHP web UI, which can create the XML file. The daemon has three options for turning bells on or off:
+ * Set one of the pins of a serial connector to high
+ * Set a GPIO pin high
+ * Execute a command
+
+Features:
+ * Create any number of named schedules
+ * Set a default schedule for each day of the week (or none, e.g. on weekends)
+ * Set quiet periods where no bells will ring (e.g. on holidays or break)
+ * Set override schedules (e.g. a half day or a special event on a particular day)
+ * Backup and restore
 
 Depends: glibc, libxml++  
 Website: http://floft.net/code/bells/
