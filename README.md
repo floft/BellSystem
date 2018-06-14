@@ -15,7 +15,7 @@ Features:
  * Backup and restore
 
 Depends: glibc, libxml++  
-Website: http://floft.net/code/bells/
+Website: https://floft.net/code/bells/
 
 [![BellSystem Web UI](https://raw.githubusercontent.com/floft/BellSystem/master/images/website.png)](https://raw.githubusercontent.com/floft/BellSystem/master/images/website.png)
 
@@ -54,7 +54,7 @@ Finally, you need to:
  * Manually change the device location, GPIO pin, or command you want to run in
    */usr/share/webapps/bellsystem/config.xml* since those you can't change from
    the website for security.
- * Follow the [user guide](http://www.floft.net/code/bells/) to set up the bell
+ * Follow the [user guide](https://floft.net/code/bells/) to set up the bell
    schedule. Make sure to change the school start/end or else it'll never ring.
 
 That's it! Find the IP address of your Raspberry Pi and go to
