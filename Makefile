@@ -21,8 +21,16 @@ install: daemon
 	install -Dm644 "install/httpd-bellsystem-root.conf" "${DESTDIR}/etc/apache2/sites-available/"
 	# Copy website password changer script
 	install -Dm755 "install/password.sh"                "${DESTDIR}${PREFIX}/bin/bellsystem-password"
+	# Backup existing config file if it exists
+	[ -f "${DESTDIR}${PREFIX}/share/webapps/bellsystem/config.xml" ] && \
+	    mv "${DESTDIR}${PREFIX}/share/webapps/bellsystem/config.xml" \
+	        "${DESTDIR}${PREFIX}/share/webapps/bellsystem/config.xml.make-bak"
 	# Copy website files
 	cp -ra www/.htaccess www/*                          "${DESTDIR}${PREFIX}/share/webapps/bellsystem/"
+	# Restore existing config file if it exists
+	[ -f "${DESTDIR}${PREFIX}/share/webapps/bellsystem/config.xml.make-bak" ] && \
+	    mv "${DESTDIR}${PREFIX}/share/webapps/bellsystem/config.xml.make-bak" \
+	        "${DESTDIR}${PREFIX}/share/webapps/bellsystem/config.xml"
 	# Make the config file writable by the Apache PHP website
 	chown www-data                                      "${DESTDIR}${PREFIX}/share/webapps/bellsystem/config.xml"
 
