@@ -19,7 +19,8 @@ Website: https://floft.net/code/bells/
 
 [![BellSystem Web UI](https://raw.githubusercontent.com/floft/BellSystem/master/images/website.png)](https://raw.githubusercontent.com/floft/BellSystem/master/images/website.png)
 
-# Raspbian Installation
+# Raspbian
+## Install
 First, put Raspbian on an SD card and boot up your Raspberry Pi. See the
 [Raspberry Pi website](https://www.raspberrypi.org/downloads/raspbian/).
 
@@ -68,6 +69,16 @@ voltage).
     make tests
     ./daemon/tests/serial.out
 
+## Update
+To upgrade (if desired):
+    cd Bellsystem
+    git pull
+    make
+    sudo make PREFIX=/usr install
+    sudo systemctl daemon-reload
+    sudo systemctl restart bellsystem apache2
+
+## Uninstall
 To uninstall (note that this deletes your config file and website password
 file):
 
