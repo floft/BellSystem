@@ -24,13 +24,13 @@ install: daemon
 	# Backup existing config file if it exists
 	[ -f "${DESTDIR}${PREFIX}/share/webapps/bellsystem/config.xml" ] && \
 	    mv "${DESTDIR}${PREFIX}/share/webapps/bellsystem/config.xml" \
-	        "${DESTDIR}${PREFIX}/share/webapps/bellsystem/config.xml.make-bak"
+	        "${DESTDIR}${PREFIX}/share/webapps/bellsystem/config.xml.make-bak" || true
 	# Copy website files
 	cp -ra www/.htaccess www/*                          "${DESTDIR}${PREFIX}/share/webapps/bellsystem/"
 	# Restore existing config file if it exists
 	[ -f "${DESTDIR}${PREFIX}/share/webapps/bellsystem/config.xml.make-bak" ] && \
 	    mv "${DESTDIR}${PREFIX}/share/webapps/bellsystem/config.xml.make-bak" \
-	        "${DESTDIR}${PREFIX}/share/webapps/bellsystem/config.xml"
+	        "${DESTDIR}${PREFIX}/share/webapps/bellsystem/config.xml" || true
 	# Make the config file writable by the Apache PHP website
 	chown www-data                                      "${DESTDIR}${PREFIX}/share/webapps/bellsystem/config.xml"
 
