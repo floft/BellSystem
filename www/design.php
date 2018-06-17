@@ -37,8 +37,18 @@ function config_save($xml)
 		{
 			$return = fwrite($f, $xml->saveXML());
 			fclose($f);
+			// Sometimes Raspbian defaults don't appear to sync for minutes,
+			// and we'd like to keep our settings even after a power failure.
+			//
+			// Note that eio_fsync followed by eio_event_loop is probably
+			// slightly cleaner, but then you'd have to install ith with PECL
+			// or something, and I think it's only a dev version now.
+			//
+			// Alternatively, we could sync in the C++ daemon when on the minute
+			// when we detect a changed config file.
+			system('sync');
 			return $return;
-		} else  return false;
+		} else return false;
 	}
 }
 
