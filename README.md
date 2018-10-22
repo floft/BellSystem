@@ -67,7 +67,7 @@ You probably want pins 5 (ground) and 7 (RTS, changed between high/low
 voltage).
 
     make tests
-    ./daemon/tests/serial.out
+    ./daemon/test/serial.out
 
 ## Update
 To upgrade (if desired):
