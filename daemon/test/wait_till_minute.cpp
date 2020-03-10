@@ -8,7 +8,7 @@ using namespace std;
 int main()
 {
 	Wait::wait_till_minute();
-	
+
 	time_t current = std::time(0);
 	struct tm* tm  = localtime(&current);
 	cout << set_digits(2, tm->tm_hour) << ":"

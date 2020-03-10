@@ -16,10 +16,10 @@ var Sha256 = {};  // Sha256 namespace
  */
 Sha256.hash = function(msg, utf8encode) {
     utf8encode =  (typeof utf8encode == 'undefined') ? true : utf8encode;
-    
+
     // convert string to UTF-8, as SHA only deals with byte-streams
     if (utf8encode) msg = Utf8.encode(msg);
-    
+
     // constants [§4.2.2]
     var K = [0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
              0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
@@ -32,8 +32,8 @@ Sha256.hash = function(msg, utf8encode) {
     // initial hash value [§5.3.1]
     var H = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
 
-    // PREPROCESSING 
- 
+    // PREPROCESSING
+
     msg += String.fromCharCode(0x80);  // add trailing '1' bit (+ 0's padding) to string [§5.1.1]
 
     // convert string msg into 512-bit/16-integer blocks arrays of ints [§5.2.1]
@@ -44,7 +44,7 @@ Sha256.hash = function(msg, utf8encode) {
     for (var i=0; i<N; i++) {
         M[i] = new Array(16);
         for (var j=0; j<16; j++) {  // encode 4 chars per integer, big-endian encoding
-            M[i][j] = (msg.charCodeAt(i*64+j*4)<<24) | (msg.charCodeAt(i*64+j*4+1)<<16) | 
+            M[i][j] = (msg.charCodeAt(i*64+j*4)<<24) | (msg.charCodeAt(i*64+j*4+1)<<16) |
                       (msg.charCodeAt(i*64+j*4+2)<<8) | (msg.charCodeAt(i*64+j*4+3));
         } // note running off the end of msg is ok 'cos bitwise ops on NaN return 0
     }
@@ -82,16 +82,16 @@ Sha256.hash = function(msg, utf8encode) {
         }
          // 4 - compute the new intermediate hash value (note 'addition modulo 2^32')
         H[0] = (H[0]+a) & 0xffffffff;
-        H[1] = (H[1]+b) & 0xffffffff; 
-        H[2] = (H[2]+c) & 0xffffffff; 
-        H[3] = (H[3]+d) & 0xffffffff; 
+        H[1] = (H[1]+b) & 0xffffffff;
+        H[2] = (H[2]+c) & 0xffffffff;
+        H[3] = (H[3]+d) & 0xffffffff;
         H[4] = (H[4]+e) & 0xffffffff;
         H[5] = (H[5]+f) & 0xffffffff;
-        H[6] = (H[6]+g) & 0xffffffff; 
-        H[7] = (H[7]+h) & 0xffffffff; 
+        H[6] = (H[6]+g) & 0xffffffff;
+        H[7] = (H[7]+h) & 0xffffffff;
     }
 
-    return Sha256.toHexStr(H[0]) + Sha256.toHexStr(H[1]) + Sha256.toHexStr(H[2]) + Sha256.toHexStr(H[3]) + 
+    return Sha256.toHexStr(H[0]) + Sha256.toHexStr(H[1]) + Sha256.toHexStr(H[2]) + Sha256.toHexStr(H[3]) +
            Sha256.toHexStr(H[4]) + Sha256.toHexStr(H[5]) + Sha256.toHexStr(H[6]) + Sha256.toHexStr(H[7]);
 }
 
@@ -104,8 +104,8 @@ Sha256.Ch = function(x, y, z)  { return (x & y) ^ (~x & z); }
 Sha256.Maj = function(x, y, z) { return (x & y) ^ (x & z) ^ (y & z); }
 
 //
-// hexadecimal representation of a number 
-//   (note toString(16) is implementation-dependant, and  
+// hexadecimal representation of a number
+//   (note toString(16) is implementation-dependant, and
 //   in IE returns signed numbers when used on full words)
 //
 Sha256.toHexStr = function(n) {
@@ -123,7 +123,7 @@ Sha256.toHexStr = function(n) {
 var Utf8 = {};  // Utf8 namespace
 
 /**
- * Encode multi-byte Unicode string into utf-8 multiple single-byte characters 
+ * Encode multi-byte Unicode string into utf-8 multiple single-byte characters
  * (BMP / basic multilingual plane only)
  *
  * Chars in range U+0080 - U+07FF are encoded in 2 chars, U+0800 - U+FFFF in 3 chars
@@ -132,18 +132,18 @@ var Utf8 = {};  // Utf8 namespace
  * @returns {String} encoded string
  */
 Utf8.encode = function(strUni) {
-  // use regular expressions & String.replace callback function for better efficiency 
+  // use regular expressions & String.replace callback function for better efficiency
   // than procedural approaches
   var strUtf = strUni.replace(
       /[\u0080-\u07ff]/g,  // U+0080 - U+07FF => 2 bytes 110yyyyy, 10zzzzzz
-      function(c) { 
+      function(c) {
         var cc = c.charCodeAt(0);
         return String.fromCharCode(0xc0 | cc>>6, 0x80 | cc&0x3f); }
     );
   strUtf = strUtf.replace(
       /[\u0800-\uffff]/g,  // U+0800 - U+FFFF => 3 bytes 1110xxxx, 10yyyyyy, 10zzzzzz
-      function(c) { 
-        var cc = c.charCodeAt(0); 
+      function(c) {
+        var cc = c.charCodeAt(0);
         return String.fromCharCode(0xe0 | cc>>12, 0x80 | cc>>6&0x3F, 0x80 | cc&0x3f); }
     );
   return strUtf;
@@ -160,7 +160,7 @@ Utf8.decode = function(strUtf) {
   var strUni = strUtf.replace(
       /[\u00e0-\u00ef][\u0080-\u00bf][\u0080-\u00bf]/g,  // 3-byte chars
       function(c) {  // (note parentheses for precence)
-        var cc = ((c.charCodeAt(0)&0x0f)<<12) | ((c.charCodeAt(1)&0x3f)<<6) | ( c.charCodeAt(2)&0x3f); 
+        var cc = ((c.charCodeAt(0)&0x0f)<<12) | ((c.charCodeAt(1)&0x3f)<<6) | ( c.charCodeAt(2)&0x3f);
         return String.fromCharCode(cc); }
     );
   strUni = strUni.replace(

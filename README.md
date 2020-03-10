@@ -14,7 +14,7 @@ Features:
  * Set override schedules (e.g. a half day or a special event on a particular day)
  * Backup and restore
 
-Depends: glibc, libxml++  
+Depends: glibc, libxml++
 Website: https://floft.net/code/bells/
 
 [![BellSystem Web UI](https://raw.githubusercontent.com/floft/BellSystem/master/images/website.png)](https://raw.githubusercontent.com/floft/BellSystem/master/images/website.png)

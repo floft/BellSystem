@@ -12,7 +12,7 @@ function get_whens($whens)
 	foreach ($whens as $when)
 	{
 		$value = (string)$when;
-			
+
 		$summary = "";
 		$parts = explode("-", (string)$when);
 
@@ -95,7 +95,7 @@ if (isset($_REQUEST['save'])) {
 		$parts = explode("@", (string)$quiet);
 
 		$new = $xml->calendar->quiet->addChild("when", $parts[0]);
-		
+
 		if (count($parts) == 2)
 		{
 			$times = explode("-", $parts[1]);
@@ -109,7 +109,7 @@ if (isset($_REQUEST['save'])) {
 	}
 
 	$xml->calendar->addChild("override");
-	
+
 	foreach ($overrides as $override)
 	{
 		$exec_part = explode("#", (string)$override);
@@ -136,7 +136,7 @@ if (isset($_REQUEST['save'])) {
 
 		$new = $xml->calendar->override->addChild("when", $parts[0]);
 		$new["exec"] = $exec_part[0];
-		
+
 		if (count($parts) == 2)
 		{
 			$times = explode("-", $parts[1]);
@@ -241,7 +241,7 @@ function box_save() {
 	{
 		exec_value = exec.options[exec.selectedIndex].value
 		exec_text  = exec.options[exec.selectedIndex].text
-		
+
 		input = exec_value + "#"
 		text  = "<span>" + exec_text + "</span> &ndash; "
 	}
@@ -265,10 +265,10 @@ function box_save() {
 		input += "@" + time_start + "-" + time_end
 		text  += " from " + time_start + " - " + time_end
 	}
-	
+
 	document.getElementById(window.box_id).value               = input
 	document.getElementById(window.box_id + "_link").innerHTML = text
-	
+
 	close()
 
 	window.box_id   = -1
@@ -313,7 +313,7 @@ function box_open(input_id) {
 		hour_end     = end_parts[0]
 		minute_end   = end_parts[1]
 	}
-	
+
 	date_parts  = parts[0].split("-")
 	start       = date_parts[0].substr(0,4) + "/" + date_parts[0].substr(4,2) + "/" + date_parts[0].substr(6,2)
 
@@ -360,7 +360,7 @@ function print_date(slashes) {
 		month = "0" + month
 	if (day < 10)
 		day = "0" + day
-	
+
 	if (slashes)
 		return year + "/" + month + "/" + day
 	else
@@ -417,7 +417,7 @@ function add_quiet() {
 	})(id)
 	link.innerHTML = print_date(true)
 	link.title = "Click to modify"
-	
+
 	$(link).fancybox({
 		'titlePosition'         : 'inside',
 		'transitionIn'          : 'none',
@@ -469,7 +469,7 @@ function add_override() {
 	})(id)
 	link.innerHTML = "<span>unknown</span> &ndash; " + print_date(true)
 	link.title = "Click to modify"
-	
+
 	$(link).fancybox({
 		'titlePosition'         : 'inside',
 		'transitionIn'          : 'none',
@@ -482,7 +482,7 @@ function add_override() {
 
 window.onload = function() {
 <?php
-foreach ($quiets as $id => $quiet) 
+foreach ($quiets as $id => $quiet)
 {
 	echo "\t$(\"#quiet_${id}_link\").fancybox({
 		'titlePosition'         : 'inside',
@@ -492,7 +492,7 @@ foreach ($quiets as $id => $quiet)
 	});\n";
 }
 
-foreach ($overrides as $id => $override) 
+foreach ($overrides as $id => $override)
 {
 	echo "\t$(\"#override_${id}_link\").fancybox({
 		'titlePosition'         : 'inside',
@@ -532,7 +532,7 @@ foreach ($days_of_week as $key=>$dow)
 	echo "\t<option value=''>     </option>\n\t";
 	for ($i=0; $i<count($schedules); ++$i) {
 		$selected = ($defaults[$key] === $schedules[$i][0])?" selected=\"selected\"":"";
-		
+
 		echo "\t<option value='{$schedules[$i][0]}'$selected>{$schedules[$i][1]}</option>\n\t";
 	}
 	echo "</select></td>\n</tr>";

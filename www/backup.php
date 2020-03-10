@@ -13,7 +13,7 @@ $error_messages = array(
 	6=>'Missing a temporary folder.',
 	7=>'Failed to write file to disk.',
 	8=>'A PHP extension stopped the file upload.'
-); 
+);
 
 if (isset($_REQUEST['backup']))
 {

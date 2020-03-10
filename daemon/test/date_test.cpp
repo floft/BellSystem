@@ -17,7 +17,7 @@ int main()
 	if (!(d2 <= d3)) return 1;
 	if (!(d2 >= d3)) return 1;
 	if (d4 == d5)    return 1;
-	
+
 	DateTime::time t1(0,  0);
 	DateTime::time t2(23, 59);
 	DateTime::time t3(10, 10);
@@ -32,6 +32,6 @@ int main()
 	if (!(t3 >= t6)) return 1;
 	if (t4 > t5)     return 1;
 	if (t5 < t6)     return 1;
-	
+
 	return 0;
 }

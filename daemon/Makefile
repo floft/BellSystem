@@ -24,7 +24,7 @@ ${OUT}: ${OBJ}
 
 install:
 	install -Dm755 ${OUT} ${DESTDIR}${PREFIX}/bin/bellsystem-daemon
-	
+
 uninstall:
 	rm -f ${DESTDIR}${PREFIX}/bin/bellsystem-daemon
 

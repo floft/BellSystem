@@ -43,7 +43,7 @@ foreach ($xml->schedules->schedule as $schedule) {
 	$id    = $schedule["id"];
 	$name  = $schedule["name"];
 	$times = array();
-	
+
 	foreach ($schedule->time as $time)
 		$times[] = $time;
 
@@ -183,7 +183,7 @@ function add_schedule() {
 	})(id)
 	remove.innerHTML = " x"
 	remove.title = "Delete this schedule"
-	
+
 	times = document.createElement('div')
 	schedule.appendChild(times)
 	times.className = "times"

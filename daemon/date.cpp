@@ -64,7 +64,7 @@ namespace DateTime
 	void date::set(const string& s)
 	{
 		if (s.length() != 8) throw Invalid();
-		
+
 		y = string_to_int(s.substr(0,4));
 		m = string_to_int(s.substr(4,2));
 		d = string_to_int(s.substr(6,2));
@@ -86,7 +86,7 @@ namespace DateTime
 	{
 		if (yy%4 == 0 && (yy%100 != 0 || yy%400 == 0))
 			return true;
-		
+
 		return false;
 	}
 
@@ -190,7 +190,7 @@ namespace DateTime
 		if (a.h == b.h &&
 		    a.m == b.m)
 		    return true;
-		
+
 		return false;
 	}
 
@@ -226,14 +226,14 @@ namespace DateTime
 
 		return false;
 	}
-	
+
 	bool operator<=(const date& a, const date& b)
 	{
 		if (a==b || a<b) return true;
 
 		return false;
 	}
-	
+
 	bool operator>=(const date& a, const date& b)
 	{
 		if (a==b || a>b) return true;
@@ -269,7 +269,7 @@ namespace DateTime
 
 		return false;
 	}
-	
+
 	bool operator>=(const time& a, const time& b)
 	{
 		if (a==b || a>b) return true;
@@ -285,14 +285,14 @@ namespace DateTime
 
 		return os;
 	}
-	
+
 	ostream& operator<<(ostream& os, const time& t)
 	{
 		os << t.h << ":" << set_digits(2, t.m);
 
 		return os;
 	}
-	
+
 	ostream& operator<<(ostream& os, const now& t)
 	{
 		os << t.d << " " << t.t;

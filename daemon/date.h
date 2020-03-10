@@ -32,7 +32,7 @@ namespace DateTime
 		bool valid(const int& yy, const int& mm, const int& dd) const;
 		bool leapyear(const int& yy) const;
 		int days_in_month(const int& yy, const int& mm) const;
-	
+
 		int year()  const { return y; }
 		int month() const { return m; }
 		int day()   const { return d; }
@@ -42,12 +42,12 @@ namespace DateTime
 		void set_day(const int& dd);
 		void set(const string& s);
 		void set(const int& yy, const int& mm, const int& dd);
-		
+
 	private:
 		int y;
 		int m;
 		int d;
-	
+
 		friend bool operator==(const date& a, const date& b);
 		friend bool operator<(const date& a,  const date& b);
 		friend bool operator>(const date& a,  const date& b);
@@ -64,7 +64,7 @@ namespace DateTime
 		time(const int& hh, const int& mm);
 
 		bool valid(const int& hh, const int& mm) const;
-	
+
 		int hour()   const { return h; }
 		int minute() const { return m; }
 
@@ -75,7 +75,7 @@ namespace DateTime
 	private:
 		int h;
 		int m;
-	
+
 		friend bool operator==(const time& a, const time& b);
 		friend bool operator<(const time& a,  const time& b);
 		friend bool operator>(const time& a,  const time& b);

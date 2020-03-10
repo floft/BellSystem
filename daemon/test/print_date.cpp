@@ -5,6 +5,6 @@ int main()
 {
 	DateTime::now n;
 	cout << n << endl;
-	
+
 	return 0;
 }

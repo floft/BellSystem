@@ -38,7 +38,7 @@ namespace Split
 
 			items[pos] += c;
 		}
-		
+
 		return items;
 	}
 }
