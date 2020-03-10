@@ -184,6 +184,16 @@ bool in_times(const DateTime::time& t, const vector<DateTime::time>& times)
 	return false;
 }
 
+bool in_times(DateTime::time t, const vector<DateTime::time>& times,
+	const int& hour_offset, const int& minute_offset)
+{
+	// Warning: this doesn't handle date overflow, e.g. if you have a bell at
+	// 00:00 and it's currently 23:59, then if minute_offset=1 t will end up
+	// being 00:00 of the wrong day.
+	t.add(hour_offset, minute_offset);
+	return in_times(t, times);
+}
+
 bool ring_schedule(const string& id, const vector<Config::schedule>& schedules,
 		   const Config::Settings& settings, const DateTime::time& now,
 		   const bool& debug = false)
@@ -219,6 +229,21 @@ bool ring_schedule(const string& id, const vector<Config::schedule>& schedules,
 					turn_on_command(settings.command);
 				if (settings.serial_enabled)
 					turn_on_serial(settings.device, settings.length);
+			}
+		}
+		else if (in_times(now, schedule.times, 0, 1))
+		{
+			if (debug)
+			{
+				cout << "Tone" << endl;
+			}
+			else
+			{
+				// For example, maybe use the gpio or serial to ring the bell.
+				// Then set command to be disabled (so it doesn't run when the
+				// bell is supposed to ring) and instead set the command to
+				// make the tone.
+				turn_on_command(settings.command);
 			}
 		}
 	}

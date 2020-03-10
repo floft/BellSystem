@@ -72,6 +72,7 @@ namespace DateTime
 		void set_minute(const int& mm);
 		void set(const string& s);
 		void set(const int& hh, const int& mm);
+		void add(const int& hh, const int& mm);
 	private:
 		int h;
 		int m;

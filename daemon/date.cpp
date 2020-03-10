@@ -162,6 +162,17 @@ namespace DateTime
 			throw Invalid();
 	}
 
+	void time::add(const int& hh, const int& mm)
+	{
+		// Warning: we carry over overflow minutes into hours but not hours
+		// into days since this is just a time object not a datetime object.
+		h = (h + hh + (m + mm) / 60) % 24;
+		m = (m + mm) % 60;
+
+		if (!valid(h,m))
+			throw Invalid();
+	}
+
 	bool time::valid(const int& hh, const int& mm) const
 	{
 		if (hh < 0 || hh > max_hours)	return false;
