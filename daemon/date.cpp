@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "date.h"
 
 namespace DateTime
@@ -162,12 +164,22 @@ namespace DateTime
 			throw Invalid();
 	}
 
+	int time::wrapAround(int v, int delta, int minval, int maxval)
+	{
+		// To get Python-style -1%50 = 49 rather than -1%50=-1 like in C++
+		const int mod = maxval + 1 - minval;
+		if (delta >= 0) {return  (v + delta                - minval) % mod + minval;}
+		else            {return ((v + delta) - delta * mod - minval) % mod + minval;}
+	}
+
 	void time::add(const int& hh, const int& mm)
 	{
 		// Warning: we carry over overflow minutes into hours but not hours
 		// into days since this is just a time object not a datetime object.
-		h = (h + hh + (m + mm) / 60) % 24;
-		m = (m + mm) % 60;
+		int carry_over_minutes = floor(
+			(static_cast<double>(m) + mm) / (max_minutes + 1));
+		h = wrapAround(h, hh + carry_over_minutes, 0, max_hours);
+		m = wrapAround(m, mm, 0, max_minutes);
 
 		if (!valid(h,m))
 			throw Invalid();

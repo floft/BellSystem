@@ -77,6 +77,8 @@ namespace DateTime
 		int h;
 		int m;
 
+		int wrapAround(int v, int delta, int minval, int maxval);
+
 		friend bool operator==(const time& a, const time& b);
 		friend bool operator<(const time& a,  const time& b);
 		friend bool operator>(const time& a,  const time& b);
