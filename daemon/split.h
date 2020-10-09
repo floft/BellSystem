@@ -1,6 +1,5 @@
 /*
  * Simple way to split a string when the separator is another string.
- * http://floft.net/wiki/Scripts/String_Split.html
  */
 
 #ifndef H_STRING_SPLIT
