@@ -14,11 +14,6 @@ Features:
  * Set override schedules (e.g. a half day or a special event on a particular day)
  * Backup and restore
 
-This School Bell System is primarily designed to be used:
-
- * for school bell systems that have weekly schedules and occasionally days without bells or with a different schedule (such as a half day)
- * with a bell system connected to a serial port of the Linux computer it is running on, a GPIO pin (e.g. on a Raspberry Pi), or some custom command or script that can make the bell ring
-
 Depends: glibc, libxml++
 
 [![BellSystem Web UI](https://raw.githubusercontent.com/floft/BellSystem/master/images/website.png)](https://raw.githubusercontent.com/floft/BellSystem/master/images/website.png)
